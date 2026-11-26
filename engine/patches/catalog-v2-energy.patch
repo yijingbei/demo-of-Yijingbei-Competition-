@@ -1,0 +1,18 @@
+--- a/source_codes/openmdbench/catalog/v2.py
++++ b/source_codes/openmdbench/catalog/v2.py
+@@ -412,6 +412,15 @@
+                         raise CatalogResolutionErrorV2(
+                             f"{label} resource is incompatible with platform domain"
+                         )
++            elif resource.resource_type == "energy":
++                from openmdbench.systems.generic_v2 import energy_consumption_parameters_v2
++
++                try:
++                    energy_consumption_parameters_v2(content)
++                except ValueError as error:
++                    raise CatalogResolutionErrorV2(
++                        f"invalid energy consumption profile {resource.exact_ref}: {error}"
++                    ) from error
+             elif resource.resource_type == "weapons":
+                 effect_ref = content.get("effect_ref")
+                 if isinstance(effect_ref, str):

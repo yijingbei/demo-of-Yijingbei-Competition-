@@ -1,0 +1,19 @@
+--- a/openmdbench/combat/models_v2.py
++++ b/openmdbench/combat/models_v2.py
+@@ -199,10 +199,15 @@
+     tick: StrictInt = Field(ge=0)
+     source_entity_id: str = Field(min_length=1, max_length=256)
+     target_entity_id: str = Field(min_length=1, max_length=256)
+-    status: Literal["hit", "miss", "target_unavailable"]
++    status: Literal["hit", "miss", "target_unavailable", "source_unavailable", "out_of_range"]
+     effect_ref: str = Field(min_length=1, max_length=256)
+     damage_model_ref: str = Field(min_length=1, max_length=256)
+     impact_position_m: tuple[float, float, float] | None = None
++    delivery_model: str = "delayed_effect"
++    source_position_m: tuple[float, float, float] | None = None
++    terminal_distance_m: float | None = Field(default=None, ge=0.0)
++    detonated: bool = False
++    source_lifecycle_policy: Literal["wreck", "despawn"] | None = None
+     evidence_hash: str = Field(pattern=_SHA256_PATTERN)
+ 
+ 

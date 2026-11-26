@@ -1,0 +1,214 @@
+--- a/source_codes/openmdbench/world/geography_v2.py
++++ b/source_codes/openmdbench/world/geography_v2.py
+@@ -489,6 +489,12 @@
+     third: tuple[float, float],
+     fourth: tuple[float, float],
+ ) -> bool:
++    # Collinear but disjoint edges must not invalidate a simple concave polygon.
++    if (max(first[0], second[0]) < min(third[0], fourth[0])
++            or max(third[0], fourth[0]) < min(first[0], second[0])
++            or max(first[1], second[1]) < min(third[1], fourth[1])
++            or max(third[1], fourth[1]) < min(first[1], second[1])):
++        return False
+     def orientation(
+         a: tuple[float, float], b: tuple[float, float], c: tuple[float, float]
+     ) -> float:
+@@ -711,6 +717,76 @@
+ 
+ 
+ @dataclass(frozen=True, slots=True)
++class SurfaceHeightRegionV2:
++    """Explicit flat terrain prism, never inferred from a coastline alone."""
++
++    region_id: str
++    vertices_m: tuple[tuple[float, float], ...]
++    elevation_m: float
++
++    def __post_init__(self) -> None:
++        _validate_layer_content(
++            "land", {"polygons": [{"id": self.region_id, "vertices_m": self.vertices_m}]},
++            limits=GeographyLayerLimitsV2(),
++        )
++        if (isinstance(self.elevation_m, bool)
++                or not isinstance(self.elevation_m, (int, float))
++                or not math.isfinite(self.elevation_m)):
++            raise ValueError("surface region elevation must be finite")
++        object.__setattr__(self, "vertices_m", tuple(tuple(map(float, p)) for p in self.vertices_m))
++        object.__setattr__(self, "elevation_m", float(self.elevation_m))
++
++    def contains(self, position_m: Sequence[float], *, tolerance_m: float = 1e-6) -> bool:
++        x, y = position_m[:2]
++        inside = False
++        for a, b in zip(self.vertices_m, self.vertices_m[1:] + self.vertices_m[:1]):
++            if _point_segment_distance_squared((x, y), a, b) <= tolerance_m ** 2:
++                return True
++            if (a[1] > y) != (b[1] > y) and x < (b[0]-a[0])*(y-a[1])/(b[1]-a[1])+a[0]:
++                inside = not inside
++        return inside
++
++    def blocks(self, start_m: Vector3V2, end_m: Vector3V2, *, tolerance_m: float) -> bool:
++        """Intersect a 3D segment with the closed, downward terrain prism.
++
++        Split at polygon crossings; evaluating each resulting interior interval
++        also handles concave footprints, grazing edges and endpoints inside.
++        """
++        if min(start_m[2], end_m[2]) > self.elevation_m + tolerance_m:
++            return False
++        dx, dy = end_m[0]-start_m[0], end_m[1]-start_m[1]
++        length2 = dx*dx+dy*dy
++        if length2 <= tolerance_m ** 2:
++            return self.contains(start_m, tolerance_m=tolerance_m)
++        fractions = {0.0, 1.0}
++        for a, b in zip(self.vertices_m, self.vertices_m[1:] + self.vertices_m[:1]):
++            ex, ey = b[0]-a[0], b[1]-a[1]
++            ax, ay = a[0]-start_m[0], a[1]-start_m[1]
++            cross = dx*ey-dy*ex
++            if abs(cross) > 1e-12 * max(1.0, math.sqrt(length2)*math.hypot(ex, ey)):
++                t, u = (ax*ey-ay*ex)/cross, (ax*dy-ay*dx)/cross
++                if 0.0 <= t <= 1.0 and 0.0 <= u <= 1.0:
++                    fractions.add(t)
++            elif abs(ax*dy-ay*dx) <= tolerance_m * math.sqrt(length2):
++                for p in (a, b):
++                    t = ((p[0]-start_m[0])*dx+(p[1]-start_m[1])*dy)/length2
++                    if 0.0 <= t <= 1.0:
++                        fractions.add(t)
++        ordered = sorted(fractions)
++        dz = end_m[2]-start_m[2]
++        for t in ordered:
++            p = (start_m[0]+t*dx, start_m[1]+t*dy)
++            if self.contains(p, tolerance_m=tolerance_m) and start_m[2]+t*dz <= self.elevation_m+tolerance_m:
++                return True
++        for lo, hi in zip(ordered, ordered[1:]):
++            mid = (lo+hi)/2.0
++            if self.contains((start_m[0]+mid*dx, start_m[1]+mid*dy), tolerance_m=tolerance_m):
++                if min(start_m[2]+lo*dz, start_m[2]+hi*dz) <= self.elevation_m+tolerance_m:
++                    return True
++        return False
++
++
++@dataclass(frozen=True, slots=True)
+ class GeographyServiceV2:
+     """Immutable WGS84/local/map conversion and navigation service."""
+ 
+@@ -724,6 +800,7 @@
+     layers: tuple[GeographyLayerV2, ...] = ()
+     surface_elevation_reference: Literal["local_sea_level"] | None = None
+     surface_elevation_constant_m: float | None = None
++    surface_height_regions: tuple[SurfaceHeightRegionV2, ...] = ()
+ 
+     def __post_init__(self) -> None:
+         origin = _vector3(self.origin_wgs84, path=("origin_wgs84",))
+@@ -792,6 +869,12 @@
+         object.__setattr__(
+             self, "layers", tuple(sorted(self.layers, key=lambda item: item.exact_ref))
+         )
++        regions = tuple(sorted(self.surface_height_regions, key=lambda r: r.region_id))
++        if len(regions) > 100 or len({r.region_id for r in regions}) != len(regions):
++            raise ValueError("surface height regions must have bounded unique identities")
++        if regions and self.surface_elevation_reference is None:
++            raise ValueError("surface height regions require an explicit surface reference")
++        object.__setattr__(self, "surface_height_regions", regions)
+         if self.surface_elevation_reference is None:
+             if self.surface_elevation_constant_m is not None:
+                 raise _error(
+@@ -996,12 +1079,13 @@
+         a sensor-relative altitude as ground-relative height.
+         """
+ 
+-        _vector3(position_m, path=("position_m",))
++        point = _vector3(position_m, path=("position_m",))
+         if (
+             self.surface_elevation_reference == "local_sea_level"
+             and self.surface_elevation_constant_m is not None
+         ):
+-            return self.surface_elevation_constant_m
++            return max((self.surface_elevation_constant_m, *(r.elevation_m
++                for r in self.surface_height_regions if r.contains(point))))
+         raise _error(
+             "geography.surface_elevation_unavailable",
+             ("surface_elevation",),
+@@ -1009,6 +1093,38 @@
+             "the resolved map does not declare a usable ground or sea elevation source",
+             "add an explicit surface_elevation declaration before using an AGL sensor profile",
+         )
++
++    def visibility_blocker(self, start_m: Vector3V2, end_m: Vector3V2) -> str | None:
++        """Return immutable map evidence; no implicit wall at a 2D shoreline."""
++        start = _vector3(start_m, path=("visibility", "start_m"))
++        end = _vector3(end_m, path=("visibility", "end_m"))
++        return next((r.region_id for r in self.surface_height_regions
++                     if r.blocks(start, end, tolerance_m=self.tolerance_m)), None)
++
++    def first_terrain_contact(
++        self, start_m: Vector3V2, end_m: Vector3V2
++    ) -> tuple[float, str] | None:
++        """Locate the first penetration of declared terrain by a point segment."""
++        start = _vector3(start_m, path=("terrain_contact", "start_m"))
++        end = _vector3(end_m, path=("terrain_contact", "end_m"))
++        # A point on a roof can move away from it. Entering its interior blocks
++        # the segment, including when both endpoints are outside a plateau.
++        offset = 2.0 * self.tolerance_m
++        shifted_start = (start[0], start[1], start[2] + offset)
++        shifted_end = (end[0], end[1], end[2] + offset)
++        region = self.visibility_blocker(shifted_start, shifted_end)
++        if region is None:
++            return None
++        lower, upper = 0.0, 1.0
++        for _ in range(48):
++            middle = (lower + upper) / 2.0
++            point = tuple(shifted_start[i] + middle * (shifted_end[i] - shifted_start[i]) for i in range(3))
++            blocker = self.visibility_blocker(shifted_start, point)
++            if blocker is None:
++                lower = middle
++            else:
++                upper, region = middle, blocker
++        return upper, region
+ 
+     @property
+     def static_obstacles(self) -> tuple[object, ...]:
+@@ -1124,6 +1240,7 @@
+             )
+             surface_reference: Literal["local_sea_level"] | None = None
+             surface_elevation_m: float | None = None
++            surface_regions: tuple[SurfaceHeightRegionV2, ...] = ()
+             if map_binding is not None:
+                 map_content = getattr(map_binding, "normalized_content", None)
+                 profile = (
+@@ -1134,7 +1251,8 @@
+                 if profile is not None:
+                     if (
+                         not isinstance(profile, Mapping)
+-                        or set(profile) != {"reference", "elevation_m"}
++                        or not {"reference", "elevation_m"} <= set(profile)
++                        or set(profile) - {"reference", "elevation_m", "regions"}
+                         or profile.get("reference") != "local_sea_level"
+                     ):
+                         raise _error(
+@@ -1162,6 +1280,19 @@
+                         )
+                     surface_reference = "local_sea_level"
+                     surface_elevation_m = float(value)
++                    raw_regions = profile.get("regions", ())
++                    if (not isinstance(raw_regions, Sequence)
++                            or isinstance(raw_regions, (str, bytes)) or len(raw_regions) > 100):
++                        raise ValueError("surface regions must be a bounded sequence")
++                    regions = []
++                    for region in raw_regions:
++                        if not isinstance(region, Mapping) or set(region) != {"id", "vertices_m", "elevation_m"}:
++                            raise ValueError("surface region fields are invalid")
++                        regions.append(SurfaceHeightRegionV2(
++                            region_id=region["id"], vertices_m=region["vertices_m"],
++                            elevation_m=region["elevation_m"],
++                        ))
++                    surface_regions = tuple(regions)
+             candidates: dict[str, object] = {}
+             for entity in resolved.entities:
+                 groups = getattr(entity, "resource_bindings", {})
+@@ -1195,6 +1326,7 @@
+                 layers=tuple(layers),
+                 surface_elevation_reference=surface_reference,
+                 surface_elevation_constant_m=surface_elevation_m,
++                surface_height_regions=surface_regions,
+             )
+         except GeographyErrorV2:
+             raise

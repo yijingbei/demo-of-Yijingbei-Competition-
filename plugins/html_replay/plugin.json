@@ -1,0 +1,17 @@
+{
+  "id": "html_replay",
+  "version": "1.9.0-autonomous.6-viewfix.1-energy.1",
+  "entry": "run.py",
+  "input_schema": "competition-result@0.1",
+  "output_schema": "competition-multiscene-replay@1",
+  "python": ">=3.11",
+  "dependencies": [
+    "PyYAML==6.0.3"
+  ],
+  "engine_import_required": false,
+  "network_required": false,
+  "bundled_renderer": "three.js r160 (MIT)",
+  "scope": "Shared replay for all three tracks: truth, both sides observations, missiles, mission areas, delivered messages and referee score timelines.",
+  "ui": "workspace-v4",
+  "presentation": "maritime-civilian"
+}

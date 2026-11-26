@@ -1,0 +1,61 @@
+--- a/source_codes/openmdbench/schemas/core_v2.py
++++ b/source_codes/openmdbench/schemas/core_v2.py
+@@ -207,12 +207,39 @@
+     engagement_permitted: bool
+ 
+ 
++class SurfaceCoastPolicyV2(CoreModelV2):
++    """Optional viscous dissipation and measured rest for unpowered hulls."""
++
++    schema_version: Literal["2.0"] = "2.0"
++    model: Literal["viscous-rest@1"] = "viscous-rest@1"
++    linear_drag_per_s: float = Field(gt=0.0, le=1.0)
++    angular_drag_per_s: float = Field(gt=0.0, le=1.0)
++    rest_speed_mps: float = Field(gt=0.0, le=0.1)
++    rest_yaw_rate_deg_s: float = Field(gt=0.0, le=0.1)
++    stable_seconds: float = Field(ge=1.0, le=60.0)
++    healthy_zero_thrust_below_mps: float | None = Field(default=None, gt=0.0, le=1.0)
++
++
++class PhysicalMotionPolicyV2(CoreModelV2):
++    """Opt-in physical continuation and continuous spherical contact resolution."""
++
++    schema_version: Literal["2.0"] = "2.0"
++    model: Literal["passive-contact@1"] = "passive-contact@1"
++    gravity_mps2: float = Field(default=9.81, gt=0.0)
++    air_drag_per_s: float = Field(default=0.08, gt=0.0)
++    contact_tolerance_m: float = Field(default=0.0001, gt=0.0, le=0.01)
++    contact_skin_m: float = Field(default=0.002, gt=0.0, le=0.1)
++    maximum_contact_iterations: int = Field(default=128, ge=16, le=512)
++    surface_coast: SurfaceCoastPolicyV2 | None = None
++
++
+ class WorldSpecV2(CoreModelV2):
+     coordinate_system: Literal["local_m", "wgs84", "map"]
+     map_ref: str | None = None
+     zones: tuple[ZoneV2, ...] = ()
+     boundary_policy: str | None = None
+     spatial_damage_policy: SpatialDamagePolicyV2 | None = None
++    physical_motion: PhysicalMotionPolicyV2 | None = None
+     roe_rules: tuple[RoePolicyV2, ...] = ()
+     duration_ticks: int | None = Field(default=None, gt=0)
+     tick_seconds: float | None = Field(default=None, gt=0.0)
+@@ -357,6 +384,9 @@
+         return self
+ 
+ 
++CoarseContactClassV2 = Literal["air", "surface", "underwater", "static_facility"]
++
++
+ class ObservationV2(CoreModelV2):
+     session_id: str = Field(min_length=1)
+     tick: int = Field(ge=0)
+@@ -366,6 +396,8 @@
+     controller_slot_id: str | None = Field(default=None, min_length=1)
+     controlled_entity_ids: tuple[str, ...] = ()
+     own_entities: tuple[dict[str, Any], ...] = ()
++    # Launcher-claim scoped flight telemetry; never grants platform control.
++    own_missiles: tuple[dict[str, Any], ...] = ()
+     organic_contacts: tuple[dict[str, Any], ...] = ()
+     shared_contacts: tuple[dict[str, Any], ...] = ()
+     received_messages: tuple[dict[str, Any], ...] = ()

@@ -1,0 +1,1344 @@
+schema_version: package@2.0
+scenario:
+  schema_version: '2.0'
+  scenario_id: IE-15-BUOY-IDENTIFICATION
+  display_name: 浮标阵中的水面威胁识别
+  factions:
+  - schema_version: '2.0'
+    id: red
+    display_name: 红方（防守）
+  - schema_version: '2.0'
+    id: blue
+    display_name: 蓝方（进攻）
+  - schema_version: '2.0'
+    id: neutral
+    display_name: 独立第三方观测浮标
+  relationships:
+  - schema_version: '2.0'
+    source_faction_id: red
+    target_faction_id: blue
+    relation: hostile
+  - schema_version: '2.0'
+    source_faction_id: blue
+    target_faction_id: red
+    relation: hostile
+  - schema_version: '2.0'
+    source_faction_id: red
+    target_faction_id: neutral
+    relation: neutral
+  - schema_version: '2.0'
+    source_faction_id: neutral
+    target_faction_id: red
+    relation: neutral
+  - schema_version: '2.0'
+    source_faction_id: blue
+    target_faction_id: neutral
+    relation: neutral
+  - schema_version: '2.0'
+    source_faction_id: neutral
+    target_faction_id: blue
+    relation: neutral
+  entities:
+  - schema_version: '2.0'
+    id: facility.berth
+    faction_id: red
+    platform_ref: platform.harbor-pier@2.1.0
+    dynamics_ref: dynamics.static-structure@2.0.0
+    component_refs:
+    - sensor.usv-radar.competition-v02@2.2.0
+    - communication.command-network.medium-periodic@2.1.0
+    initial_state:
+      schema_version: '2.0'
+      position_m:
+      - 700.0
+      - -400.0
+      - 0.0
+      velocity_mps:
+      - 0.0
+      - 0.0
+      - 0.0
+      heading_deg: 90.0
+      health: 1.0
+      energy: 1.0
+    tags:
+    - defence
+    - facility
+    - pier
+    - fixed
+    controller_slot: null
+    ammunition: {}
+  - schema_version: '2.0'
+    id: facility.berth.berth-02
+    faction_id: red
+    platform_ref: platform.harbor-pier@2.1.0
+    dynamics_ref: dynamics.static-structure@2.0.0
+    component_refs:
+    - sensor.usv-radar.competition-v02@2.2.0
+    - communication.command-network.medium-periodic@2.1.0
+    initial_state:
+      schema_version: '2.0'
+      position_m:
+      - 1800.0
+      - -200.0
+      - 0.0
+      velocity_mps:
+      - 0.0
+      - 0.0
+      - 0.0
+      heading_deg: 90.0
+      health: 1.0
+      energy: 1.0
+    tags:
+    - defence
+    - facility
+    - pier
+    - fixed
+    controller_slot: null
+    ammunition: {}
+  - schema_version: '2.0'
+    id: site.shore-radar
+    faction_id: red
+    platform_ref: platform.shore-sensor-site@2.1.0
+    dynamics_ref: dynamics.fixed-site@2.0.0
+    component_refs:
+    - sensor.shore-early-warning.competition-v02@2.2.0
+    - sensor.shore-gap-filler.competition-v02@2.2.0
+    - communication.command-network.medium-periodic@2.1.0
+    initial_state:
+      schema_version: '2.0'
+      position_m:
+      - -1400.0
+      - -300.0
+      - 40.0
+      velocity_mps:
+      - 0.0
+      - 0.0
+      - 0.0
+      heading_deg: 90.0
+      health: 1.0
+      energy: 1.0
+    tags:
+    - defence
+    - sensor-site
+    - fixed
+    controller_slot: null
+    ammunition: {}
+  - schema_version: '2.0'
+    id: defender.uav-01
+    faction_id: red
+    platform_ref: platform.interceptor-uav.energy-ie14@1.0.0
+    dynamics_ref: dynamics.interceptor-uav@2.0.0
+    component_refs:
+    - sensor.interceptor-radar.competition-v02@2.2.0
+    - sensor.interceptor-eo.competition-v02@2.2.0
+    - communication.command-network.medium-periodic@2.1.0
+    initial_state:
+      schema_version: '2.0'
+      position_m:
+      - 3200.0
+      - 1200.0
+      - 180.0
+      velocity_mps:
+      - 0.0
+      - 0.0
+      - 0.0
+      heading_deg: 100.0
+      health: 1.0
+      energy: 1.0
+    tags:
+    - defence
+    - reconnaissance
+    - uav
+    controller_slot: null
+    ammunition: {}
+    target_domains: []
+  - schema_version: '2.0'
+    id: defender.usv-01
+    faction_id: red
+    platform_ref: platform.armed-usv@2.1.0
+    dynamics_ref: dynamics.armed-usv@2.0.0
+    component_refs:
+    - sensor.usv-radar.competition-v02@2.2.0
+    - communication.command-network.medium-periodic@2.1.0
+    initial_state:
+      schema_version: '2.0'
+      position_m:
+      - 2200.0
+      - 3300.0
+      - 0.0
+      velocity_mps:
+      - 0.0
+      - 0.0
+      - 0.0
+      heading_deg: 90.0
+      health: 1.0
+      energy: 1.0
+    tags:
+    - defence
+    - combat-unit
+    - usv
+    - surface
+    controller_slot: null
+    loadout_ref: loadout.armed-usv@2.2.0
+    ammunition:
+      ammunition.surface-missile@2.2.0: 3
+    target_domains:
+    - land
+    - surface
+  - schema_version: '2.0'
+    id: defender.usv-02
+    faction_id: red
+    platform_ref: platform.armed-usv@2.1.0
+    dynamics_ref: dynamics.armed-usv@2.0.0
+    component_refs:
+    - sensor.usv-radar.competition-v02@2.2.0
+    - communication.command-network.medium-periodic@2.1.0
+    initial_state:
+      schema_version: '2.0'
+      position_m:
+      - 2200.0
+      - -3300.0
+      - 0.0
+      velocity_mps:
+      - 0.0
+      - 0.0
+      - 0.0
+      heading_deg: 90.0
+      health: 1.0
+      energy: 1.0
+    tags:
+    - defence
+    - combat-unit
+    - usv
+    - surface
+    controller_slot: null
+    loadout_ref: loadout.armed-usv@2.2.0
+    ammunition:
+      ammunition.surface-missile@2.2.0: 3
+    target_domains:
+    - land
+    - surface
+  - schema_version: '2.0'
+    id: surface.object.04
+    faction_id: blue
+    platform_ref: platform.armed-usv@2.1.0
+    dynamics_ref: dynamics.armed-usv@2.0.0
+    component_refs:
+    - sensor.usv-radar.competition-v02@2.2.0
+    - communication.command-network.medium-periodic@2.1.0
+    initial_state:
+      schema_version: '2.0'
+      position_m:
+      - 6000.0
+      - 7500.0
+      - 0.0
+      velocity_mps:
+      - -8.0
+      - 0.0
+      - 0.0
+      heading_deg: 270.0
+      health: 1.0
+      energy: 1.0
+    tags:
+    - boat
+    - combat-unit
+    - surface
+    - usv
+    - target.facility.berth
+    controller_slot: null
+    loadout_ref: loadout.armed-usv@2.2.0
+    ammunition:
+      ammunition.surface-missile@2.2.0: 3
+    target_domains:
+    - land
+    - surface
+  - schema_version: '2.0'
+    id: surface.object.02
+    faction_id: blue
+    platform_ref: platform.armed-usv@2.1.0
+    dynamics_ref: dynamics.armed-usv@2.0.0
+    component_refs:
+    - sensor.usv-radar.competition-v02@2.2.0
+    - communication.command-network.medium-periodic@2.1.0
+    initial_state:
+      schema_version: '2.0'
+      position_m:
+      - 6735.827743
+      - -7910.246878
+      - 0.0
+      velocity_mps:
+      - 0.0
+      - 1.2
+      - 0.0
+      heading_deg: 0.0
+      health: 1.0
+      energy: 1.0
+    tags:
+    - boat
+    - combat-unit
+    - surface
+    - usv
+    - target.facility.berth.berth-02
+    controller_slot: null
+    loadout_ref: loadout.armed-usv@2.2.0
+    ammunition:
+      ammunition.surface-missile@2.2.0: 3
+    target_domains:
+    - land
+    - surface
+  - schema_version: '2.0'
+    id: surface.object.05
+    faction_id: neutral
+    platform_ref: platform.observation-buoy@1.0.0
+    dynamics_ref: dynamics.observation-buoy@1.0.0
+    component_refs:
+    - sensor.buoy-observation@1.0.0
+    - communication.observation-buoy@1.0.0
+    initial_state:
+      schema_version: '2.0'
+      position_m:
+      - 3900.0
+      - -700.0
+      - 0.0
+      velocity_mps:
+      - 0.0
+      - 1.2
+      - 0.0
+      heading_deg: 0.0
+      health: 1.0
+      energy: 1.0
+    tags:
+    - observation
+    - noncombatant
+    - surface
+    controller_slot: null
+    ammunition: {}
+  - schema_version: '2.0'
+    id: surface.object.01
+    faction_id: neutral
+    platform_ref: platform.observation-buoy@1.0.0
+    dynamics_ref: dynamics.observation-buoy@1.0.0
+    component_refs:
+    - sensor.buoy-observation@1.0.0
+    - communication.observation-buoy@1.0.0
+    initial_state:
+      schema_version: '2.0'
+      position_m:
+      - 4600.0
+      - -2100.0
+      - 0.0
+      velocity_mps:
+      - 0.0
+      - 0.0
+      - 0.0
+      heading_deg: 0.0
+      health: 1.0
+      energy: 1.0
+    tags:
+    - observation
+    - noncombatant
+    - surface
+    controller_slot: null
+    ammunition: {}
+  - schema_version: '2.0'
+    id: surface.object.03
+    faction_id: neutral
+    platform_ref: platform.observation-buoy@1.0.0
+    dynamics_ref: dynamics.observation-buoy@1.0.0
+    component_refs:
+    - sensor.buoy-observation@1.0.0
+    - communication.observation-buoy@1.0.0
+    initial_state:
+      schema_version: '2.0'
+      position_m:
+      - 7600.0
+      - 2000.0
+      - 0.0
+      velocity_mps:
+      - 0.0
+      - 0.0
+      - 0.0
+      heading_deg: 90.0
+      health: 1.0
+      energy: 1.0
+    tags:
+    - observation
+    - noncombatant
+    - surface
+    controller_slot: null
+    ammunition: {}
+  formations: []
+  events:
+  - schema_version: '2.0'
+    id: event.weather-initial
+    event_type: weather_change
+    trigger:
+      kind: tick
+      tick: 0
+    priority: 1000
+    depends_on: []
+    payload:
+      environment_ref: environment.clear.ie-calibration@2.0.0
+  - schema_version: '2.0'
+    id: event.success
+    event_type: mission_marker
+    trigger:
+      kind: tick
+      tick: 0
+    priority: 1
+    depends_on: []
+    payload:
+      marker_id: marker.success
+  - schema_version: '2.0'
+    id: event.settled-failure
+    event_type: mission_marker
+    trigger:
+      kind: tick
+      tick: 0
+    priority: 1
+    depends_on: []
+    payload:
+      marker_id: marker.settled-failure
+  - schema_version: '2.0'
+    id: event.assets-lost
+    event_type: mission_marker
+    trigger:
+      kind: tick
+      tick: 0
+    priority: 1
+    depends_on: []
+    payload:
+      marker_id: marker.assets-lost
+  - schema_version: '2.0'
+    id: event.timeout
+    event_type: mission_marker
+    trigger:
+      kind: tick
+      tick: 2964
+    priority: 1
+    depends_on: []
+    payload:
+      marker_id: marker.timeout
+  world:
+    physical_motion:
+      model: passive-contact@1
+      gravity_mps2: 9.81
+      air_drag_per_s: 0.08
+      contact_tolerance_m: 0.0001
+      contact_skin_m: 0.002
+      maximum_contact_iterations: 128
+      surface_coast:
+        schema_version: '2.0'
+        model: viscous-rest@1
+        linear_drag_per_s: 0.045
+        angular_drag_per_s: 0.1
+        rest_speed_mps: 0.03
+        rest_yaw_rate_deg_s: 0.02
+        stable_seconds: 6.0
+        healthy_zero_thrust_below_mps: 0.5
+    schema_version: '2.0'
+    coordinate_system: local_m
+    map_ref: map.weihai-local@2.3.0
+    duration_ticks: 3965
+    tick_seconds: 1.0
+    spatial_damage_policy:
+      schema_version: '2.0'
+      collision_effect_ref: effect.collision-impact@2.0.0
+      magnitude_model: scaled_relative_speed
+      magnitude_parameters:
+        scale: 0.01
+      output_unit: '1'
+    zones:
+    - schema_version: '2.0'
+      id: zone.target.facility.berth
+      geometry_type: polygon
+      coordinates_m:
+      - - 1000.0
+        - -400.0
+      - - 994.236
+        - -341.473
+      - - 977.164
+        - -285.195
+      - - 949.441
+        - -233.329
+      - - 912.132
+        - -187.868
+      - - 866.671
+        - -150.559
+      - - 814.805
+        - -122.836
+      - - 758.527
+        - -105.764
+      - - 700.0
+        - -100.0
+      - - 641.473
+        - -105.764
+      - - 585.195
+        - -122.836
+      - - 533.329
+        - -150.559
+      - - 487.868
+        - -187.868
+      - - 450.559
+        - -233.329
+      - - 422.836
+        - -285.195
+      - - 405.764
+        - -341.473
+      - - 400.0
+        - -400.0
+      - - 405.764
+        - -458.527
+      - - 422.836
+        - -514.805
+      - - 450.559
+        - -566.671
+      - - 487.868
+        - -612.132
+      - - 533.329
+        - -649.441
+      - - 585.195
+        - -677.164
+      - - 641.473
+        - -694.236
+      - - 700.0
+        - -700.0
+      - - 758.527
+        - -694.236
+      - - 814.805
+        - -677.164
+      - - 866.671
+        - -649.441
+      - - 912.132
+        - -612.132
+      - - 949.441
+        - -566.671
+      - - 977.164
+        - -514.805
+      - - 994.236
+        - -458.527
+      tags:
+      - target
+      - facility
+      - target.facility.berth
+    - schema_version: '2.0'
+      id: zone.competition-protected
+      geometry_type: polygon
+      coordinates_m:
+      - - 400.0
+        - -700.0
+      - - 1000.0
+        - -700.0
+      - - 1000.0
+        - -100.0
+      - - 400.0
+        - -100.0
+    - schema_version: '2.0'
+      id: zone.target.facility.berth.berth-02
+      geometry_type: polygon
+      coordinates_m:
+      - - 2100.0
+        - -200.0
+      - - 2094.236
+        - -141.473
+      - - 2077.1639999999998
+        - -85.195
+      - - 2049.441
+        - -33.32900000000001
+      - - 2012.132
+        - 12.132000000000005
+      - - 1966.671
+        - 49.441
+      - - 1914.8049999999998
+        - 77.164
+      - - 1858.527
+        - 94.236
+      - - 1800.0
+        - 100.0
+      - - 1741.473
+        - 94.236
+      - - 1685.1950000000002
+        - 77.164
+      - - 1633.329
+        - 49.441
+      - - 1587.868
+        - 12.132000000000005
+      - - 1550.559
+        - -33.32900000000001
+      - - 1522.836
+        - -85.195
+      - - 1505.7640000000001
+        - -141.473
+      - - 1500.0
+        - -200.0
+      - - 1505.7640000000001
+        - -258.527
+      - - 1522.836
+        - -314.80499999999995
+      - - 1550.559
+        - -366.67100000000005
+      - - 1587.868
+        - -412.13199999999995
+      - - 1633.329
+        - -449.44100000000003
+      - - 1685.1950000000002
+        - -477.164
+      - - 1741.473
+        - -494.236
+      - - 1800.0
+        - -500.0
+      - - 1858.527
+        - -494.236
+      - - 1914.8049999999998
+        - -477.164
+      - - 1966.671
+        - -449.44100000000003
+      - - 2012.132
+        - -412.13199999999995
+      - - 2049.441
+        - -366.67100000000005
+      - - 2077.1639999999998
+        - -314.80499999999995
+      - - 2094.236
+        - -258.527
+      tags:
+      - target
+      - facility
+      - target.facility.berth.berth-02
+    - schema_version: '2.0'
+      id: zone.operating-sector
+      geometry_type: polygon
+      coordinates_m:
+      - - -5000.0
+        - -7500.0
+      - - 17000.0
+        - -7500.0
+      - - 17000.0
+        - 7500.0
+      - - -5000.0
+        - 7500.0
+      tags:
+      - operating-sector
+      - ingress-reference
+    roe_rules:
+    - schema_version: '2.0'
+      id: roe.defender-engage-intruder
+      source_faction_id: red
+      target_faction_id: blue
+      relationship: hostile
+      engagement_permitted: true
+    - schema_version: '2.0'
+      id: roe.intruder-engage-defender
+      source_faction_id: blue
+      target_faction_id: red
+      relationship: hostile
+      engagement_permitted: true
+    - schema_version: '2.0'
+      id: roe.red-external-neutral-contact
+      source_faction_id: red
+      target_faction_id: neutral
+      relationship: neutral
+      engagement_permitted: true
+    - schema_version: '2.0'
+      id: roe.blue-external-neutral-contact
+      source_faction_id: blue
+      target_faction_id: neutral
+      relationship: neutral
+      engagement_permitted: true
+  mission_states:
+  - state.active
+  - state.success
+  - state.settled-failure
+  - state.assets-lost
+  - state.timeout
+  mission_rules:
+  - schema_version: '2.0'
+    id: rule.assets-lost
+    priority: 200
+    depends_on: []
+    condition:
+      schema_version: '2.0'
+      operator: all
+      selector:
+        schema_version: '2.0'
+        entity_ids:
+        - facility.berth
+        - facility.berth.berth-02
+      parameters:
+        conditions:
+        - operator: score
+          parameters:
+            metric_id: metric.assets_lost_settled
+            comparison: '>='
+            value: 1.0
+    outcome:
+      set_state: state.assets-lost
+      emit_event: event.assets-lost
+      terminal: true
+      result: objective_incomplete
+      ranking:
+        red: 2
+        blue: 1
+        neutral: 3
+      wait_for_combat_settlement: true
+  - schema_version: '2.0'
+    id: rule.success
+    priority: 100
+    depends_on: []
+    condition:
+      schema_version: '2.0'
+      operator: all
+      selector:
+        schema_version: '2.0'
+        entity_ids:
+        - facility.berth
+        - facility.berth.berth-02
+      parameters:
+        conditions:
+        - operator: score
+          parameters:
+            metric_id: metric.settled
+            comparison: '>='
+            value: 1.0
+        - operator: score
+          parameters:
+            metric_id: metric.protection
+            comparison: '>='
+            value: 1.0
+        - operator: score
+          parameters:
+            metric_id: metric.facilities
+            comparison: '>='
+            value: 0.5
+    outcome:
+      set_state: state.success
+      emit_event: event.success
+      terminal: true
+      result: objective_complete
+      ranking:
+        red: 1
+        blue: 2
+        neutral: 3
+      wait_for_combat_settlement: true
+  - schema_version: '2.0'
+    id: rule.settled-failure
+    priority: 90
+    depends_on: []
+    condition:
+      schema_version: '2.0'
+      operator: all
+      selector:
+        schema_version: '2.0'
+        entity_ids:
+        - facility.berth
+        - facility.berth.berth-02
+      parameters:
+        conditions:
+        - operator: score
+          parameters:
+            metric_id: metric.settled
+            comparison: '>='
+            value: 1.0
+        - operator: not
+          parameters:
+            conditions:
+            - operator: any
+              parameters:
+                conditions:
+                - operator: all
+                  parameters:
+                    conditions:
+                    - operator: score
+                      parameters:
+                        metric_id: metric.assets_lost_settled
+                        comparison: '>='
+                        value: 1.0
+                - operator: all
+                  parameters:
+                    conditions:
+                    - operator: score
+                      parameters:
+                        metric_id: metric.settled
+                        comparison: '>='
+                        value: 1.0
+                    - operator: score
+                      parameters:
+                        metric_id: metric.protection
+                        comparison: '>='
+                        value: 1.0
+                    - operator: score
+                      parameters:
+                        metric_id: metric.facilities
+                        comparison: '>='
+                        value: 0.5
+    outcome:
+      set_state: state.settled-failure
+      emit_event: event.settled-failure
+      terminal: true
+      result: objective_incomplete
+      ranking:
+        red: 2
+        blue: 1
+        neutral: 3
+      wait_for_combat_settlement: true
+  - schema_version: '2.0'
+    id: rule.timeout
+    priority: 10
+    depends_on: []
+    condition:
+      schema_version: '2.0'
+      operator: all
+      selector:
+        schema_version: '2.0'
+        entity_ids:
+        - facility.berth
+        - facility.berth.berth-02
+      parameters:
+        conditions:
+        - operator: time
+          parameters:
+            comparison: '>='
+            tick: 2400
+        - operator: not
+          parameters:
+            conditions:
+            - operator: any
+              parameters:
+                conditions:
+                - operator: all
+                  parameters:
+                    conditions:
+                    - operator: score
+                      parameters:
+                        metric_id: metric.assets_lost_settled
+                        comparison: '>='
+                        value: 1.0
+                - operator: all
+                  parameters:
+                    conditions:
+                    - operator: score
+                      parameters:
+                        metric_id: metric.settled
+                        comparison: '>='
+                        value: 1.0
+                    - operator: score
+                      parameters:
+                        metric_id: metric.protection
+                        comparison: '>='
+                        value: 1.0
+                    - operator: score
+                      parameters:
+                        metric_id: metric.facilities
+                        comparison: '>='
+                        value: 0.5
+                - operator: all
+                  parameters:
+                    conditions:
+                    - operator: score
+                      parameters:
+                        metric_id: metric.settled
+                        comparison: '>='
+                        value: 1.0
+    outcome:
+      set_state: state.timeout
+      emit_event: event.timeout
+      terminal: true
+      result: objective_incomplete
+      ranking:
+        red: 2
+        blue: 1
+        neutral: 3
+      wait_for_combat_settlement: true
+  scoring:
+    aggregation_version: utility-v1
+    aggregation: sum
+    direction: maximize
+    weight_policy: normalized_sum_one
+    metrics:
+    - id: metric.protection
+      selector:
+        schema_version: '2.0'
+        entity_ids:
+        - facility.berth
+        - facility.berth.berth-02
+        - site.shore-radar
+        - defender.uav-01
+        - defender.usv-01
+        - defender.usv-02
+      aggregation: mean
+      unit: '1'
+      direction: maximize
+      weight: 0.025
+      available: true
+      value: 0.0
+      required: true
+      normalization:
+        lower_bound: 0.0
+        upper_bound: 1.0
+      plugin_ref: models.competition-interception@0.5.0
+      plugin_parameters:
+        metric_id: metric.protection
+        kind: protection
+        attacker_ids:
+        - surface.object.04
+        - surface.object.02
+        defender_ids:
+        - facility.berth
+        - facility.berth.berth-02
+        - site.shore-radar
+        - defender.uav-01
+        - defender.usv-01
+        - defender.usv-02
+        protected_zone_ids:
+        - zone.target.facility.berth
+        - zone.target.facility.berth.berth-02
+        unit: '1'
+        facility_weights:
+          facility.berth: 1
+          facility.berth.berth-02: 1
+        settlement_ticks: 1565
+        settlement_mode: queue_drained
+    - id: metric.neutralization
+      selector:
+        schema_version: '2.0'
+        entity_ids:
+        - facility.berth
+        - facility.berth.berth-02
+        - site.shore-radar
+        - defender.uav-01
+        - defender.usv-01
+        - defender.usv-02
+      aggregation: mean
+      unit: '1'
+      direction: maximize
+      weight: 0.25
+      available: true
+      value: 0.0
+      required: true
+      normalization:
+        lower_bound: 0.0
+        upper_bound: 1.0
+      plugin_ref: models.competition-interception@0.5.0
+      plugin_parameters:
+        metric_id: metric.neutralization
+        kind: neutralization
+        attacker_ids:
+        - surface.object.04
+        - surface.object.02
+        defender_ids:
+        - facility.berth
+        - facility.berth.berth-02
+        - site.shore-radar
+        - defender.uav-01
+        - defender.usv-01
+        - defender.usv-02
+        protected_zone_ids:
+        - zone.target.facility.berth
+        - zone.target.facility.berth.berth-02
+        unit: '1'
+        facility_weights:
+          facility.berth: 1
+          facility.berth.berth-02: 1
+        settlement_ticks: 1565
+        settlement_mode: queue_drained
+    - id: metric.graded_protection
+      selector:
+        schema_version: '2.0'
+        entity_ids:
+        - facility.berth
+        - facility.berth.berth-02
+        - site.shore-radar
+        - defender.uav-01
+        - defender.usv-01
+        - defender.usv-02
+      aggregation: mean
+      unit: '1'
+      direction: maximize
+      weight: 0.025
+      available: true
+      value: 0.0
+      required: true
+      normalization:
+        lower_bound: 0.0
+        upper_bound: 1.0
+      plugin_ref: models.competition-interception@0.5.0
+      plugin_parameters:
+        metric_id: metric.graded_protection
+        kind: graded_protection
+        attacker_ids:
+        - surface.object.04
+        - surface.object.02
+        defender_ids:
+        - facility.berth
+        - facility.berth.berth-02
+        - site.shore-radar
+        - defender.uav-01
+        - defender.usv-01
+        - defender.usv-02
+        protected_zone_ids:
+        - zone.target.facility.berth
+        - zone.target.facility.berth.berth-02
+        unit: '1'
+        facility_weights:
+          facility.berth: 1
+          facility.berth.berth-02: 1
+        settlement_ticks: 1565
+        settlement_mode: queue_drained
+    - id: metric.survival
+      selector:
+        schema_version: '2.0'
+        entity_ids:
+        - facility.berth
+        - facility.berth.berth-02
+        - site.shore-radar
+        - defender.uav-01
+        - defender.usv-01
+        - defender.usv-02
+      aggregation: mean
+      unit: '1'
+      direction: maximize
+      weight: 0.05
+      available: true
+      value: 0.0
+      required: true
+      normalization:
+        lower_bound: 0.0
+        upper_bound: 1.0
+      plugin_ref: models.competition-interception@0.5.0
+      plugin_parameters:
+        metric_id: metric.survival
+        kind: survival
+        attacker_ids:
+        - surface.object.04
+        - surface.object.02
+        defender_ids:
+        - facility.berth
+        - facility.berth.berth-02
+        - site.shore-radar
+        - defender.uav-01
+        - defender.usv-01
+        - defender.usv-02
+        protected_zone_ids:
+        - zone.target.facility.berth
+        - zone.target.facility.berth.berth-02
+        unit: '1'
+        facility_weights:
+          facility.berth: 1
+          facility.berth.berth-02: 1
+        settlement_ticks: 1565
+        settlement_mode: queue_drained
+    - id: metric.facilities
+      selector:
+        schema_version: '2.0'
+        entity_ids:
+        - facility.berth
+        - facility.berth.berth-02
+        - site.shore-radar
+        - defender.uav-01
+        - defender.usv-01
+        - defender.usv-02
+      aggregation: mean
+      unit: '1'
+      direction: maximize
+      weight: 0.35
+      available: true
+      value: 0.0
+      required: true
+      normalization:
+        lower_bound: 0.0
+        upper_bound: 1.0
+      plugin_ref: models.competition-interception@0.5.0
+      plugin_parameters:
+        metric_id: metric.facilities
+        kind: facilities
+        attacker_ids:
+        - surface.object.04
+        - surface.object.02
+        defender_ids:
+        - facility.berth
+        - facility.berth.berth-02
+        - site.shore-radar
+        - defender.uav-01
+        - defender.usv-01
+        - defender.usv-02
+        protected_zone_ids:
+        - zone.target.facility.berth
+        - zone.target.facility.berth.berth-02
+        unit: '1'
+        facility_weights:
+          facility.berth: 1
+          facility.berth.berth-02: 1
+        settlement_ticks: 1565
+        settlement_mode: queue_drained
+    - id: metric.settled
+      selector:
+        schema_version: '2.0'
+        entity_ids:
+        - facility.berth
+        - facility.berth.berth-02
+        - site.shore-radar
+        - defender.uav-01
+        - defender.usv-01
+        - defender.usv-02
+      aggregation: mean
+      unit: '1'
+      direction: maximize
+      weight: 0.0
+      available: true
+      value: 0.0
+      required: true
+      normalization:
+        lower_bound: 0.0
+        upper_bound: 1.0
+      plugin_ref: models.competition-interception@0.5.0
+      plugin_parameters:
+        metric_id: metric.settled
+        kind: settled
+        attacker_ids:
+        - surface.object.04
+        - surface.object.02
+        defender_ids:
+        - facility.berth
+        - facility.berth.berth-02
+        - site.shore-radar
+        - defender.uav-01
+        - defender.usv-01
+        - defender.usv-02
+        protected_zone_ids:
+        - zone.target.facility.berth
+        - zone.target.facility.berth.berth-02
+        unit: '1'
+        facility_weights:
+          facility.berth: 1
+          facility.berth.berth-02: 1
+        settlement_ticks: 1565
+        settlement_mode: queue_drained
+    - id: metric.intercept_timeliness
+      selector:
+        schema_version: '2.0'
+        entity_ids:
+        - facility.berth
+        - facility.berth.berth-02
+        - site.shore-radar
+        - defender.uav-01
+        - defender.usv-01
+        - defender.usv-02
+      aggregation: mean
+      unit: '1'
+      direction: maximize
+      weight: 0.2
+      available: true
+      value: 0.0
+      required: true
+      normalization:
+        lower_bound: 0.0
+        upper_bound: 1.0
+      plugin_ref: models.competition-intercept-performance@0.7.0
+      plugin_parameters:
+        metric_id: metric.intercept_timeliness
+        kind: interception_timeliness
+        attacker_ids:
+        - surface.object.04
+        - surface.object.02
+        defender_ids:
+        - facility.berth
+        - facility.berth.berth-02
+        - site.shore-radar
+        - defender.uav-01
+        - defender.usv-01
+        - defender.usv-02
+        facility_weights:
+          facility.berth: 1
+          facility.berth.berth-02: 1
+        ammunition_budgets:
+          defender.usv-01:
+            ammunition.surface-missile@2.2.0: 3
+          defender.usv-02:
+            ammunition.surface-missile@2.2.0: 3
+        threat_half_lives:
+          surface.object.04: 150.0
+          surface.object.02: 150.0
+        nominal_rounds_per_threat:
+          surface.object.04: 1
+          surface.object.02: 1
+        unit: '1'
+    - id: metric.ammunition_efficiency
+      selector:
+        schema_version: '2.0'
+        entity_ids:
+        - facility.berth
+        - facility.berth.berth-02
+        - site.shore-radar
+        - defender.uav-01
+        - defender.usv-01
+        - defender.usv-02
+      aggregation: mean
+      unit: '1'
+      direction: maximize
+      weight: 0.1
+      available: true
+      value: 0.0
+      required: true
+      normalization:
+        lower_bound: 0.0
+        upper_bound: 1.0
+      plugin_ref: models.competition-intercept-performance@0.7.0
+      plugin_parameters:
+        metric_id: metric.ammunition_efficiency
+        kind: ammunition_efficiency
+        attacker_ids:
+        - surface.object.04
+        - surface.object.02
+        defender_ids:
+        - facility.berth
+        - facility.berth.berth-02
+        - site.shore-radar
+        - defender.uav-01
+        - defender.usv-01
+        - defender.usv-02
+        facility_weights:
+          facility.berth: 1
+          facility.berth.berth-02: 1
+        ammunition_budgets:
+          defender.usv-01:
+            ammunition.surface-missile@2.2.0: 3
+          defender.usv-02:
+            ammunition.surface-missile@2.2.0: 3
+        threat_half_lives:
+          surface.object.04: 150.0
+          surface.object.02: 150.0
+        nominal_rounds_per_threat:
+          surface.object.04: 1
+          surface.object.02: 1
+        unit: '1'
+    - id: metric.assets_lost_settled
+      selector:
+        schema_version: '2.0'
+        entity_ids:
+        - facility.berth
+        - facility.berth.berth-02
+        - site.shore-radar
+        - defender.uav-01
+        - defender.usv-01
+        - defender.usv-02
+      aggregation: mean
+      unit: '1'
+      direction: maximize
+      weight: 0.0
+      available: true
+      value: 0.0
+      required: true
+      normalization:
+        lower_bound: 0.0
+        upper_bound: 1.0
+      plugin_ref: models.competition-interception@0.5.0
+      plugin_parameters:
+        metric_id: metric.assets_lost_settled
+        kind: assets_lost_settled
+        attacker_ids:
+        - surface.object.04
+        - surface.object.02
+        defender_ids:
+        - facility.berth
+        - facility.berth.berth-02
+        - site.shore-radar
+        - defender.uav-01
+        - defender.usv-01
+        - defender.usv-02
+        protected_zone_ids:
+        - zone.target.facility.berth
+        - zone.target.facility.berth.berth-02
+        unit: '1'
+        facility_weights:
+          facility.berth: 1
+          facility.berth.berth-02: 1
+        settlement_ticks: 1565
+        settlement_mode: queue_drained
+  controller_slots:
+  - schema_version: '2.0'
+    id: controller.team
+    controller_id: agent.team
+    faction_id: red
+    selector:
+      schema_version: '2.0'
+      entity_ids:
+      - facility.berth
+      - facility.berth.berth-02
+      - site.shore-radar
+      - defender.uav-01
+      - defender.usv-01
+      - defender.usv-02
+    controller_endpoint_ref: site.shore-radar
+    required_capabilities: []
+    action_schema_ref: action-batch@2.0
+    observation_schema_ref: observation@2.0
+    exclusive: true
+  - schema_version: '2.0'
+    id: controller.surface.object.04
+    controller_id: agent.surface.object.04
+    faction_id: blue
+    selector:
+      schema_version: '2.0'
+      entity_ids:
+      - surface.object.04
+    controller_endpoint_ref: surface.object.04
+    required_capabilities:
+    - weapon
+    action_schema_ref: action-batch@2.0
+    observation_schema_ref: observation@2.0
+    exclusive: true
+  - schema_version: '2.0'
+    id: controller.surface.object.02
+    controller_id: agent.surface.object.02
+    faction_id: blue
+    selector:
+      schema_version: '2.0'
+      entity_ids:
+      - surface.object.02
+    controller_endpoint_ref: surface.object.02
+    required_capabilities:
+    - weapon
+    action_schema_ref: action-batch@2.0
+    observation_schema_ref: observation@2.0
+    exclusive: true
+  - schema_version: '2.0'
+    id: controller.surface.object.05
+    controller_id: agent.surface.object.05
+    faction_id: neutral
+    selector:
+      schema_version: '2.0'
+      entity_ids:
+      - surface.object.05
+    controller_endpoint_ref: surface.object.05
+    required_capabilities: []
+    action_schema_ref: action-batch@2.0
+    observation_schema_ref: observation@2.0
+    exclusive: true
+  - schema_version: '2.0'
+    id: controller.surface.object.01
+    controller_id: agent.surface.object.01
+    faction_id: neutral
+    selector:
+      schema_version: '2.0'
+      entity_ids:
+      - surface.object.01
+    controller_endpoint_ref: surface.object.01
+    required_capabilities: []
+    action_schema_ref: action-batch@2.0
+    observation_schema_ref: observation@2.0
+    exclusive: true
+  - schema_version: '2.0'
+    id: controller.surface.object.03
+    controller_id: agent.surface.object.03
+    faction_id: neutral
+    selector:
+      schema_version: '2.0'
+      entity_ids:
+      - surface.object.03
+    controller_endpoint_ref: surface.object.03
+    required_capabilities: []
+    action_schema_ref: action-batch@2.0
+    observation_schema_ref: observation@2.0
+    exclusive: true
+  controller_policy: explicit_uncontrolled
+  score_metrics: []

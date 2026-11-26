@@ -1,0 +1,43 @@
+--- a/source_codes/openmdbench/world/combat_evidence_v2.py
++++ b/source_codes/openmdbench/world/combat_evidence_v2.py
+@@ -10,6 +10,7 @@
+ from typing import Literal
+ 
+ from openmdbench.scenarios.declarative_v2 import ResolvedEntityV2
++from openmdbench.schemas.core_v2 import CoarseContactClassV2
+ from openmdbench.world.controllers_v2 import ControllerOwnershipIndexV2
+ 
+ 
+@@ -43,16 +44,17 @@
+     stale_after_ticks: int = 1
+     confirmed: bool = True
+     source_sensor_ref: str | None = None
++    estimated_domain: CoarseContactClassV2 | None = None
+ 
+     def __post_init__(self) -> None:
+         if (
+             self.schema_version != "world-contact@2.0"
+             or not all(
+-                isinstance(value, str) and 0 < len(value) <= 256
+-                for value in (
+-                    self.evidence_id,
+-                    self.owner_entity_id,
+-                    self.target_entity_id,
++                isinstance(value, str) and 0 < len(value) <= limit
++                for value, limit in (
++                    (self.evidence_id, 1024),
++                    (self.owner_entity_id, 256),
++                    (self.target_entity_id, 512),
+                 )
+             )
+             or any(
+@@ -92,6 +94,9 @@
+                 self.source_sensor_ref is not None
+                 and (not isinstance(self.source_sensor_ref, str) or not self.source_sensor_ref)
+             )
++            or self.estimated_domain not in {
++                None, "air", "surface", "underwater", "static_facility"
++            }
+         ):
+             raise ValueError("World contact evidence is not canonical")
+ 

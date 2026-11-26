@@ -1,0 +1,2605 @@
+scenario:
+  controller_policy: explicit_uncontrolled
+  controller_slots:
+  - action_schema_ref: action-batch@2.0
+    controller_endpoint_ref: facility.command
+    controller_id: agent.team
+    exclusive: true
+    faction_id: red
+    id: controller.team
+    observation_schema_ref: observation@2.0
+    required_capabilities: []
+    schema_version: '2.0'
+    selector:
+      entity_ids:
+      - defender.uav-01
+      - defender.uav-02
+      - defender.uav-03
+      - defender.uav-04
+      - defender.usv-01
+      - defender.usv-02
+      - defender.usv-03
+      - facility.berth
+      - facility.command
+      - site.shore-radar
+      - defender.uav-05
+      schema_version: '2.0'
+  - action_schema_ref: action-batch@2.0
+    controller_endpoint_ref: intruder.uav-01
+    controller_id: agent.intruder.uav-01
+    exclusive: true
+    faction_id: blue
+    id: controller.intruder.uav-01
+    observation_schema_ref: observation@2.0
+    required_capabilities:
+    - weapon
+    schema_version: '2.0'
+    selector:
+      entity_ids:
+      - intruder.uav-01
+      schema_version: '2.0'
+  - action_schema_ref: action-batch@2.0
+    controller_endpoint_ref: intruder.uav-02
+    controller_id: agent.intruder.uav-02
+    exclusive: true
+    faction_id: blue
+    id: controller.intruder.uav-02
+    observation_schema_ref: observation@2.0
+    required_capabilities:
+    - weapon
+    schema_version: '2.0'
+    selector:
+      entity_ids:
+      - intruder.uav-02
+      schema_version: '2.0'
+  - action_schema_ref: action-batch@2.0
+    controller_endpoint_ref: intruder.uav-03
+    controller_id: agent.intruder.uav-03
+    exclusive: true
+    faction_id: blue
+    id: controller.intruder.uav-03
+    observation_schema_ref: observation@2.0
+    required_capabilities:
+    - weapon
+    schema_version: '2.0'
+    selector:
+      entity_ids:
+      - intruder.uav-03
+      schema_version: '2.0'
+  - action_schema_ref: action-batch@2.0
+    controller_endpoint_ref: intruder.uav-04
+    controller_id: agent.intruder.uav-04
+    exclusive: true
+    faction_id: blue
+    id: controller.intruder.uav-04
+    observation_schema_ref: observation@2.0
+    required_capabilities:
+    - weapon
+    schema_version: '2.0'
+    selector:
+      entity_ids:
+      - intruder.uav-04
+      schema_version: '2.0'
+  - action_schema_ref: action-batch@2.0
+    controller_endpoint_ref: intruder.uav-94
+    controller_id: agent.intruder.uav-94
+    exclusive: true
+    faction_id: blue
+    id: controller.intruder.uav-94
+    observation_schema_ref: observation@2.0
+    required_capabilities:
+    - weapon
+    schema_version: '2.0'
+    selector:
+      entity_ids:
+      - intruder.uav-94
+      schema_version: '2.0'
+  - action_schema_ref: action-batch@2.0
+    controller_endpoint_ref: intruder.boat-01
+    controller_id: agent.intruder.boat-01
+    exclusive: true
+    faction_id: blue
+    id: controller.intruder.boat-01
+    observation_schema_ref: observation@2.0
+    required_capabilities:
+    - weapon
+    schema_version: '2.0'
+    selector:
+      entity_ids:
+      - intruder.boat-01
+      schema_version: '2.0'
+  - action_schema_ref: action-batch@2.0
+    controller_endpoint_ref: intruder.boat-02
+    controller_id: agent.intruder.boat-02
+    exclusive: true
+    faction_id: blue
+    id: controller.intruder.boat-02
+    observation_schema_ref: observation@2.0
+    required_capabilities:
+    - weapon
+    schema_version: '2.0'
+    selector:
+      entity_ids:
+      - intruder.boat-02
+      schema_version: '2.0'
+  - action_schema_ref: action-batch@2.0
+    controller_endpoint_ref: intruder.boat-03
+    controller_id: agent.intruder.boat-03
+    exclusive: true
+    faction_id: blue
+    id: controller.intruder.boat-03
+    observation_schema_ref: observation@2.0
+    required_capabilities:
+    - weapon
+    schema_version: '2.0'
+    selector:
+      entity_ids:
+      - intruder.boat-03
+      schema_version: '2.0'
+  - action_schema_ref: action-batch@2.0
+    controller_endpoint_ref: intruder.boat-93
+    controller_id: agent.intruder.boat-93
+    exclusive: true
+    faction_id: blue
+    id: controller.intruder.boat-93
+    observation_schema_ref: observation@2.0
+    required_capabilities:
+    - weapon
+    schema_version: '2.0'
+    selector:
+      entity_ids:
+      - intruder.boat-93
+      schema_version: '2.0'
+  - action_schema_ref: action-batch@2.0
+    controller_endpoint_ref: intruder.reinforcement-air-02
+    controller_id: agent.intruder.reinforcement-air-02
+    exclusive: true
+    faction_id: blue
+    id: controller.intruder.reinforcement-air-02
+    observation_schema_ref: observation@2.0
+    required_capabilities:
+    - weapon
+    schema_version: '2.0'
+    selector:
+      entity_ids:
+      - intruder.reinforcement-air-02
+      schema_version: '2.0'
+  - action_schema_ref: action-batch@2.0
+    controller_endpoint_ref: intruder.reinforcement-surface-01
+    controller_id: agent.intruder.reinforcement-surface-01
+    exclusive: true
+    faction_id: blue
+    id: controller.intruder.reinforcement-surface-01
+    observation_schema_ref: observation@2.0
+    required_capabilities:
+    - weapon
+    schema_version: '2.0'
+    selector:
+      entity_ids:
+      - intruder.reinforcement-surface-01
+      schema_version: '2.0'
+  display_name: 多方向接近 · 5机防守 / 6机三路进攻 · 6km空空弹 · 25分钟
+  entities:
+  - component_refs:
+    - sensor.shore-gap-filler.competition-v02@2.2.0
+    - communication.command-network.medium-periodic@2.1.0
+    controller_slot: null
+    dynamics_ref: dynamics.fixed-site@2.0.0
+    faction_id: red
+    id: facility.command
+    initial_state:
+      energy: 1.0
+      heading_deg: 90.0
+      health: 1.0
+      position_m:
+      - -1200.0
+      - -200.0
+      - 40.0
+      schema_version: '2.0'
+      velocity_mps:
+      - 0.0
+      - 0.0
+      - 0.0
+    platform_ref: platform.shore-defence-site@2.1.0
+    schema_version: '2.0'
+    tags:
+    - defence
+    - facility
+    - fixed
+  - component_refs:
+    - sensor.usv-radar.competition-v02@2.2.0
+    - communication.command-network.medium-periodic@2.1.0
+    controller_slot: null
+    dynamics_ref: dynamics.static-structure@2.0.0
+    faction_id: red
+    id: facility.berth
+    initial_state:
+      energy: 1.0
+      heading_deg: 90.0
+      health: 1.0
+      position_m:
+      - 700.0
+      - -400.0
+      - 0.0
+      schema_version: '2.0'
+      velocity_mps:
+      - 0.0
+      - 0.0
+      - 0.0
+    platform_ref: platform.harbor-pier@2.1.0
+    schema_version: '2.0'
+    tags:
+    - defence
+    - facility
+    - pier
+    - fixed
+  - component_refs:
+    - sensor.shore-early-warning.competition-v02@2.2.0
+    - sensor.shore-gap-filler.competition-v02@2.2.0
+    - communication.command-network.medium-periodic@2.1.0
+    controller_slot: null
+    dynamics_ref: dynamics.fixed-site@2.0.0
+    faction_id: red
+    id: site.shore-radar
+    initial_state:
+      energy: 1.0
+      heading_deg: 90.0
+      health: 1.0
+      position_m:
+      - -1400.0
+      - -300.0
+      - 40.0
+      schema_version: '2.0'
+      velocity_mps:
+      - 0.0
+      - 0.0
+      - 0.0
+    platform_ref: platform.shore-sensor-site@2.1.0
+    schema_version: '2.0'
+    tags:
+    - defence
+    - sensor-site
+    - fixed
+  - ammunition:
+      ammunition.air-item.speed-trial@1.1.0: 2
+    component_refs:
+    - sensor.interceptor-radar.competition-v02@2.2.0
+    - sensor.interceptor-eo.competition-v02@2.2.0
+    - communication.command-network.medium-periodic@2.1.0
+    controller_slot: null
+    dynamics_ref: dynamics.interceptor-uav@2.0.0
+    faction_id: red
+    id: defender.uav-01
+    initial_state:
+      energy: 1.0
+      heading_deg: 100.0
+      health: 1.0
+      position_m:
+      - -1200.0
+      - 1200.0
+      - 180.0
+      schema_version: '2.0'
+      velocity_mps:
+      - 0.0
+      - 0.0
+      - 0.0
+    loadout_ref: loadout.defender-uav.speed-trial@1.1.0
+    platform_ref: platform.interceptor-uav.energy-ie05@1.0.0
+    schema_version: '2.0'
+    tags:
+    - defence
+    - combat-unit
+    - interceptor
+    - uav
+    target_domains: []
+  - ammunition:
+      ammunition.air-item.speed-trial@1.1.0: 2
+    component_refs:
+    - sensor.interceptor-radar.competition-v02@2.2.0
+    - sensor.interceptor-eo.competition-v02@2.2.0
+    - communication.command-network.medium-periodic@2.1.0
+    controller_slot: null
+    dynamics_ref: dynamics.interceptor-uav@2.0.0
+    faction_id: red
+    id: defender.uav-02
+    initial_state:
+      energy: 1.0
+      heading_deg: 100.0
+      health: 1.0
+      position_m:
+      - 1200.0
+      - 0.0
+      - 210.0
+      schema_version: '2.0'
+      velocity_mps:
+      - 0.0
+      - 0.0
+      - 0.0
+    loadout_ref: loadout.defender-uav.speed-trial@1.1.0
+    platform_ref: platform.interceptor-uav.energy-ie05@1.0.0
+    schema_version: '2.0'
+    tags:
+    - defence
+    - combat-unit
+    - interceptor
+    - uav
+    target_domains: []
+  - ammunition:
+      ammunition.air-item.speed-trial@1.1.0: 2
+    component_refs:
+    - sensor.interceptor-radar.competition-v02@2.2.0
+    - sensor.interceptor-eo.competition-v02@2.2.0
+    - communication.command-network.medium-periodic@2.1.0
+    controller_slot: null
+    dynamics_ref: dynamics.interceptor-uav@2.0.0
+    faction_id: red
+    id: defender.uav-03
+    initial_state:
+      energy: 1.0
+      heading_deg: 100.0
+      health: 1.0
+      position_m:
+      - -1200.0
+      - -1200.0
+      - 240.0
+      schema_version: '2.0'
+      velocity_mps:
+      - 0.0
+      - 0.0
+      - 0.0
+    loadout_ref: loadout.defender-uav.speed-trial@1.1.0
+    platform_ref: platform.interceptor-uav.energy-ie05@1.0.0
+    schema_version: '2.0'
+    tags:
+    - defence
+    - combat-unit
+    - interceptor
+    - uav
+    target_domains: []
+  - ammunition:
+      ammunition.air-item.speed-trial@1.1.0: 2
+    component_refs:
+    - sensor.interceptor-radar.competition-v02@2.2.0
+    - sensor.interceptor-eo.competition-v02@2.2.0
+    - communication.command-network.medium-periodic@2.1.0
+    controller_slot: null
+    dynamics_ref: dynamics.interceptor-uav@2.0.0
+    faction_id: red
+    id: defender.uav-04
+    initial_state:
+      energy: 1.0
+      heading_deg: 100.0
+      health: 1.0
+      position_m:
+      - 1200.0
+      - -1200.0
+      - 270.0
+      schema_version: '2.0'
+      velocity_mps:
+      - 0.0
+      - 0.0
+      - 0.0
+    loadout_ref: loadout.defender-uav.speed-trial@1.1.0
+    platform_ref: platform.interceptor-uav.energy-ie05@1.0.0
+    schema_version: '2.0'
+    tags:
+    - defence
+    - combat-unit
+    - interceptor
+    - uav
+    target_domains: []
+  - ammunition:
+      ammunition.surface-missile@2.2.0: 2
+    component_refs:
+    - sensor.usv-radar.competition-v02@2.2.0
+    - communication.command-network.medium-periodic@2.1.0
+    controller_slot: null
+    dynamics_ref: dynamics.armed-usv@2.0.0
+    faction_id: red
+    id: defender.usv-01
+    initial_state:
+      energy: 1.0
+      heading_deg: 90.0
+      health: 1.0
+      position_m:
+      - 1800.0
+      - -200.0
+      - 0.0
+      schema_version: '2.0'
+      velocity_mps:
+      - 0.0
+      - 0.0
+      - 0.0
+    loadout_ref: loadout.armed-usv@2.2.0
+    platform_ref: platform.armed-usv@2.1.0
+    schema_version: '2.0'
+    tags:
+    - defence
+    - combat-unit
+    - usv
+    - surface
+    target_domains:
+    - land
+    - surface
+  - ammunition:
+      ammunition.surface-missile@2.2.0: 2
+    component_refs:
+    - sensor.usv-radar.competition-v02@2.2.0
+    - communication.command-network.medium-periodic@2.1.0
+    controller_slot: null
+    dynamics_ref: dynamics.armed-usv@2.0.0
+    faction_id: red
+    id: defender.usv-02
+    initial_state:
+      energy: 1.0
+      heading_deg: 90.0
+      health: 1.0
+      position_m:
+      - 2400.0
+      - 800.0
+      - 0.0
+      schema_version: '2.0'
+      velocity_mps:
+      - 0.0
+      - 0.0
+      - 0.0
+    loadout_ref: loadout.armed-usv@2.2.0
+    platform_ref: platform.armed-usv@2.1.0
+    schema_version: '2.0'
+    tags:
+    - defence
+    - combat-unit
+    - usv
+    - surface
+    target_domains:
+    - land
+    - surface
+  - ammunition:
+      ammunition.surface-missile@2.2.0: 2
+    component_refs:
+    - sensor.usv-radar.competition-v02@2.2.0
+    - communication.command-network.medium-periodic@2.1.0
+    controller_slot: null
+    dynamics_ref: dynamics.armed-usv@2.0.0
+    faction_id: red
+    id: defender.usv-03
+    initial_state:
+      energy: 1.0
+      heading_deg: 90.0
+      health: 1.0
+      position_m:
+      - 2200.0
+      - -1400.0
+      - 0.0
+      schema_version: '2.0'
+      velocity_mps:
+      - 0.0
+      - 0.0
+      - 0.0
+    loadout_ref: loadout.armed-usv@2.2.0
+    platform_ref: platform.armed-usv@2.1.0
+    schema_version: '2.0'
+    tags:
+    - defence
+    - combat-unit
+    - usv
+    - surface
+    target_domains:
+    - land
+    - surface
+  - ammunition:
+      ammunition.air-item.speed-trial@1.1.0: 2
+      ammunition.loitering-munition.competition-maritime@2.1.0: 1
+    component_refs:
+    - sensor.interceptor-radar.competition-v02@2.2.0
+    - sensor.interceptor-eo.competition-v02@2.2.0
+    - communication.command-network.medium-periodic@2.1.0
+    controller_slot: null
+    dynamics_ref: dynamics.interceptor-uav@2.0.0
+    faction_id: blue
+    id: intruder.uav-01
+    initial_state:
+      energy: 1.0
+      heading_deg: 180.0
+      health: 1.0
+      position_m:
+      - 500.0
+      - 15000.0
+      - 150.0
+      schema_version: '2.0'
+      velocity_mps:
+      - 3.061616997868383e-15
+      - -25.0
+      - 0.0
+    loadout_ref: loadout.attacker-uav.speed-trial@1.1.0
+    platform_ref: platform.interceptor-uav.energy-ie05@1.0.0
+    schema_version: '2.0'
+    tags:
+    - intruder
+    - uav
+    - wave-1
+    - target.facility.command
+    - combat-unit
+    target_domains: []
+  - ammunition:
+      ammunition.air-item.speed-trial@1.1.0: 2
+      ammunition.loitering-munition.competition-maritime@2.1.0: 1
+    component_refs:
+    - sensor.interceptor-radar.competition-v02@2.2.0
+    - sensor.interceptor-eo.competition-v02@2.2.0
+    - communication.command-network.medium-periodic@2.1.0
+    controller_slot: null
+    dynamics_ref: dynamics.interceptor-uav@2.0.0
+    faction_id: blue
+    id: intruder.uav-02
+    initial_state:
+      energy: 1.0
+      heading_deg: 228.0940580589171
+      health: 1.0
+      position_m:
+      - 11000.0
+      - 10000.0
+      - 250.0
+      schema_version: '2.0'
+      velocity_mps:
+      - -18.60605709236643
+      - -16.69774354443141
+      - 0.0
+    loadout_ref: loadout.attacker-uav.speed-trial@1.1.0
+    platform_ref: platform.interceptor-uav.energy-ie05@1.0.0
+    schema_version: '2.0'
+    tags:
+    - intruder
+    - uav
+    - wave-1
+    - target.facility.command
+    - combat-unit
+    target_domains: []
+  - ammunition:
+      ammunition.air-item.speed-trial@1.1.0: 2
+      ammunition.loitering-munition.competition-maritime@2.1.0: 1
+    component_refs:
+    - sensor.interceptor-radar.competition-v02@2.2.0
+    - sensor.interceptor-eo.competition-v02@2.2.0
+    - communication.command-network.medium-periodic@2.1.0
+    controller_slot: null
+    dynamics_ref: dynamics.interceptor-uav@2.0.0
+    faction_id: blue
+    id: intruder.uav-03
+    initial_state:
+      energy: 1.0
+      heading_deg: 228.84936634785186
+      health: 1.0
+      position_m:
+      - 12600.0
+      - 11600.0
+      - 200.0
+      schema_version: '2.0'
+      velocity_mps:
+      - -18.824553996976064
+      - -16.45102327561822
+      - 0.0
+    loadout_ref: loadout.attacker-uav.speed-trial@1.1.0
+    platform_ref: platform.interceptor-uav.energy-ie05@1.0.0
+    schema_version: '2.0'
+    tags:
+    - intruder
+    - uav
+    - wave-1
+    - target.facility.command
+    - combat-unit
+    target_domains: []
+  - ammunition:
+      ammunition.air-item.speed-trial@1.1.0: 2
+      ammunition.loitering-munition.competition-maritime@2.1.0: 1
+    component_refs:
+    - sensor.interceptor-radar.competition-v02@2.2.0
+    - sensor.interceptor-eo.competition-v02@2.2.0
+    - communication.command-network.medium-periodic@2.1.0
+    controller_slot: null
+    dynamics_ref: dynamics.interceptor-uav@2.0.0
+    faction_id: blue
+    id: intruder.uav-04
+    initial_state:
+      energy: 1.0
+      heading_deg: 310.24994516685956
+      health: 1.0
+      position_m:
+      - 11000.0
+      - -9000.0
+      - 300.0
+      schema_version: '2.0'
+      velocity_mps:
+      - -19.080827203375016
+      - 16.153081230370383
+      - 0.0
+    loadout_ref: loadout.attacker-uav.speed-trial@1.1.0
+    platform_ref: platform.interceptor-uav.energy-ie05@1.0.0
+    schema_version: '2.0'
+    tags:
+    - intruder
+    - uav
+    - wave-1
+    - target.facility.command
+    - combat-unit
+    target_domains: []
+  - ammunition:
+      ammunition.surface-missile@2.2.0: 2
+    component_refs:
+    - sensor.usv-radar.competition-v02@2.2.0
+    - communication.command-network.medium-periodic@2.1.0
+    controller_slot: null
+    dynamics_ref: dynamics.armed-usv@2.0.0
+    faction_id: blue
+    id: intruder.boat-01
+    initial_state:
+      energy: 1.0
+      heading_deg: 231.48356588158774
+      health: 1.0
+      position_m:
+      - 6560.0
+      - 4264.0
+      - 0.0
+      schema_version: '2.0'
+      velocity_mps:
+      - -8.049635407053316
+      - -6.4067397179465315
+      - 0.0
+    loadout_ref: loadout.armed-usv@2.2.0
+    platform_ref: platform.armed-usv@2.1.0
+    schema_version: '2.0'
+    tags:
+    - intruder
+    - boat
+    - wave-1
+    - target.facility.berth
+    - combat-unit
+    target_domains:
+    - land
+    - surface
+  - ammunition:
+      ammunition.surface-missile@2.2.0: 2
+    component_refs:
+    - sensor.usv-radar.competition-v02@2.2.0
+    - communication.command-network.medium-periodic@2.1.0
+    controller_slot: null
+    dynamics_ref: dynamics.armed-usv@2.0.0
+    faction_id: blue
+    id: intruder.boat-02
+    initial_state:
+      energy: 1.0
+      heading_deg: 305.0380470597246
+      health: 1.0
+      position_m:
+      - 7380.0
+      - -5084.0
+      - 0.0
+      schema_version: '2.0'
+      velocity_mps:
+      - -8.423515865979846
+      - 5.906549284953593
+      - 0.0
+    loadout_ref: loadout.armed-usv@2.2.0
+    platform_ref: platform.armed-usv@2.1.0
+    schema_version: '2.0'
+    tags:
+    - intruder
+    - boat
+    - wave-1
+    - target.facility.berth
+    - combat-unit
+    target_domains:
+    - land
+    - surface
+  - ammunition:
+      ammunition.surface-missile@2.2.0: 2
+    component_refs:
+    - sensor.usv-radar.competition-v02@2.2.0
+    - communication.command-network.medium-periodic@2.1.0
+    controller_slot: null
+    dynamics_ref: dynamics.armed-usv@2.0.0
+    faction_id: blue
+    id: intruder.boat-03
+    initial_state:
+      energy: 1.0
+      heading_deg: 242.17903847205494
+      health: 1.0
+      position_m:
+      - 7052.0
+      - 2952.0
+      - 0.0
+      schema_version: '2.0'
+      velocity_mps:
+      - -9.09881305889963
+      - -4.801514856709032
+      - 0.0
+    loadout_ref: loadout.armed-usv@2.2.0
+    platform_ref: platform.armed-usv@2.1.0
+    schema_version: '2.0'
+    tags:
+    - intruder
+    - boat
+    - wave-1
+    - target.facility.berth
+    - combat-unit
+    target_domains:
+    - land
+    - surface
+  - ammunition:
+      ammunition.surface-missile@2.2.0: 2
+    component_refs:
+    - sensor.usv-radar.competition-v02@2.2.0
+    - communication.command-network.medium-periodic@2.1.0
+    controller_slot: null
+    dynamics_ref: dynamics.armed-usv@2.0.0
+    faction_id: blue
+    id: intruder.boat-93
+    initial_state:
+      energy: 1.0
+      heading_deg: 241.6710179925554
+      health: 1.0
+      position_m:
+      - 6946.270036
+      - 2358.693518
+      - 0.0
+      schema_version: '2.0'
+      velocity_mps:
+      - -9.0558827019544
+      - -4.882000869361157
+      - 0.0
+    loadout_ref: loadout.armed-usv@2.2.0
+    platform_ref: platform.armed-usv@2.1.0
+    schema_version: '2.0'
+    tags:
+    - intruder
+    - boat
+    - wave-1
+    - target.facility.berth
+    - combat-unit
+    target_domains:
+    - land
+    - surface
+  - ammunition:
+      ammunition.surface-missile@2.2.0: 2
+    component_refs:
+    - sensor.usv-radar.competition-v02@2.2.0
+    - communication.command-network.medium-periodic@2.1.0
+    controller_slot: null
+    dynamics_ref: dynamics.armed-usv@2.0.0
+    faction_id: blue
+    id: intruder.reinforcement-surface-01
+    initial_state:
+      energy: 1.0
+      heading_deg: 316.5493002683691
+      health: 1.0
+      position_m:
+      - 6900.0
+      - -6200.0
+      - 0.0
+      schema_version: '2.0'
+      velocity_mps:
+      - -7.075368000457736
+      - 7.468742307651182
+      - 0.0
+    loadout_ref: loadout.armed-usv@2.2.0
+    platform_ref: platform.armed-usv@2.1.0
+    schema_version: '2.0'
+    tags:
+    - intruder
+    - boat
+    - target.facility.berth
+    - wave-0
+    - combat-unit
+    target_domains:
+    - land
+    - surface
+  - ammunition:
+      ammunition.air-item.speed-trial@1.1.0: 2
+    component_refs:
+    - sensor.interceptor-radar.competition-v02@2.2.0
+    - sensor.interceptor-eo.competition-v02@2.2.0
+    - communication.command-network.medium-periodic@2.1.0
+    controller_slot: null
+    dynamics_ref: dynamics.interceptor-uav@2.0.0
+    faction_id: red
+    id: defender.uav-05
+    initial_state:
+      energy: 1.0
+      heading_deg: 100.0
+      health: 1.0
+      position_m:
+      - 3300.0
+      - 1400.0
+      - 300.0
+      schema_version: '2.0'
+      velocity_mps:
+      - 0.0
+      - 0.0
+      - 0.0
+    loadout_ref: loadout.defender-uav.speed-trial@1.1.0
+    platform_ref: platform.interceptor-uav.energy-ie05@1.0.0
+    schema_version: '2.0'
+    tags:
+    - defence
+    - combat-unit
+    - interceptor
+    - uav
+    target_domains: []
+  events:
+  - depends_on: []
+    event_type: weather_change
+    id: event.weather-initial
+    payload:
+      environment_ref: environment.clear@2.0.0
+    priority: 1000
+    schema_version: '2.0'
+    trigger:
+      kind: tick
+      tick: 0
+  - depends_on: []
+    event_type: mission_marker
+    id: event.success
+    payload:
+      marker_id: marker.success
+    priority: 1
+    schema_version: '2.0'
+    trigger:
+      kind: tick
+      tick: 0
+  - depends_on: []
+    event_type: mission_marker
+    id: event.settled-failure
+    payload:
+      marker_id: marker.settled-failure
+    priority: 1
+    schema_version: '2.0'
+    trigger:
+      kind: tick
+      tick: 0
+  - depends_on: []
+    event_type: mission_marker
+    id: event.assets-lost
+    payload:
+      marker_id: marker.assets-lost
+    priority: 1
+    schema_version: '2.0'
+    trigger:
+      kind: tick
+      tick: 0
+  - depends_on: []
+    event_type: mission_marker
+    id: event.timeout
+    payload:
+      marker_id: marker.timeout
+    priority: 1
+    schema_version: '2.0'
+    trigger:
+      kind: tick
+      tick: 0
+  - event_type: spawn
+    id: event.spawn.intruder.uav-94
+    payload:
+      entity:
+        ammunition:
+          ammunition.air-item.speed-trial@1.1.0: 2
+          ammunition.loitering-munition.competition-maritime@2.1.0: 1
+        component_refs:
+        - sensor.interceptor-radar.competition-v02@2.2.0
+        - sensor.interceptor-eo.competition-v02@2.2.0
+        - communication.command-network.medium-periodic@2.1.0
+        controller_slot: null
+        dynamics_ref: dynamics.interceptor-uav@2.0.0
+        faction_id: blue
+        id: intruder.uav-94
+        initial_state:
+          energy: 1.0
+          heading_deg: 188.65675409661463
+          health: 1.0
+          position_m:
+          - 2100.0
+          - 16000.0
+          - 150.0
+          schema_version: '2.0'
+          velocity_mps:
+          - -3.7628669613189016
+          - -24.7151943595719
+          - 0.0
+        loadout_ref: loadout.attacker-uav.speed-trial@1.1.0
+        platform_ref: platform.interceptor-uav.energy-ie05@1.0.0
+        schema_version: '2.0'
+        tags:
+        - intruder
+        - uav
+        - wave-1
+        - target.facility.command
+        - combat-unit
+        target_domains: []
+    schema_version: '2.0'
+    trigger:
+      kind: tick
+      tick: 120
+  - event_type: spawn
+    id: event.spawn.intruder.reinforcement-air-02
+    payload:
+      entity:
+        ammunition:
+          ammunition.air-item.speed-trial@1.1.0: 2
+          ammunition.loitering-munition.competition-maritime@2.1.0: 1
+        component_refs:
+        - sensor.interceptor-radar.competition-v02@2.2.0
+        - sensor.interceptor-eo.competition-v02@2.2.0
+        - communication.command-network.medium-periodic@2.1.0
+        controller_slot: null
+        dynamics_ref: dynamics.interceptor-uav@2.0.0
+        faction_id: blue
+        id: intruder.reinforcement-air-02
+        initial_state:
+          energy: 1.0
+          heading_deg: 298.7343087668065
+          health: 1.0
+          position_m:
+          - 14500.0
+          - -7200.0
+          - 260.0
+          schema_version: '2.0'
+          velocity_mps:
+          - -21.921461204593314
+          - 12.018716181668921
+          - 0.0
+        loadout_ref: loadout.attacker-uav.speed-trial@1.1.0
+        platform_ref: platform.interceptor-uav.energy-ie05@1.0.0
+        schema_version: '2.0'
+        tags:
+        - intruder
+        - uav
+        - target.facility.command
+        - wave-0
+        - combat-unit
+        target_domains: []
+    schema_version: '2.0'
+    trigger:
+      kind: tick
+      tick: 120
+  factions:
+  - display_name: 红方（防守）
+    id: red
+    schema_version: '2.0'
+  - display_name: 蓝方（进攻）
+    id: blue
+    schema_version: '2.0'
+  formations: []
+  mission_rules:
+  - condition:
+      operator: all
+      parameters:
+        conditions:
+        - operator: score
+          parameters:
+            comparison: '>='
+            metric_id: metric.assets_lost_settled
+            value: 1.0
+      schema_version: '2.0'
+      selector:
+        entity_ids:
+        - facility.berth
+        - facility.command
+        schema_version: '2.0'
+    depends_on: []
+    id: rule.assets-lost
+    outcome:
+      emit_event: event.assets-lost
+      ranking:
+        red: 2
+        blue: 1
+      result: objective_incomplete
+      set_state: state.assets-lost
+      terminal: true
+      wait_for_combat_settlement: true
+    priority: 200
+    schema_version: '2.0'
+  - condition:
+      operator: all
+      parameters:
+        conditions:
+        - operator: score
+          parameters:
+            comparison: '>='
+            metric_id: metric.settled
+            value: 1.0
+        - operator: score
+          parameters:
+            comparison: '>='
+            metric_id: metric.protection
+            value: 1.0
+        - operator: score
+          parameters:
+            comparison: '>='
+            metric_id: metric.facilities
+            value: 0.5
+      schema_version: '2.0'
+      selector:
+        entity_ids:
+        - facility.berth
+        - facility.command
+        schema_version: '2.0'
+    depends_on: []
+    id: rule.success
+    outcome:
+      emit_event: event.success
+      ranking:
+        red: 1
+        blue: 2
+      result: objective_complete
+      set_state: state.success
+      terminal: true
+      wait_for_combat_settlement: true
+    priority: 100
+    schema_version: '2.0'
+  - condition:
+      operator: all
+      parameters:
+        conditions:
+        - operator: score
+          parameters:
+            comparison: '>='
+            metric_id: metric.settled
+            value: 1.0
+        - operator: not
+          parameters:
+            conditions:
+            - operator: any
+              parameters:
+                conditions:
+                - operator: all
+                  parameters:
+                    conditions:
+                    - operator: score
+                      parameters:
+                        comparison: '>='
+                        metric_id: metric.assets_lost_settled
+                        value: 1.0
+                - operator: all
+                  parameters:
+                    conditions:
+                    - operator: score
+                      parameters:
+                        comparison: '>='
+                        metric_id: metric.settled
+                        value: 1.0
+                    - operator: score
+                      parameters:
+                        comparison: '>='
+                        metric_id: metric.protection
+                        value: 1.0
+                    - operator: score
+                      parameters:
+                        comparison: '>='
+                        metric_id: metric.facilities
+                        value: 0.5
+      schema_version: '2.0'
+      selector:
+        entity_ids:
+        - facility.berth
+        - facility.command
+        schema_version: '2.0'
+    depends_on: []
+    id: rule.settled-failure
+    outcome:
+      emit_event: event.settled-failure
+      ranking:
+        red: 2
+        blue: 1
+      result: objective_incomplete
+      set_state: state.settled-failure
+      terminal: true
+      wait_for_combat_settlement: true
+    priority: 90
+    schema_version: '2.0'
+  - condition:
+      operator: all
+      parameters:
+        conditions:
+        - operator: time
+          parameters:
+            comparison: '>='
+            tick: 1250
+        - operator: not
+          parameters:
+            conditions:
+            - operator: any
+              parameters:
+                conditions:
+                - operator: all
+                  parameters:
+                    conditions:
+                    - operator: score
+                      parameters:
+                        comparison: '>='
+                        metric_id: metric.assets_lost_settled
+                        value: 1.0
+                - operator: all
+                  parameters:
+                    conditions:
+                    - operator: score
+                      parameters:
+                        comparison: '>='
+                        metric_id: metric.settled
+                        value: 1.0
+                    - operator: score
+                      parameters:
+                        comparison: '>='
+                        metric_id: metric.protection
+                        value: 1.0
+                    - operator: score
+                      parameters:
+                        comparison: '>='
+                        metric_id: metric.facilities
+                        value: 0.5
+                - operator: all
+                  parameters:
+                    conditions:
+                    - operator: score
+                      parameters:
+                        comparison: '>='
+                        metric_id: metric.settled
+                        value: 1.0
+      schema_version: '2.0'
+      selector:
+        entity_ids:
+        - facility.berth
+        - facility.command
+        schema_version: '2.0'
+    depends_on: []
+    id: rule.timeout
+    outcome:
+      emit_event: event.timeout
+      ranking:
+        red: 2
+        blue: 1
+      result: objective_incomplete
+      set_state: state.timeout
+      terminal: true
+      wait_for_combat_settlement: true
+    priority: 10
+    schema_version: '2.0'
+  - condition:
+      schema_version: '2.0'
+      operator: score
+      selector:
+        entity_ids:
+        - facility.berth
+        - facility.command
+        schema_version: '2.0'
+      parameters:
+        metric_id: metric.combat_exhausted
+        comparison: '>='
+        value: 1.0
+    depends_on: []
+    id: rule.combat-exhausted
+    outcome:
+      emit_event: event.timeout
+      ranking:
+        red: 2
+        blue: 1
+      result: objective_incomplete
+      set_state: state.timeout
+      terminal: true
+      wait_for_combat_settlement: true
+    priority: 20
+    schema_version: '2.0'
+  - condition:
+      schema_version: '2.0'
+      operator: time
+      selector:
+        entity_ids:
+        - facility.berth
+        - facility.command
+        schema_version: '2.0'
+      parameters:
+        comparison: '>='
+        tick: 1500
+    depends_on: []
+    id: rule.hard-time-limit
+    outcome:
+      emit_event: event.timeout
+      ranking:
+        red: 2
+        blue: 1
+      result: objective_incomplete
+      set_state: state.timeout
+      terminal: true
+      wait_for_combat_settlement: false
+    priority: 5
+    schema_version: '2.0'
+  - condition:
+      schema_version: '2.0'
+      operator: score
+      selector:
+        entity_ids:
+        - facility.berth
+        - facility.command
+        schema_version: '2.0'
+      parameters:
+        metric_id: metric.assault_withdrawn
+        comparison: '>='
+        value: 1.0
+    depends_on: []
+    id: rule.assault-withdrawn
+    outcome:
+      emit_event: event.timeout
+      ranking:
+        red: 2
+        blue: 1
+      result: objective_incomplete
+      set_state: state.timeout
+      terminal: true
+      wait_for_combat_settlement: true
+    priority: 21
+    schema_version: '2.0'
+  mission_states:
+  - state.active
+  - state.success
+  - state.settled-failure
+  - state.assets-lost
+  - state.timeout
+  relationships:
+  - relation: hostile
+    schema_version: '2.0'
+    source_faction_id: red
+    target_faction_id: blue
+  - relation: hostile
+    schema_version: '2.0'
+    source_faction_id: blue
+    target_faction_id: red
+  scenario_id: competition.ie-05-multi-axis.ie14-r01.calibration-r02.pressure-r04.difficulty-r08.homogeneous-r26.virtual-competition-uav-speed-20261113.requested.energy-v1.ie05-5v6-three-axes-20261119.ie-6km-balanced-full-evasion-25min-20261120
+  schema_version: '2.0'
+  score_metrics: []
+  scoring:
+    aggregation: sum
+    aggregation_version: utility-v1
+    direction: maximize
+    metrics:
+    - aggregation: mean
+      available: true
+      direction: maximize
+      id: metric.protection
+      normalization:
+        lower_bound: 0.0
+        upper_bound: 1.0
+      plugin_parameters:
+        attacker_ids:
+        - intruder.boat-01
+        - intruder.boat-02
+        - intruder.boat-03
+        - intruder.boat-93
+        - intruder.reinforcement-air-02
+        - intruder.reinforcement-surface-01
+        - intruder.uav-01
+        - intruder.uav-02
+        - intruder.uav-03
+        - intruder.uav-04
+        - intruder.uav-94
+        defender_ids:
+        - defender.uav-01
+        - defender.uav-02
+        - defender.uav-03
+        - defender.uav-04
+        - defender.usv-01
+        - defender.usv-02
+        - defender.usv-03
+        - facility.berth
+        - facility.command
+        - site.shore-radar
+        - defender.uav-05
+        facility_weights:
+          facility.command: 3
+          facility.berth: 1
+        kind: protection
+        metric_id: metric.protection
+        protected_zone_ids:
+        - zone.target.facility.command
+        - zone.target.facility.berth
+        settlement_ticks: 1565
+        unit: '1'
+        settlement_mode: queue_drained
+      plugin_ref: models.competition-interception@0.5.0
+      required: true
+      selector:
+        entity_ids:
+        - defender.uav-01
+        - defender.uav-02
+        - defender.uav-03
+        - defender.uav-04
+        - defender.usv-01
+        - defender.usv-02
+        - defender.usv-03
+        - facility.berth
+        - facility.command
+        - site.shore-radar
+        - defender.uav-05
+        schema_version: '2.0'
+      unit: '1'
+      value: 0.0
+      weight: 0.025
+    - aggregation: mean
+      available: true
+      direction: maximize
+      id: metric.neutralization
+      normalization:
+        lower_bound: 0.0
+        upper_bound: 1.0
+      plugin_parameters:
+        attacker_ids:
+        - intruder.boat-01
+        - intruder.boat-02
+        - intruder.boat-03
+        - intruder.boat-93
+        - intruder.reinforcement-air-02
+        - intruder.reinforcement-surface-01
+        - intruder.uav-01
+        - intruder.uav-02
+        - intruder.uav-03
+        - intruder.uav-04
+        - intruder.uav-94
+        defender_ids:
+        - defender.uav-01
+        - defender.uav-02
+        - defender.uav-03
+        - defender.uav-04
+        - defender.usv-01
+        - defender.usv-02
+        - defender.usv-03
+        - facility.berth
+        - facility.command
+        - site.shore-radar
+        - defender.uav-05
+        facility_weights:
+          facility.command: 3
+          facility.berth: 1
+        kind: neutralization
+        metric_id: metric.neutralization
+        protected_zone_ids:
+        - zone.target.facility.command
+        - zone.target.facility.berth
+        settlement_ticks: 1565
+        unit: '1'
+        settlement_mode: queue_drained
+      plugin_ref: models.competition-interception@0.5.0
+      required: true
+      selector:
+        entity_ids:
+        - defender.uav-01
+        - defender.uav-02
+        - defender.uav-03
+        - defender.uav-04
+        - defender.usv-01
+        - defender.usv-02
+        - defender.usv-03
+        - facility.berth
+        - facility.command
+        - site.shore-radar
+        - defender.uav-05
+        schema_version: '2.0'
+      unit: '1'
+      value: 0.0
+      weight: 0.25
+    - aggregation: mean
+      available: true
+      direction: maximize
+      id: metric.graded_protection
+      normalization:
+        lower_bound: 0.0
+        upper_bound: 1.0
+      plugin_parameters:
+        attacker_ids:
+        - intruder.boat-01
+        - intruder.boat-02
+        - intruder.boat-03
+        - intruder.boat-93
+        - intruder.reinforcement-air-02
+        - intruder.reinforcement-surface-01
+        - intruder.uav-01
+        - intruder.uav-02
+        - intruder.uav-03
+        - intruder.uav-04
+        - intruder.uav-94
+        defender_ids:
+        - defender.uav-01
+        - defender.uav-02
+        - defender.uav-03
+        - defender.uav-04
+        - defender.usv-01
+        - defender.usv-02
+        - defender.usv-03
+        - facility.berth
+        - facility.command
+        - site.shore-radar
+        - defender.uav-05
+        facility_weights:
+          facility.command: 3
+          facility.berth: 1
+        kind: graded_protection
+        metric_id: metric.graded_protection
+        protected_zone_ids:
+        - zone.target.facility.command
+        - zone.target.facility.berth
+        settlement_ticks: 1565
+        unit: '1'
+        settlement_mode: queue_drained
+      plugin_ref: models.competition-interception@0.5.0
+      required: true
+      selector:
+        entity_ids:
+        - defender.uav-01
+        - defender.uav-02
+        - defender.uav-03
+        - defender.uav-04
+        - defender.usv-01
+        - defender.usv-02
+        - defender.usv-03
+        - facility.berth
+        - facility.command
+        - site.shore-radar
+        - defender.uav-05
+        schema_version: '2.0'
+      unit: '1'
+      value: 0.0
+      weight: 0.025
+    - aggregation: mean
+      available: true
+      direction: maximize
+      id: metric.survival
+      normalization:
+        lower_bound: 0.0
+        upper_bound: 1.0
+      plugin_parameters:
+        attacker_ids:
+        - intruder.boat-01
+        - intruder.boat-02
+        - intruder.boat-03
+        - intruder.boat-93
+        - intruder.reinforcement-air-02
+        - intruder.reinforcement-surface-01
+        - intruder.uav-01
+        - intruder.uav-02
+        - intruder.uav-03
+        - intruder.uav-04
+        - intruder.uav-94
+        defender_ids:
+        - defender.uav-01
+        - defender.uav-02
+        - defender.uav-03
+        - defender.uav-04
+        - defender.usv-01
+        - defender.usv-02
+        - defender.usv-03
+        - facility.berth
+        - facility.command
+        - site.shore-radar
+        - defender.uav-05
+        facility_weights:
+          facility.command: 3
+          facility.berth: 1
+        kind: survival
+        metric_id: metric.survival
+        protected_zone_ids:
+        - zone.target.facility.command
+        - zone.target.facility.berth
+        settlement_ticks: 1565
+        unit: '1'
+        settlement_mode: queue_drained
+      plugin_ref: models.competition-interception@0.5.0
+      required: true
+      selector:
+        entity_ids:
+        - defender.uav-01
+        - defender.uav-02
+        - defender.uav-03
+        - defender.uav-04
+        - defender.usv-01
+        - defender.usv-02
+        - defender.usv-03
+        - facility.berth
+        - facility.command
+        - site.shore-radar
+        - defender.uav-05
+        schema_version: '2.0'
+      unit: '1'
+      value: 0.0
+      weight: 0.05
+    - aggregation: mean
+      available: true
+      direction: maximize
+      id: metric.facilities
+      normalization:
+        lower_bound: 0.0
+        upper_bound: 1.0
+      plugin_parameters:
+        attacker_ids:
+        - intruder.boat-01
+        - intruder.boat-02
+        - intruder.boat-03
+        - intruder.boat-93
+        - intruder.reinforcement-air-02
+        - intruder.reinforcement-surface-01
+        - intruder.uav-01
+        - intruder.uav-02
+        - intruder.uav-03
+        - intruder.uav-04
+        - intruder.uav-94
+        defender_ids:
+        - defender.uav-01
+        - defender.uav-02
+        - defender.uav-03
+        - defender.uav-04
+        - defender.usv-01
+        - defender.usv-02
+        - defender.usv-03
+        - facility.berth
+        - facility.command
+        - site.shore-radar
+        - defender.uav-05
+        facility_weights:
+          facility.command: 3
+          facility.berth: 1
+        kind: facilities
+        metric_id: metric.facilities
+        protected_zone_ids:
+        - zone.target.facility.command
+        - zone.target.facility.berth
+        settlement_ticks: 1565
+        unit: '1'
+        settlement_mode: queue_drained
+      plugin_ref: models.competition-interception@0.5.0
+      required: true
+      selector:
+        entity_ids:
+        - defender.uav-01
+        - defender.uav-02
+        - defender.uav-03
+        - defender.uav-04
+        - defender.usv-01
+        - defender.usv-02
+        - defender.usv-03
+        - facility.berth
+        - facility.command
+        - site.shore-radar
+        - defender.uav-05
+        schema_version: '2.0'
+      unit: '1'
+      value: 0.0
+      weight: 0.35
+    - aggregation: mean
+      available: true
+      direction: maximize
+      id: metric.settled
+      normalization:
+        lower_bound: 0.0
+        upper_bound: 1.0
+      plugin_parameters:
+        attacker_ids:
+        - intruder.boat-01
+        - intruder.boat-02
+        - intruder.boat-03
+        - intruder.boat-93
+        - intruder.reinforcement-air-02
+        - intruder.reinforcement-surface-01
+        - intruder.uav-01
+        - intruder.uav-02
+        - intruder.uav-03
+        - intruder.uav-04
+        - intruder.uav-94
+        defender_ids:
+        - defender.uav-01
+        - defender.uav-02
+        - defender.uav-03
+        - defender.uav-04
+        - defender.usv-01
+        - defender.usv-02
+        - defender.usv-03
+        - facility.berth
+        - facility.command
+        - site.shore-radar
+        - defender.uav-05
+        facility_weights:
+          facility.command: 3
+          facility.berth: 1
+        kind: settled
+        metric_id: metric.settled
+        protected_zone_ids:
+        - zone.target.facility.command
+        - zone.target.facility.berth
+        settlement_ticks: 1565
+        unit: '1'
+        settlement_mode: queue_drained
+      plugin_ref: models.competition-interception@0.5.0
+      required: true
+      selector:
+        entity_ids:
+        - defender.uav-01
+        - defender.uav-02
+        - defender.uav-03
+        - defender.uav-04
+        - defender.usv-01
+        - defender.usv-02
+        - defender.usv-03
+        - facility.berth
+        - facility.command
+        - site.shore-radar
+        - defender.uav-05
+        schema_version: '2.0'
+      unit: '1'
+      value: 0.0
+      weight: 0.0
+    - aggregation: mean
+      available: true
+      direction: maximize
+      id: metric.intercept_timeliness
+      normalization:
+        lower_bound: 0.0
+        upper_bound: 1.0
+      plugin_parameters:
+        ammunition_budgets:
+          defender.uav-01:
+            ammunition.air-item.speed-trial@1.1.0: 2
+          defender.uav-02:
+            ammunition.air-item.speed-trial@1.1.0: 2
+          defender.uav-03:
+            ammunition.air-item.speed-trial@1.1.0: 2
+          defender.uav-04:
+            ammunition.air-item.speed-trial@1.1.0: 2
+          defender.usv-01:
+            ammunition.surface-missile@2.2.0: 2
+          defender.usv-02:
+            ammunition.surface-missile@2.2.0: 2
+          defender.usv-03:
+            ammunition.surface-missile@2.2.0: 2
+          defender.uav-05:
+            ammunition.air-item.speed-trial@1.1.0: 2
+        attacker_ids:
+        - intruder.boat-01
+        - intruder.boat-02
+        - intruder.boat-03
+        - intruder.boat-93
+        - intruder.reinforcement-air-02
+        - intruder.reinforcement-surface-01
+        - intruder.uav-01
+        - intruder.uav-02
+        - intruder.uav-03
+        - intruder.uav-04
+        - intruder.uav-94
+        defender_ids:
+        - defender.uav-01
+        - defender.uav-02
+        - defender.uav-03
+        - defender.uav-04
+        - defender.usv-01
+        - defender.usv-02
+        - defender.usv-03
+        - facility.berth
+        - facility.command
+        - site.shore-radar
+        - defender.uav-05
+        facility_weights:
+          facility.command: 3
+          facility.berth: 1
+        kind: interception_timeliness
+        metric_id: metric.intercept_timeliness
+        nominal_rounds_per_threat:
+          intruder.uav-01: 2
+          intruder.uav-02: 2
+          intruder.uav-03: 2
+          intruder.uav-04: 2
+          intruder.uav-94: 2
+          intruder.boat-01: 1
+          intruder.boat-02: 1
+          intruder.boat-03: 1
+          intruder.boat-93: 1
+          intruder.reinforcement-air-02: 2
+          intruder.reinforcement-surface-01: 1
+        threat_half_lives:
+          intruder.uav-01: 60.0
+          intruder.uav-02: 60.0
+          intruder.uav-03: 60.0
+          intruder.uav-04: 60.0
+          intruder.uav-94: 60.0
+          intruder.boat-01: 150.0
+          intruder.boat-02: 150.0
+          intruder.boat-03: 150.0
+          intruder.boat-93: 150.0
+          intruder.reinforcement-air-02: 60.0
+          intruder.reinforcement-surface-01: 150.0
+        unit: '1'
+      plugin_ref: models.competition-intercept-performance@0.7.0
+      required: true
+      selector:
+        entity_ids:
+        - defender.uav-01
+        - defender.uav-02
+        - defender.uav-03
+        - defender.uav-04
+        - defender.usv-01
+        - defender.usv-02
+        - defender.usv-03
+        - facility.berth
+        - facility.command
+        - site.shore-radar
+        - defender.uav-05
+        schema_version: '2.0'
+      unit: '1'
+      value: 0.0
+      weight: 0.2
+    - aggregation: mean
+      available: true
+      direction: maximize
+      id: metric.ammunition_efficiency
+      normalization:
+        lower_bound: 0.0
+        upper_bound: 1.0
+      plugin_parameters:
+        ammunition_budgets:
+          defender.uav-01:
+            ammunition.air-item.speed-trial@1.1.0: 2
+          defender.uav-02:
+            ammunition.air-item.speed-trial@1.1.0: 2
+          defender.uav-03:
+            ammunition.air-item.speed-trial@1.1.0: 2
+          defender.uav-04:
+            ammunition.air-item.speed-trial@1.1.0: 2
+          defender.usv-01:
+            ammunition.surface-missile@2.2.0: 2
+          defender.usv-02:
+            ammunition.surface-missile@2.2.0: 2
+          defender.usv-03:
+            ammunition.surface-missile@2.2.0: 2
+          defender.uav-05:
+            ammunition.air-item.speed-trial@1.1.0: 2
+        attacker_ids:
+        - intruder.boat-01
+        - intruder.boat-02
+        - intruder.boat-03
+        - intruder.boat-93
+        - intruder.reinforcement-air-02
+        - intruder.reinforcement-surface-01
+        - intruder.uav-01
+        - intruder.uav-02
+        - intruder.uav-03
+        - intruder.uav-04
+        - intruder.uav-94
+        defender_ids:
+        - defender.uav-01
+        - defender.uav-02
+        - defender.uav-03
+        - defender.uav-04
+        - defender.usv-01
+        - defender.usv-02
+        - defender.usv-03
+        - facility.berth
+        - facility.command
+        - site.shore-radar
+        - defender.uav-05
+        facility_weights:
+          facility.command: 3
+          facility.berth: 1
+        kind: ammunition_efficiency
+        metric_id: metric.ammunition_efficiency
+        nominal_rounds_per_threat:
+          intruder.uav-01: 2
+          intruder.uav-02: 2
+          intruder.uav-03: 2
+          intruder.uav-04: 2
+          intruder.uav-94: 2
+          intruder.boat-01: 1
+          intruder.boat-02: 1
+          intruder.boat-03: 1
+          intruder.boat-93: 1
+          intruder.reinforcement-air-02: 2
+          intruder.reinforcement-surface-01: 1
+        threat_half_lives:
+          intruder.uav-01: 60.0
+          intruder.uav-02: 60.0
+          intruder.uav-03: 60.0
+          intruder.uav-04: 60.0
+          intruder.uav-94: 60.0
+          intruder.boat-01: 150.0
+          intruder.boat-02: 150.0
+          intruder.boat-03: 150.0
+          intruder.boat-93: 150.0
+          intruder.reinforcement-air-02: 60.0
+          intruder.reinforcement-surface-01: 150.0
+        unit: '1'
+      plugin_ref: models.competition-intercept-performance@0.7.0
+      required: true
+      selector:
+        entity_ids:
+        - defender.uav-01
+        - defender.uav-02
+        - defender.uav-03
+        - defender.uav-04
+        - defender.usv-01
+        - defender.usv-02
+        - defender.usv-03
+        - facility.berth
+        - facility.command
+        - site.shore-radar
+        - defender.uav-05
+        schema_version: '2.0'
+      unit: '1'
+      value: 0.0
+      weight: 0.1
+    - aggregation: mean
+      available: true
+      direction: maximize
+      id: metric.assets_lost_settled
+      normalization:
+        lower_bound: 0.0
+        upper_bound: 1.0
+      plugin_parameters:
+        attacker_ids:
+        - intruder.boat-01
+        - intruder.boat-02
+        - intruder.boat-03
+        - intruder.boat-93
+        - intruder.reinforcement-air-02
+        - intruder.reinforcement-surface-01
+        - intruder.uav-01
+        - intruder.uav-02
+        - intruder.uav-03
+        - intruder.uav-04
+        - intruder.uav-94
+        defender_ids:
+        - defender.uav-01
+        - defender.uav-02
+        - defender.uav-03
+        - defender.uav-04
+        - defender.usv-01
+        - defender.usv-02
+        - defender.usv-03
+        - facility.berth
+        - facility.command
+        - site.shore-radar
+        - defender.uav-05
+        facility_weights:
+          facility.command: 3
+          facility.berth: 1
+        kind: assets_lost_settled
+        metric_id: metric.assets_lost_settled
+        protected_zone_ids:
+        - zone.target.facility.command
+        - zone.target.facility.berth
+        settlement_ticks: 1565
+        unit: '1'
+        settlement_mode: queue_drained
+      plugin_ref: models.competition-interception@0.5.0
+      required: true
+      selector:
+        entity_ids:
+        - defender.uav-01
+        - defender.uav-02
+        - defender.uav-03
+        - defender.uav-04
+        - defender.usv-01
+        - defender.usv-02
+        - defender.usv-03
+        - facility.berth
+        - facility.command
+        - site.shore-radar
+        - defender.uav-05
+        schema_version: '2.0'
+      unit: '1'
+      value: 0.0
+      weight: 0.0
+    - aggregation: mean
+      available: true
+      direction: maximize
+      id: metric.combat_exhausted
+      normalization:
+        lower_bound: 0.0
+        upper_bound: 1.0
+      plugin_parameters:
+        metric_id: metric.combat_exhausted
+        participants:
+        - entity_id: facility.command
+          faction_id: red
+          domain: land
+          weapons: []
+        - entity_id: facility.berth
+          faction_id: red
+          domain: surface
+          weapons: []
+        - entity_id: site.shore-radar
+          faction_id: red
+          domain: land
+          weapons: []
+        - entity_id: defender.uav-01
+          faction_id: red
+          domain: air
+          weapons:
+          - ammunition_ref: ammunition.air-item.speed-trial@1.1.0
+            target_domains:
+            - air
+        - entity_id: defender.uav-02
+          faction_id: red
+          domain: air
+          weapons:
+          - ammunition_ref: ammunition.air-item.speed-trial@1.1.0
+            target_domains:
+            - air
+        - entity_id: defender.uav-03
+          faction_id: red
+          domain: air
+          weapons:
+          - ammunition_ref: ammunition.air-item.speed-trial@1.1.0
+            target_domains:
+            - air
+        - entity_id: defender.uav-04
+          faction_id: red
+          domain: air
+          weapons:
+          - ammunition_ref: ammunition.air-item.speed-trial@1.1.0
+            target_domains:
+            - air
+        - entity_id: defender.usv-01
+          faction_id: red
+          domain: surface
+          weapons:
+          - ammunition_ref: ammunition.surface-missile@2.2.0
+            target_domains:
+            - surface
+            - land
+        - entity_id: defender.usv-02
+          faction_id: red
+          domain: surface
+          weapons:
+          - ammunition_ref: ammunition.surface-missile@2.2.0
+            target_domains:
+            - surface
+            - land
+        - entity_id: defender.usv-03
+          faction_id: red
+          domain: surface
+          weapons:
+          - ammunition_ref: ammunition.surface-missile@2.2.0
+            target_domains:
+            - surface
+            - land
+        - entity_id: intruder.uav-01
+          faction_id: blue
+          domain: air
+          weapons:
+          - ammunition_ref: ammunition.air-item.speed-trial@1.1.0
+            target_domains:
+            - air
+          - ammunition_ref: ammunition.loitering-munition.competition-maritime@2.1.0
+            target_domains:
+            - land
+            - surface
+        - entity_id: intruder.uav-02
+          faction_id: blue
+          domain: air
+          weapons:
+          - ammunition_ref: ammunition.air-item.speed-trial@1.1.0
+            target_domains:
+            - air
+          - ammunition_ref: ammunition.loitering-munition.competition-maritime@2.1.0
+            target_domains:
+            - land
+            - surface
+        - entity_id: intruder.uav-03
+          faction_id: blue
+          domain: air
+          weapons:
+          - ammunition_ref: ammunition.air-item.speed-trial@1.1.0
+            target_domains:
+            - air
+          - ammunition_ref: ammunition.loitering-munition.competition-maritime@2.1.0
+            target_domains:
+            - land
+            - surface
+        - entity_id: intruder.uav-04
+          faction_id: blue
+          domain: air
+          weapons:
+          - ammunition_ref: ammunition.air-item.speed-trial@1.1.0
+            target_domains:
+            - air
+          - ammunition_ref: ammunition.loitering-munition.competition-maritime@2.1.0
+            target_domains:
+            - land
+            - surface
+        - entity_id: intruder.boat-01
+          faction_id: blue
+          domain: surface
+          weapons:
+          - ammunition_ref: ammunition.surface-missile@2.2.0
+            target_domains:
+            - surface
+            - land
+        - entity_id: intruder.boat-02
+          faction_id: blue
+          domain: surface
+          weapons:
+          - ammunition_ref: ammunition.surface-missile@2.2.0
+            target_domains:
+            - surface
+            - land
+        - entity_id: intruder.boat-03
+          faction_id: blue
+          domain: surface
+          weapons:
+          - ammunition_ref: ammunition.surface-missile@2.2.0
+            target_domains:
+            - surface
+            - land
+        - entity_id: intruder.boat-93
+          faction_id: blue
+          domain: surface
+          weapons:
+          - ammunition_ref: ammunition.surface-missile@2.2.0
+            target_domains:
+            - surface
+            - land
+        - entity_id: intruder.reinforcement-surface-01
+          faction_id: blue
+          domain: surface
+          weapons:
+          - ammunition_ref: ammunition.surface-missile@2.2.0
+            target_domains:
+            - surface
+            - land
+        - entity_id: defender.uav-05
+          faction_id: red
+          domain: air
+          weapons:
+          - ammunition_ref: ammunition.air-item.speed-trial@1.1.0
+            target_domains:
+            - air
+        - entity_id: intruder.uav-94
+          faction_id: blue
+          domain: air
+          weapons:
+          - ammunition_ref: ammunition.air-item.speed-trial@1.1.0
+            target_domains:
+            - air
+          - ammunition_ref: ammunition.loitering-munition.competition-maritime@2.1.0
+            target_domains:
+            - land
+            - surface
+        - entity_id: intruder.reinforcement-air-02
+          faction_id: blue
+          domain: air
+          weapons:
+          - ammunition_ref: ammunition.air-item.speed-trial@1.1.0
+            target_domains:
+            - air
+          - ammunition_ref: ammunition.loitering-munition.competition-maritime@2.1.0
+            target_domains:
+            - land
+            - surface
+        unit: '1'
+      plugin_ref: models.competition-combat-exhaustion@1.0.0
+      required: true
+      selector:
+        entity_ids:
+        - defender.uav-01
+        - defender.uav-02
+        - defender.uav-03
+        - defender.uav-04
+        - defender.usv-01
+        - defender.usv-02
+        - defender.usv-03
+        - facility.berth
+        - facility.command
+        - site.shore-radar
+        - defender.uav-05
+        schema_version: '2.0'
+      unit: '1'
+      value: 0.0
+      weight: 0.0
+    - aggregation: mean
+      available: true
+      direction: maximize
+      id: metric.combat_exhaustion_candidate
+      normalization:
+        lower_bound: 0.0
+        upper_bound: 1.0
+      plugin_parameters:
+        metric_id: metric.combat_exhaustion_candidate
+        participants:
+        - entity_id: facility.command
+          faction_id: red
+          domain: land
+          weapons: []
+        - entity_id: facility.berth
+          faction_id: red
+          domain: surface
+          weapons: []
+        - entity_id: site.shore-radar
+          faction_id: red
+          domain: land
+          weapons: []
+        - entity_id: defender.uav-01
+          faction_id: red
+          domain: air
+          weapons:
+          - ammunition_ref: ammunition.air-item.speed-trial@1.1.0
+            target_domains:
+            - air
+        - entity_id: defender.uav-02
+          faction_id: red
+          domain: air
+          weapons:
+          - ammunition_ref: ammunition.air-item.speed-trial@1.1.0
+            target_domains:
+            - air
+        - entity_id: defender.uav-03
+          faction_id: red
+          domain: air
+          weapons:
+          - ammunition_ref: ammunition.air-item.speed-trial@1.1.0
+            target_domains:
+            - air
+        - entity_id: defender.uav-04
+          faction_id: red
+          domain: air
+          weapons:
+          - ammunition_ref: ammunition.air-item.speed-trial@1.1.0
+            target_domains:
+            - air
+        - entity_id: defender.usv-01
+          faction_id: red
+          domain: surface
+          weapons:
+          - ammunition_ref: ammunition.surface-missile@2.2.0
+            target_domains:
+            - surface
+            - land
+        - entity_id: defender.usv-02
+          faction_id: red
+          domain: surface
+          weapons:
+          - ammunition_ref: ammunition.surface-missile@2.2.0
+            target_domains:
+            - surface
+            - land
+        - entity_id: defender.usv-03
+          faction_id: red
+          domain: surface
+          weapons:
+          - ammunition_ref: ammunition.surface-missile@2.2.0
+            target_domains:
+            - surface
+            - land
+        - entity_id: intruder.uav-01
+          faction_id: blue
+          domain: air
+          weapons:
+          - ammunition_ref: ammunition.air-item.speed-trial@1.1.0
+            target_domains:
+            - air
+          - ammunition_ref: ammunition.loitering-munition.competition-maritime@2.1.0
+            target_domains:
+            - land
+            - surface
+        - entity_id: intruder.uav-02
+          faction_id: blue
+          domain: air
+          weapons:
+          - ammunition_ref: ammunition.air-item.speed-trial@1.1.0
+            target_domains:
+            - air
+          - ammunition_ref: ammunition.loitering-munition.competition-maritime@2.1.0
+            target_domains:
+            - land
+            - surface
+        - entity_id: intruder.uav-03
+          faction_id: blue
+          domain: air
+          weapons:
+          - ammunition_ref: ammunition.air-item.speed-trial@1.1.0
+            target_domains:
+            - air
+          - ammunition_ref: ammunition.loitering-munition.competition-maritime@2.1.0
+            target_domains:
+            - land
+            - surface
+        - entity_id: intruder.uav-04
+          faction_id: blue
+          domain: air
+          weapons:
+          - ammunition_ref: ammunition.air-item.speed-trial@1.1.0
+            target_domains:
+            - air
+          - ammunition_ref: ammunition.loitering-munition.competition-maritime@2.1.0
+            target_domains:
+            - land
+            - surface
+        - entity_id: intruder.boat-01
+          faction_id: blue
+          domain: surface
+          weapons:
+          - ammunition_ref: ammunition.surface-missile@2.2.0
+            target_domains:
+            - surface
+            - land
+        - entity_id: intruder.boat-02
+          faction_id: blue
+          domain: surface
+          weapons:
+          - ammunition_ref: ammunition.surface-missile@2.2.0
+            target_domains:
+            - surface
+            - land
+        - entity_id: intruder.boat-03
+          faction_id: blue
+          domain: surface
+          weapons:
+          - ammunition_ref: ammunition.surface-missile@2.2.0
+            target_domains:
+            - surface
+            - land
+        - entity_id: intruder.boat-93
+          faction_id: blue
+          domain: surface
+          weapons:
+          - ammunition_ref: ammunition.surface-missile@2.2.0
+            target_domains:
+            - surface
+            - land
+        - entity_id: intruder.reinforcement-surface-01
+          faction_id: blue
+          domain: surface
+          weapons:
+          - ammunition_ref: ammunition.surface-missile@2.2.0
+            target_domains:
+            - surface
+            - land
+        - entity_id: defender.uav-05
+          faction_id: red
+          domain: air
+          weapons:
+          - ammunition_ref: ammunition.air-item.speed-trial@1.1.0
+            target_domains:
+            - air
+        - entity_id: intruder.uav-94
+          faction_id: blue
+          domain: air
+          weapons:
+          - ammunition_ref: ammunition.air-item.speed-trial@1.1.0
+            target_domains:
+            - air
+          - ammunition_ref: ammunition.loitering-munition.competition-maritime@2.1.0
+            target_domains:
+            - land
+            - surface
+        - entity_id: intruder.reinforcement-air-02
+          faction_id: blue
+          domain: air
+          weapons:
+          - ammunition_ref: ammunition.air-item.speed-trial@1.1.0
+            target_domains:
+            - air
+          - ammunition_ref: ammunition.loitering-munition.competition-maritime@2.1.0
+            target_domains:
+            - land
+            - surface
+        unit: '1'
+        require_drained: false
+      plugin_ref: models.competition-combat-exhaustion@1.0.0
+      required: true
+      selector:
+        entity_ids:
+        - defender.uav-01
+        - defender.uav-02
+        - defender.uav-03
+        - defender.uav-04
+        - defender.usv-01
+        - defender.usv-02
+        - defender.usv-03
+        - facility.berth
+        - facility.command
+        - site.shore-radar
+        - defender.uav-05
+        schema_version: '2.0'
+      unit: '1'
+      value: 0.0
+      weight: 0.0
+    - aggregation: mean
+      available: true
+      direction: maximize
+      id: metric.assault_withdrawal_candidate
+      normalization:
+        lower_bound: 0.0
+        upper_bound: 1.0
+      plugin_parameters:
+        metric_id: metric.assault_withdrawal_candidate
+        controllers:
+          intruder.uav-01: controller.intruder.uav-01
+          intruder.uav-02: controller.intruder.uav-02
+          intruder.uav-03: controller.intruder.uav-03
+          intruder.uav-04: controller.intruder.uav-04
+          intruder.boat-01: controller.intruder.boat-01
+          intruder.boat-02: controller.intruder.boat-02
+          intruder.boat-03: controller.intruder.boat-03
+          intruder.boat-93: controller.intruder.boat-93
+          intruder.reinforcement-surface-01: controller.intruder.reinforcement-surface-01
+          intruder.uav-94: controller.intruder.uav-94
+          intruder.reinforcement-air-02: controller.intruder.reinforcement-air-02
+        spawn_ticks:
+          intruder.uav-01: 0
+          intruder.uav-02: 0
+          intruder.uav-03: 0
+          intruder.uav-04: 0
+          intruder.boat-01: 0
+          intruder.boat-02: 0
+          intruder.boat-03: 0
+          intruder.boat-93: 0
+          intruder.reinforcement-surface-01: 0
+          intruder.uav-94: 120
+          intruder.reinforcement-air-02: 120
+        confirmation_ticks: 30
+        require_drained: false
+        unit: '1'
+      plugin_ref: models.competition-assault-withdrawal@1.0.0
+      required: true
+      selector:
+        entity_ids:
+        - defender.uav-01
+        - defender.uav-02
+        - defender.uav-03
+        - defender.uav-04
+        - defender.usv-01
+        - defender.usv-02
+        - defender.usv-03
+        - facility.berth
+        - facility.command
+        - site.shore-radar
+        - defender.uav-05
+        schema_version: '2.0'
+      unit: '1'
+      value: 0.0
+      weight: 0.0
+    - aggregation: mean
+      available: true
+      direction: maximize
+      id: metric.assault_withdrawn
+      normalization:
+        lower_bound: 0.0
+        upper_bound: 1.0
+      plugin_parameters:
+        metric_id: metric.assault_withdrawn
+        controllers:
+          intruder.uav-01: controller.intruder.uav-01
+          intruder.uav-02: controller.intruder.uav-02
+          intruder.uav-03: controller.intruder.uav-03
+          intruder.uav-04: controller.intruder.uav-04
+          intruder.boat-01: controller.intruder.boat-01
+          intruder.boat-02: controller.intruder.boat-02
+          intruder.boat-03: controller.intruder.boat-03
+          intruder.boat-93: controller.intruder.boat-93
+          intruder.reinforcement-surface-01: controller.intruder.reinforcement-surface-01
+          intruder.uav-94: controller.intruder.uav-94
+          intruder.reinforcement-air-02: controller.intruder.reinforcement-air-02
+        spawn_ticks:
+          intruder.uav-01: 0
+          intruder.uav-02: 0
+          intruder.uav-03: 0
+          intruder.uav-04: 0
+          intruder.boat-01: 0
+          intruder.boat-02: 0
+          intruder.boat-03: 0
+          intruder.boat-93: 0
+          intruder.reinforcement-surface-01: 0
+          intruder.uav-94: 120
+          intruder.reinforcement-air-02: 120
+        confirmation_ticks: 30
+        require_drained: true
+        unit: '1'
+      plugin_ref: models.competition-assault-withdrawal@1.0.0
+      required: true
+      selector:
+        entity_ids:
+        - defender.uav-01
+        - defender.uav-02
+        - defender.uav-03
+        - defender.uav-04
+        - defender.usv-01
+        - defender.usv-02
+        - defender.usv-03
+        - facility.berth
+        - facility.command
+        - site.shore-radar
+        - defender.uav-05
+        schema_version: '2.0'
+      unit: '1'
+      value: 0.0
+      weight: 0.0
+    weight_policy: normalized_sum_one
+  world:
+    physical_motion:
+      model: passive-contact@1
+      gravity_mps2: 9.81
+      air_drag_per_s: 0.08
+      contact_tolerance_m: 0.0001
+      contact_skin_m: 0.002
+      maximum_contact_iterations: 128
+      surface_coast:
+        schema_version: '2.0'
+        model: viscous-rest@1
+        linear_drag_per_s: 0.045
+        angular_drag_per_s: 0.1
+        rest_speed_mps: 0.03
+        rest_yaw_rate_deg_s: 0.02
+        stable_seconds: 6.0
+        healthy_zero_thrust_below_mps: 0.5
+    coordinate_system: local_m
+    duration_ticks: 1500
+    map_ref: map.weihai-local@2.3.0
+    roe_rules:
+    - engagement_permitted: true
+      id: roe.defender-engage-intruder
+      relationship: hostile
+      schema_version: '2.0'
+      source_faction_id: red
+      target_faction_id: blue
+    - engagement_permitted: true
+      id: roe.intruder-engage-defender
+      relationship: hostile
+      schema_version: '2.0'
+      source_faction_id: blue
+      target_faction_id: red
+    schema_version: '2.0'
+    spatial_damage_policy:
+      collision_effect_ref: effect.collision-impact@2.0.0
+      magnitude_model: scaled_relative_speed
+      magnitude_parameters:
+        scale: 0.01
+      output_unit: '1'
+      schema_version: '2.0'
+    tick_seconds: 1.0
+    zones:
+    - coordinates_m:
+      - - -900.0
+        - -200.0
+      - - -905.764
+        - -141.473
+      - - -922.836
+        - -85.195
+      - - -950.559
+        - -33.329
+      - - -987.868
+        - 12.132
+      - - -1033.329
+        - 49.441
+      - - -1085.195
+        - 77.164
+      - - -1141.473
+        - 94.236
+      - - -1200.0
+        - 100.0
+      - - -1258.527
+        - 94.236
+      - - -1314.805
+        - 77.164
+      - - -1366.671
+        - 49.441
+      - - -1412.132
+        - 12.132
+      - - -1449.441
+        - -33.329
+      - - -1477.164
+        - -85.195
+      - - -1494.236
+        - -141.473
+      - - -1500.0
+        - -200.0
+      - - -1494.236
+        - -258.527
+      - - -1477.164
+        - -314.805
+      - - -1449.441
+        - -366.671
+      - - -1412.132
+        - -412.132
+      - - -1366.671
+        - -449.441
+      - - -1314.805
+        - -477.164
+      - - -1258.527
+        - -494.236
+      - - -1200.0
+        - -500.0
+      - - -1141.473
+        - -494.236
+      - - -1085.195
+        - -477.164
+      - - -1033.329
+        - -449.441
+      - - -987.868
+        - -412.132
+      - - -950.559
+        - -366.671
+      - - -922.836
+        - -314.805
+      - - -905.764
+        - -258.527
+      geometry_type: polygon
+      id: zone.target.facility.command
+      schema_version: '2.0'
+      tags:
+      - target
+      - facility
+      - target.facility.command
+    - coordinates_m:
+      - - 1000.0
+        - -400.0
+      - - 994.236
+        - -341.473
+      - - 977.164
+        - -285.195
+      - - 949.441
+        - -233.329
+      - - 912.132
+        - -187.868
+      - - 866.671
+        - -150.559
+      - - 814.805
+        - -122.836
+      - - 758.527
+        - -105.764
+      - - 700.0
+        - -100.0
+      - - 641.473
+        - -105.764
+      - - 585.195
+        - -122.836
+      - - 533.329
+        - -150.559
+      - - 487.868
+        - -187.868
+      - - 450.559
+        - -233.329
+      - - 422.836
+        - -285.195
+      - - 405.764
+        - -341.473
+      - - 400.0
+        - -400.0
+      - - 405.764
+        - -458.527
+      - - 422.836
+        - -514.805
+      - - 450.559
+        - -566.671
+      - - 487.868
+        - -612.132
+      - - 533.329
+        - -649.441
+      - - 585.195
+        - -677.164
+      - - 641.473
+        - -694.236
+      - - 700.0
+        - -700.0
+      - - 758.527
+        - -694.236
+      - - 814.805
+        - -677.164
+      - - 866.671
+        - -649.441
+      - - 912.132
+        - -612.132
+      - - 949.441
+        - -566.671
+      - - 977.164
+        - -514.805
+      - - 994.236
+        - -458.527
+      geometry_type: polygon
+      id: zone.target.facility.berth
+      schema_version: '2.0'
+      tags:
+      - target
+      - facility
+      - target.facility.berth
+schema_version: package@2.0

@@ -1,0 +1,214 @@
+--- a/source_codes/openmdbench/systems/generic_v2.py
++++ b/source_codes/openmdbench/systems/generic_v2.py
+@@ -5,9 +5,59 @@
+ import hashlib
+ import json
+ import math
+-from collections.abc import Mapping, Sequence
++from collections.abc import Callable, Mapping, Sequence
+ from dataclasses import dataclass
+ from typing import Literal
++
++from openmdbench.schemas.core_v2 import CoarseContactClassV2
++
++_COARSE_CONTACT_CLASSES: dict[str, CoarseContactClassV2] = {
++    "air": "air",
++    "surface": "surface",
++    "underwater": "underwater",
++    "land": "static_facility",
++    "shore": "static_facility",
++}
++
++
++def shared_contact_refresh_ticks_v2(profile: Mapping[str, object]) -> int:
++    """Opt-in report cadence; zero preserves legacy one-snapshot transport."""
++    value = profile.get("contact_report_refresh_ticks", 0)
++    if type(value) is not int or value < 0:
++        raise ValueError("contact_report_refresh_ticks must be a nonnegative integer")
++    return value
++
++
++def energy_consumption_parameters_v2(
++    profile: Mapping[str, object],
++) -> tuple[float, float, float, float]:
++    """Validate opt-in speed scaling; absent fields retain linear consumption.
++
++    ``motion_rate_per_meter * speed`` is the power at the reference speed.
++    The optional exponent scales it by ``(speed / reference) ** (exponent - 1)``.
++    Rates are normalized energy fractions; the exponent and reference are not
++    affected by environment consumption multipliers.
++    """
++    values = []
++    for field, default in (
++        ("idle_rate_per_second", 0.0),
++        ("motion_rate_per_meter", 0.0),
++        ("motion_speed_exponent", 1.0),
++        ("motion_reference_speed_mps", 1.0),
++    ):
++        raw = profile.get(field, default)
++        if (isinstance(raw, bool) or not isinstance(raw, (int, float))
++                or not math.isfinite(raw)):
++            raise ValueError(f"energy field {field} must be finite numeric")
++        values.append(float(raw))
++    idle, motion, exponent, reference = values
++    if idle < 0.0 or motion < 0.0:
++        raise ValueError("energy consumption rates must be nonnegative")
++    if not 1.0 <= exponent <= 3.0:
++        raise ValueError("motion_speed_exponent must be between 1 and 3")
++    if reference <= 0.0 or (exponent != 1.0 and "motion_reference_speed_mps" not in profile):
++        raise ValueError("nonlinear energy requires an explicit positive reference speed")
++    return idle, motion, exponent, reference
+ 
+ 
+ def _hash(value: object) -> str:
+@@ -33,6 +83,9 @@
+     # This value is supplied by the World geography boundary.  It is deliberately
+     # optional because only sensors with an explicit AGL profile require it.
+     surface_elevation_m: float | None = None
++    # Explicit antenna/target geometry is independent of collision envelopes.
++    sensing_height_m: float = 0.0
++    sea_level_elevation_m: float | None = None
+ 
+ 
+ @dataclass(frozen=True, slots=True)
+@@ -69,6 +122,27 @@
+     measurement_rng_substream: str = ""
+     target_agl_m: float | None = None
+     altitude_range_reference: Literal["agl"] | None = None
++    horizon_range_m: float | None = None
++    visibility_status: str | None = None
++    terrain_blocker_id: str | None = None
++    estimated_domain: CoarseContactClassV2 | None = None
++
++
++def validate_sensor_visibility_profile_v2(profile: object) -> Mapping[str, object]:
++    """Opt-in geometric visibility; unsupported or incomplete data fails closed."""
++    fields = {"mount_height_m", "earth_radius_m", "refraction_factor", "terrain_occlusion"}
++    if not isinstance(profile, Mapping) or set(profile) != fields:
++        raise ValueError("sensor visibility profile fields are invalid")
++    for field in ("mount_height_m", "earth_radius_m", "refraction_factor"):
++        value = profile[field]
++        if (isinstance(value, bool) or not isinstance(value, (int, float))
++                or not math.isfinite(value) or value < 0.0):
++            raise ValueError("sensor visibility geometry must be finite and nonnegative")
++    if profile["earth_radius_m"] <= 0 or profile["refraction_factor"] <= 0:
++        raise ValueError("sensor visibility Earth radius and refraction must be positive")
++    if not isinstance(profile["terrain_occlusion"], bool):
++        raise ValueError("sensor terrain occlusion must be explicit boolean")
++    return profile
+ 
+ 
+ @dataclass(frozen=True, slots=True)
+@@ -192,6 +266,7 @@
+         dt_seconds: float,
+         seed: int,
+         queued_message_count: int,
++        terrain_blocker: Callable[[tuple[float, float, float], tuple[float, float, float]], str | None] | None = None,
+     ) -> GenericSubsystemTickReceiptV2:
+         if tick < 0 or dt_seconds <= 0.0 or not math.isfinite(dt_seconds) or seed < 0:
+             raise ValueError("subsystem tick anchors are invalid")
+@@ -217,6 +292,11 @@
+                 )
+                 minimum_contact_confidence = self._number(sensor, "minimum_contact_confidence", 0.0)
+                 target_domains = self._strings(sensor, "target_domains")
++                visibility = sensor.get("visibility_profile")
++                if visibility is not None:
++                    visibility = validate_sensor_visibility_profile_v2(visibility)
++                    if visibility["terrain_occlusion"] and terrain_blocker is None:
++                        raise ValueError("sensor terrain visibility requires geography evidence")
+                 if not sensor_ref or range_m <= 0.0 or not 0.0 <= probability <= 1.0:
+                     continue
+                 if (
+@@ -258,7 +338,30 @@
+                             "sensor": sensor_ref,
+                         }
+                     )
+-                    if distance > effective_range_m:
++                    horizon_range_m, blocker_id = None, None
++                    visibility_status = None if visibility is None else "clear"
++                    if visibility is not None:
++                        datum = owner.sea_level_elevation_m
++                        if (datum is None or not math.isfinite(datum)
++                                or target.sea_level_elevation_m != datum):
++                            raise ValueError("sensor horizon requires explicit common sea-level evidence")
++                        if (not math.isfinite(target.sensing_height_m) or target.sensing_height_m < 0):
++                            raise ValueError("sensor target height must be finite and nonnegative")
++                        mount = float(visibility["mount_height_m"])
++                        sensor_point = (*owner.position_m[:2], owner.position_m[2]+mount)
++                        target_point = (*target.position_m[:2], target.position_m[2]+target.sensing_height_m)
++                        h1, h2 = sensor_point[2]-datum, target_point[2]-datum
++                        radius = float(visibility["earth_radius_m"])*float(visibility["refraction_factor"])
++                        horizon_range_m = sum(math.sqrt(max(0.0, h)*(2.0*radius+max(0.0, h))) for h in (h1, h2))
++                        if h1 < 0.0 or h2 < 0.0:
++                            visibility_status = "below_reference"
++                        elif horizontal > horizon_range_m:
++                            visibility_status = "beyond_horizon"
++                        elif distance <= effective_range_m and visibility["terrain_occlusion"]:
++                            blocker_id = terrain_blocker(sensor_point, target_point)
++                            if blocker_id is not None:
++                                visibility_status = "terrain_occluded"
++                    if distance > effective_range_m or visibility_status not in {None, "clear"}:
+                         contacts.append(
+                             SensorContactReceiptV2(
+                                 evidence_id=evidence_id,
+@@ -287,6 +390,9 @@
+                                 minimum_contact_confidence=minimum_contact_confidence,
+                                 target_agl_m=target_agl_m,
+                                 altitude_range_reference=altitude_reference,
++                                horizon_range_m=horizon_range_m,
++                                visibility_status="beyond_range" if distance > effective_range_m else visibility_status,
++                                terrain_blocker_id=blocker_id,
+                             )
+                         )
+                         continue
+@@ -326,6 +432,13 @@
+                             probability=probability,
+                             sample=sample,
+                             detected=sample < probability,
++                            # Idealized coarse-domain classifier, UNVALIDATED.
++                            # Publish only after detection; this is neither a
++                            # platform-type identification nor an affiliation.
++                            estimated_domain=(
++                                _COARSE_CONTACT_CLASSES.get(target.domain or "")
++                                if sample < probability else None
++                            ),
+                             rng_substream=substream,
+                             measurement_position_m=measured_position,
+                             measurement_range_m=measurement_range,
+@@ -340,6 +453,9 @@
+                             measurement_rng_substream=measurement_substream,
+                             target_agl_m=target_agl_m,
+                             altitude_range_reference=altitude_reference,
++                            horizon_range_m=horizon_range_m,
++                            visibility_status=visibility_status,
++                            terrain_blocker_id=blocker_id,
+                         )
+                     )
+             if owner.energy is None:
+@@ -348,12 +464,14 @@
+                 owner.energy_profiles, key=lambda item: str(item.get("exact_ref", ""))
+             ):
+                 energy_ref = str(profile.get("exact_ref", ""))
+-                idle_rate = self._number(profile, "idle_rate_per_second", 0.0)
+-                motion_rate = self._number(profile, "motion_rate_per_meter", 0.0)
+-                if not energy_ref or idle_rate < 0.0 or motion_rate < 0.0:
++                idle_rate, motion_rate, exponent, reference = energy_consumption_parameters_v2(profile)
++                if not energy_ref:
+                     raise ValueError("energy profile is invalid")
+                 speed = math.sqrt(sum(value * value for value in owner.velocity_mps))
+-                consumed = min(owner.energy, dt_seconds * (idle_rate + motion_rate * speed))
++                motion_power = motion_rate * speed
++                if exponent != 1.0:
++                    motion_power *= (speed / reference) ** (exponent - 1.0)
++                consumed = min(owner.energy, dt_seconds * (idle_rate + motion_power))
+                 energy_receipts.append(
+                     EnergyTickReceiptV2(
+                         entity_id=owner.entity_id,
+@@ -398,6 +516,7 @@
+ 
+ 
+ __all__ = [
++    "energy_consumption_parameters_v2",
+     "CommunicationTickReceiptV2",
+     "EnergyTickReceiptV2",
+     "GenericSubsystemEngineV2",

@@ -1,0 +1,1257 @@
+schema_version: catalog-bundle@2.0
+resources:
+- schema_version: '2.0'
+  resource_type: dynamics
+  id: dynamics.fixed-site
+  version: 2.0.0
+  engine_compatibility: '>=2.0.0,<3.0.0'
+  model_id: models.native-fixed@2.0.0
+  dependencies: []
+  content:
+    compatible_platform_types:
+    - fixed-sensor-site
+    mobile: false
+- schema_version: '2.0'
+  resource_type: dynamics
+  id: dynamics.interceptor-uav
+  version: 2.0.1
+  engine_compatibility: '>=2.0.0,<3.0.0'
+  model_id: models.native-uav-kinematics@2.0.0
+  dependencies: []
+  content:
+    compatible_platform_types:
+    - interceptor-uav
+    mobile: true
+    max_speed_mps: 33.333333
+    max_turn_rate_deg_s: 30.0
+    max_vertical_speed_mps: 20.0
+    max_acceleration_mps2: 8.0
+    max_deceleration_mps2: 10.0
+    min_altitude_m: 0.0
+    max_altitude_m: 3000.0
+- schema_version: '2.0'
+  resource_type: dynamics
+  id: dynamics.armed-usv
+  version: 2.0.1
+  engine_compatibility: '>=2.0.0,<3.0.0'
+  model_id: models.native-sim2sea-mmg@2.0.0
+  dependencies: []
+  content:
+    compatible_platform_types:
+    - armed-usv
+    mobile: true
+    max_speed_mps: 18.0
+    max_nps: 137.17333333333335
+    max_rudder_rad: 0.3
+    controller_gain: 0.008
+    controller_reference_speed_mps: 10.0
+    controller_low_speed_mps: 3.5
+    substeps: 10
+    integration_dt_s: 0.1
+- schema_version: '2.0'
+  resource_type: dynamics
+  id: dynamics.suicide-usv
+  version: 2.0.0
+  engine_compatibility: '>=2.0.0,<3.0.0'
+  model_id: models.native-sim2sea-mmg@2.0.0
+  dependencies: []
+  content:
+    compatible_platform_types:
+    - suicide-usv
+    mobile: true
+    max_speed_mps: 15.433332
+    max_nps: 205.77776
+    max_rudder_rad: 0.3
+    controller_gain: 0.008
+    controller_reference_speed_mps: 10.0
+    controller_low_speed_mps: 3.5
+    substeps: 10
+    integration_dt_s: 0.1
+- schema_version: '2.0'
+  resource_type: dynamics
+  id: dynamics.static-structure
+  version: 2.0.0
+  engine_compatibility: '>=2.0.0,<3.0.0'
+  model_id: models.native-fixed@2.0.0
+  dependencies: []
+  content:
+    compatible_platform_types:
+    - harbor-pier
+    mobile: false
+- schema_version: '2.0'
+  resource_type: collision_shapes
+  id: shape.fixed-site
+  version: 2.0.0
+  engine_compatibility: '>=2.0.0,<3.0.0'
+  model_id: models.formal-data@2.0.0
+  dependencies: []
+  content:
+    compatible_domains:
+    - land
+    shape: aabb
+    half_extents_m:
+    - 6.0
+    - 6.0
+    - 4.0
+- schema_version: '2.0'
+  resource_type: collision_shapes
+  id: shape.interceptor-uav
+  version: 2.0.0
+  engine_compatibility: '>=2.0.0,<3.0.0'
+  model_id: models.formal-data@2.0.0
+  dependencies: []
+  content:
+    compatible_domains:
+    - air
+    shape: sphere
+    radius_m: 2.5
+- schema_version: '2.0'
+  resource_type: collision_shapes
+  id: shape.harbor-pier
+  version: 2.0.0
+  engine_compatibility: '>=2.0.0,<3.0.0'
+  model_id: models.formal-data@2.0.0
+  dependencies: []
+  content:
+    compatible_domains:
+    - surface
+    shape: sphere
+    radius_m: 15.0
+- schema_version: '2.0'
+  resource_type: collision_shapes
+  id: shape.usv-sphere
+  version: 2.0.0
+  engine_compatibility: '>=2.0.0,<3.0.0'
+  model_id: models.formal-data@2.0.0
+  dependencies: []
+  content:
+    compatible_domains:
+    - surface
+    shape: sphere
+    radius_m: 3.0
+- schema_version: '2.0'
+  resource_type: visualization_assets
+  id: visual.fixed-site
+  version: 2.0.0
+  engine_compatibility: '>=2.0.0,<3.0.0'
+  model_id: models.formal-data@2.0.0
+  dependencies: []
+  content:
+    compatible_domains:
+    - land
+    profile: shore_radar_generic
+    length_m: 12.0
+    width_m: 12.0
+    color_role: faction
+- schema_version: '2.0'
+  resource_type: visualization_assets
+  id: visual.interceptor-uav
+  version: 2.0.0
+  engine_compatibility: '>=2.0.0,<3.0.0'
+  model_id: models.formal-data@2.0.0
+  dependencies: []
+  content:
+    compatible_domains:
+    - air
+    profile: uav_generic
+    length_m: 12.0
+    width_m: 18.0
+    color_role: faction
+- schema_version: '2.0'
+  resource_type: visualization_assets
+  id: visual.picket-usv
+  version: 2.0.0
+  engine_compatibility: '>=2.0.0,<3.0.0'
+  model_id: models.formal-data@2.0.0
+  dependencies: []
+  content:
+    compatible_domains:
+    - surface
+    profile: usv_generic
+    length_m: 20.0
+    width_m: 6.0
+    color_role: faction
+- schema_version: '2.0'
+  resource_type: visualization_assets
+  id: visual.harbor-pier
+  version: 2.0.0
+  engine_compatibility: '>=2.0.0,<3.0.0'
+  model_id: models.formal-data@2.0.0
+  dependencies: []
+  content:
+    compatible_domains:
+    - surface
+    profile: submarine_pier_generic
+    length_m: 240.0
+    width_m: 36.0
+    color_role: faction
+- schema_version: '2.0'
+  resource_type: energy
+  id: energy.normalized
+  version: 2.0.0
+  engine_compatibility: '>=2.0.0,<3.0.0'
+  model_id: models.formal-data@2.0.0
+  dependencies: []
+  content:
+    compatible_platform_types:
+    - fixed-sensor-site
+    - interceptor-uav
+    - armed-usv
+    - suicide-usv
+    - harbor-pier
+    capacity_j: 1.0
+- schema_version: '2.0'
+  resource_type: damage_models
+  id: damage.kinetic-terminal
+  version: 2.0.0
+  engine_compatibility: '>=2.0.0,<3.0.0'
+  model_id: models.formal-data@2.0.0
+  dependencies: []
+  content:
+    effect_types:
+    - kinetic
+    health_scale: 1.0
+    disabled_threshold: 0.5
+    destroyed_threshold: 0.0
+- schema_version: '2.0'
+  resource_type: damage_models
+  id: damage.kinetic-partial
+  version: 2.0.0
+  engine_compatibility: '>=2.0.0,<3.0.0'
+  model_id: models.formal-data@2.0.0
+  dependencies: []
+  content:
+    effect_types:
+    - kinetic
+    health_scale: 0.5
+    disabled_threshold: 0.5
+    destroyed_threshold: 0.0
+- schema_version: '2.0'
+  resource_type: effects
+  id: effect.interceptor-hit
+  version: 2.0.0
+  engine_compatibility: '>=2.0.0,<3.0.0'
+  model_id: models.formal-data@2.0.0
+  dependencies:
+  - damage.kinetic-terminal@2.0.0
+  content:
+    effect_type: kinetic
+    damage_model_ref: damage.kinetic-terminal@2.0.0
+    magnitude: 1.0
+    unit: '1'
+- schema_version: '2.0'
+  resource_type: effects
+  id: effect.surface-missile-hit
+  version: 2.0.0
+  engine_compatibility: '>=2.0.0,<3.0.0'
+  model_id: models.formal-data@2.0.0
+  dependencies:
+  - damage.kinetic-terminal@2.0.0
+  content:
+    effect_type: kinetic
+    damage_model_ref: damage.kinetic-terminal@2.0.0
+    magnitude: 1.0
+    unit: '1'
+- schema_version: '2.0'
+  resource_type: effects
+  id: effect.suicide-detonation
+  version: 2.0.0
+  engine_compatibility: '>=2.0.0,<3.0.0'
+  model_id: models.formal-data@2.0.0
+  dependencies:
+  - damage.kinetic-terminal@2.0.0
+  content:
+    effect_type: kinetic
+    damage_model_ref: damage.kinetic-terminal@2.0.0
+    magnitude: 1.0
+    unit: '1'
+- schema_version: '2.0'
+  resource_type: effects
+  id: effect.collision-impact
+  version: 2.0.0
+  engine_compatibility: '>=2.0.0,<3.0.0'
+  model_id: models.formal-data@2.0.0
+  dependencies:
+  - damage.kinetic-partial@2.0.0
+  content:
+    effect_type: kinetic
+    damage_model_ref: damage.kinetic-partial@2.0.0
+    magnitude: 0.5
+    unit: '1'
+- schema_version: '2.0'
+  resource_type: effects
+  id: effect.loitering-hit
+  version: 2.0.0
+  engine_compatibility: '>=2.0.0,<3.0.0'
+  model_id: models.formal-data@2.0.0
+  dependencies:
+  - damage.kinetic-partial@2.0.0
+  content:
+    effect_type: kinetic
+    damage_model_ref: damage.kinetic-partial@2.0.0
+    magnitude: 0.6
+    unit: '1'
+- schema_version: '2.0'
+  resource_type: weapons
+  id: weapon.interceptor-missile
+  version: 2.0.1
+  engine_compatibility: '>=2.0.0,<3.0.0'
+  model_id: models.formal-data@2.0.0
+  dependencies:
+  - effect.interceptor-hit@2.0.0
+  content:
+    allowed_platform_types:
+    - interceptor-uav
+    target_domains:
+    - air
+    effect_ref: effect.interceptor-hit@2.0.0
+    min_range_m: 500.0
+    max_range_m: 15000.0
+    hit_probability: 0.85
+    delivery_model: guided_missile
+    missile:
+      launch_speed_mps: 33.333333
+      cruise_speed_mps: 33.333333
+      max_acceleration_mps2: 10.0
+      max_turn_rate_deg_s: 60.0
+      max_vertical_speed_mps: 20.0
+      seeker_range_m: 5000.0
+      seeker_fov_deg: 120.0
+      seeker_detection_probability: 0.9
+      fuse_radius_m: 15.0
+      max_flight_ticks: 520
+    cooldown_ticks: 5
+    energy_per_shot: 0.0002
+    rounds_per_action: 1
+    contact_required: true
+- schema_version: '2.0'
+  resource_type: weapons
+  id: weapon.loitering-munition
+  version: 2.0.1
+  engine_compatibility: '>=2.0.0,<3.0.0'
+  model_id: models.formal-data@2.0.0
+  dependencies:
+  - effect.loitering-hit@2.0.0
+  content:
+    allowed_platform_types:
+    - interceptor-uav
+    target_domains:
+    - air
+    - land
+    effect_ref: effect.loitering-hit@2.0.0
+    min_range_m: 500.0
+    max_range_m: 45000.0
+    hit_probability: 0.8
+    delivery_model: guided_missile
+    missile:
+      launch_speed_mps: 30.0
+      cruise_speed_mps: 30.0
+      max_acceleration_mps2: 60.0
+      max_turn_rate_deg_s: 60.0
+      max_vertical_speed_mps: 30.0
+      seeker_range_m: 5000.0
+      seeker_fov_deg: 130.0
+      seeker_detection_probability: 0.92
+      fuse_radius_m: 15.0
+      max_flight_ticks: 1560
+    cooldown_ticks: 5
+    energy_per_shot: 0.0002
+    rounds_per_action: 1
+    contact_required: true
+- schema_version: '2.0'
+  resource_type: weapons
+  id: weapon.surface-missile
+  version: 2.1.1
+  engine_compatibility: '>=2.0.0,<3.0.0'
+  model_id: models.formal-data@2.0.0
+  dependencies:
+  - effect.surface-missile-hit@2.0.0
+  content:
+    allowed_platform_types:
+    - armed-usv
+    target_domains:
+    - surface
+    effect_ref: effect.surface-missile-hit@2.0.0
+    min_range_m: 0.0
+    max_range_m: 45000.0
+    hit_probability: 0.7
+    delivery_model: guided_missile
+    missile:
+      launch_speed_mps: 30.0
+      cruise_speed_mps: 30.0
+      max_acceleration_mps2: 10.0
+      max_turn_rate_deg_s: 60.0
+      max_vertical_speed_mps: 5.0
+      seeker_range_m: 5000.0
+      seeker_fov_deg: 120.0
+      seeker_detection_probability: 0.9
+      fuse_radius_m: 25.0
+      max_flight_ticks: 1600
+    cooldown_ticks: 3
+    energy_per_shot: 0.0002
+    rounds_per_action: 1
+    contact_required: true
+- schema_version: '2.0'
+  resource_type: ammunition
+  id: ammunition.interceptor-missile
+  version: 2.0.1
+  engine_compatibility: '>=2.0.0,<3.0.0'
+  model_id: models.formal-data@2.0.0
+  dependencies:
+  - weapon.interceptor-missile@2.0.1
+  content:
+    weapon_ref: weapon.interceptor-missile@2.0.1
+    mass_per_round_kg: 4.0
+- schema_version: '2.0'
+  resource_type: ammunition
+  id: ammunition.surface-missile
+  version: 2.1.1
+  engine_compatibility: '>=2.0.0,<3.0.0'
+  model_id: models.formal-data@2.0.0
+  dependencies:
+  - weapon.surface-missile@2.1.1
+  content:
+    weapon_ref: weapon.surface-missile@2.1.1
+    mass_per_round_kg: 12.0
+- schema_version: '2.0'
+  resource_type: ammunition
+  id: ammunition.loitering-munition
+  version: 2.0.1
+  engine_compatibility: '>=2.0.0,<3.0.0'
+  model_id: models.formal-data@2.0.0
+  dependencies:
+  - weapon.loitering-munition@2.0.1
+  content:
+    weapon_ref: weapon.loitering-munition@2.0.1
+    mass_per_round_kg: 18.0
+- schema_version: '2.0'
+  resource_type: loadouts
+  id: loadout.interceptor-uav
+  version: 2.0.1
+  engine_compatibility: '>=2.0.0,<3.0.0'
+  model_id: models.formal-data@2.0.0
+  dependencies:
+  - weapon.interceptor-missile@2.0.1
+  - ammunition.interceptor-missile@2.0.1
+  content:
+    compatible_platform_types:
+    - interceptor-uav
+    required_slots:
+    - air-weapon
+    mass_kg: 80.0
+    weapon_refs:
+    - weapon.interceptor-missile@2.0.1
+    ammunition_refs:
+    - ammunition.interceptor-missile@2.0.1
+- schema_version: '2.0'
+  resource_type: loadouts
+  id: loadout.armed-usv
+  version: 2.1.1
+  engine_compatibility: '>=2.0.0,<3.0.0'
+  model_id: models.formal-data@2.0.0
+  dependencies:
+  - weapon.surface-missile@2.1.1
+  - ammunition.surface-missile@2.1.1
+  content:
+    compatible_platform_types:
+    - armed-usv
+    required_slots:
+    - surface-weapon
+    mass_kg: 120.0
+    weapon_refs:
+    - weapon.surface-missile@2.1.1
+    ammunition_refs:
+    - ammunition.surface-missile@2.1.1
+- schema_version: '2.0'
+  resource_type: environments
+  id: environment.clear
+  version: 2.0.0
+  engine_compatibility: '>=2.0.0,<3.0.0'
+  model_id: models.formal-data@2.0.0
+  dependencies: []
+  content:
+    weather: clear
+    visibility_scale: 1.0
+    sea_state: 1
+    sensor_range_multiplier: 1.0
+    sensor_detection_probability_multiplier: 1.0
+- schema_version: '2.0'
+  resource_type: environments
+  id: environment.rain-fog
+  version: 2.0.0
+  engine_compatibility: '>=2.0.0,<3.0.0'
+  model_id: models.formal-data@2.0.0
+  dependencies: []
+  content:
+    weather: rain_or_fog
+    visibility_scale: 0.65
+    sea_state: 4
+    sensor_range_multiplier: 0.7
+    sensor_detection_probability_multiplier: 0.8
+- schema_version: '2.0'
+  resource_type: sensors
+  id: sensor.shore-early-warning.competition-v02
+  version: 2.2.0
+  engine_compatibility: '>=2.0.0,<3.0.0'
+  model_id: models.formal-data@2.0.0
+  dependencies: []
+  content:
+    compatible_platform_types:
+    - fixed-sensor-site
+    slot_type: sensor
+    kind: radar
+    range_m: 7000.0
+    probability: 0.85
+    update_ticks: 5
+    confirmation_frames: 1
+    stale_after_ticks: 12
+    engagement_max_age_ticks: 12
+    minimum_contact_confidence: 0.0
+    target_domains:
+    - air
+    altitude_range_profile:
+      reference: agl
+      low_altitude_ceiling_m: 120.0
+      low_altitude_range_m: 3111.111111
+      nominal_range_m: 7000.0
+      transition: step
+    visibility_profile:
+      mount_height_m: 18.0
+      earth_radius_m: 6371000.0
+      refraction_factor: 1.3333333333333333
+      terrain_occlusion: true
+    parameter_annotations:
+      visibility_profile:
+        fidelity: UNVALIDATED_COMPETITION_ABSTRACTION
+        source: Explicit competition mount heights and effective-radius model; no equipment
+          calibration.
+- schema_version: '2.0'
+  resource_type: sensors
+  id: sensor.shore-gap-filler.competition-v02
+  version: 2.2.0
+  engine_compatibility: '>=2.0.0,<3.0.0'
+  model_id: models.formal-data@2.0.0
+  dependencies: []
+  content:
+    compatible_platform_types:
+    - fixed-sensor-site
+    slot_type: sensor
+    kind: radar
+    range_m: 5000.0
+    probability: 0.9
+    update_ticks: 2
+    confirmation_frames: 1
+    stale_after_ticks: 12
+    engagement_max_age_ticks: 12
+    minimum_contact_confidence: 0.0
+    target_domains:
+    - air
+    altitude_range_profile:
+      reference: agl
+      low_altitude_ceiling_m: 120.0
+      low_altitude_range_m: 3750.0
+      nominal_range_m: 5000.0
+      transition: step
+    visibility_profile:
+      mount_height_m: 12.0
+      earth_radius_m: 6371000.0
+      refraction_factor: 1.3333333333333333
+      terrain_occlusion: true
+    parameter_annotations:
+      visibility_profile:
+        fidelity: UNVALIDATED_COMPETITION_ABSTRACTION
+        source: Explicit competition mount heights and effective-radius model; no equipment
+          calibration.
+- schema_version: '2.0'
+  resource_type: sensors
+  id: sensor.interceptor-radar.competition-v02
+  version: 2.2.1
+  engine_compatibility: '>=2.0.0,<3.0.0'
+  model_id: models.formal-data@2.0.0
+  dependencies: []
+  content:
+    compatible_platform_types:
+    - interceptor-uav
+    slot_type: sensor
+    kind: radar
+    range_m: 5000.0
+    probability: 0.75
+    update_ticks: 2
+    confirmation_frames: 1
+    stale_after_ticks: 12
+    engagement_max_age_ticks: 12
+    minimum_contact_confidence: 0.0
+    target_domains:
+    - air
+    - surface
+    - land
+    altitude_range_profile:
+      reference: agl
+      low_altitude_ceiling_m: 120.0
+      low_altitude_range_m: 3000.0
+      nominal_range_m: 5000.0
+      transition: step
+    visibility_profile:
+      mount_height_m: 0.5
+      earth_radius_m: 6371000.0
+      refraction_factor: 1.3333333333333333
+      terrain_occlusion: true
+    parameter_annotations:
+      visibility_profile:
+        fidelity: UNVALIDATED_COMPETITION_ABSTRACTION
+        source: Explicit competition mount heights and effective-radius model; no equipment
+          calibration.
+- schema_version: '2.0'
+  resource_type: sensors
+  id: sensor.interceptor-eo.competition-v02
+  version: 2.2.0
+  engine_compatibility: '>=2.0.0,<3.0.0'
+  model_id: models.formal-data@2.0.0
+  dependencies: []
+  content:
+    compatible_platform_types:
+    - interceptor-uav
+    slot_type: sensor
+    kind: eo_ir
+    range_m: 4000.0
+    probability: 0.9
+    update_ticks: 1
+    confirmation_frames: 1
+    stale_after_ticks: 12
+    engagement_max_age_ticks: 12
+    minimum_contact_confidence: 0.0
+    target_domains:
+    - air
+    - surface
+    - land
+    altitude_range_profile:
+      reference: agl
+      low_altitude_ceiling_m: 120.0
+      low_altitude_range_m: 3000.0
+      nominal_range_m: 4000.0
+      transition: step
+    visibility_profile:
+      mount_height_m: 0.5
+      earth_radius_m: 6371000.0
+      refraction_factor: 1.0
+      terrain_occlusion: true
+    parameter_annotations:
+      visibility_profile:
+        fidelity: UNVALIDATED_COMPETITION_ABSTRACTION
+        source: Explicit competition mount heights and effective-radius model; no equipment
+          calibration.
+- schema_version: '2.0'
+  resource_type: sensors
+  id: sensor.usv-radar.competition-v02
+  version: 2.2.0
+  engine_compatibility: '>=2.0.0,<3.0.0'
+  model_id: models.formal-data@2.0.0
+  dependencies: []
+  content:
+    compatible_platform_types:
+    - armed-usv
+    - suicide-usv
+    - harbor-pier
+    slot_type: sensor
+    kind: radar
+    range_m: 3000.0
+    probability: 0.8
+    update_ticks: 3
+    confirmation_frames: 1
+    stale_after_ticks: 12
+    engagement_max_age_ticks: 12
+    minimum_contact_confidence: 0.0
+    target_domains:
+    - air
+    - surface
+    - land
+    altitude_range_profile:
+      reference: agl
+      low_altitude_ceiling_m: 120.0
+      low_altitude_range_m: 2000.0
+      nominal_range_m: 3000.0
+      transition: step
+    visibility_profile:
+      mount_height_m: 3.0
+      earth_radius_m: 6371000.0
+      refraction_factor: 1.3333333333333333
+      terrain_occlusion: true
+    parameter_annotations:
+      visibility_profile:
+        fidelity: UNVALIDATED_COMPETITION_ABSTRACTION
+        source: Explicit competition mount heights and effective-radius model; no equipment
+          calibration.
+- schema_version: '2.0'
+  resource_type: platforms
+  id: platform.shore-defence-site
+  version: 2.1.0
+  engine_compatibility: '>=2.0.0,<3.0.0'
+  model_id: models.formal-data@2.0.0
+  dependencies:
+  - energy.normalized@2.0.0
+  - shape.fixed-site@2.0.0
+  - visual.fixed-site@2.0.0
+  content:
+    platform_type: fixed-sensor-site
+    domain: land
+    mobile: false
+    allowed_dynamics:
+    - dynamics.fixed-site@2.0.0
+    component_slots:
+    - shore-weapon
+    - sensor
+    - communication
+    loadout_slots:
+    - shore-weapon
+    payload_capacity_kg: 200.0
+    mass_kg: 5000.0
+    energy_ref: energy.normalized@2.0.0
+    collision_shape_ref: shape.fixed-site@2.0.0
+    visualization_ref: visual.fixed-site@2.0.0
+    sensing_height_m: 18.0
+    parameter_annotations:
+      sensing_height_m:
+        fidelity: UNVALIDATED_COMPETITION_ABSTRACTION
+        source: Visible target height above platform position; independent of collision envelope.
+- schema_version: '2.0'
+  resource_type: platforms
+  id: platform.harbor-pier
+  version: 2.1.0
+  engine_compatibility: '>=2.0.0,<3.0.0'
+  model_id: models.formal-data@2.0.0
+  dependencies: []
+  content:
+    platform_type: harbor-pier
+    domain: surface
+    mobile: false
+    allowed_dynamics:
+    - dynamics.static-structure@2.0.0
+    component_slots:
+    - sensor
+    - communication
+    loadout_slots: []
+    payload_capacity_kg: 0.0
+    mass_kg: 20000.0
+    energy_ref: energy.normalized@2.0.0
+    collision_shape_ref: shape.harbor-pier@2.0.0
+    visualization_ref: visual.harbor-pier@2.0.0
+    sensing_height_m: 5.0
+    parameter_annotations:
+      sensing_height_m:
+        fidelity: UNVALIDATED_COMPETITION_ABSTRACTION
+        source: Visible target height above platform position; independent of collision envelope.
+- schema_version: '2.0'
+  resource_type: platforms
+  id: platform.shore-sensor-site
+  version: 2.1.0
+  engine_compatibility: '>=2.0.0,<3.0.0'
+  model_id: models.formal-data@2.0.0
+  dependencies: []
+  content:
+    platform_type: fixed-sensor-site
+    domain: land
+    mobile: false
+    allowed_dynamics:
+    - dynamics.fixed-site@2.0.0
+    component_slots:
+    - sensor
+    - sensor
+    - communication
+    loadout_slots: []
+    payload_capacity_kg: 0.0
+    mass_kg: 3000.0
+    energy_ref: energy.normalized@2.0.0
+    collision_shape_ref: shape.fixed-site@2.0.0
+    visualization_ref: visual.fixed-site@2.0.0
+    sensing_height_m: 18.0
+    parameter_annotations:
+      sensing_height_m:
+        fidelity: UNVALIDATED_COMPETITION_ABSTRACTION
+        source: Visible target height above platform position; independent of collision envelope.
+- schema_version: '2.0'
+  resource_type: weapons
+  id: weapon.suicide-warhead
+  version: 2.3.0
+  engine_compatibility: '>=2.0.0,<3.0.0'
+  model_id: models.formal-data@2.0.0
+  dependencies:
+  - effect.suicide-detonation@2.0.0
+  content:
+    allowed_platform_types:
+    - suicide-usv
+    target_domains:
+    - surface
+    - land
+    effect_ref: effect.suicide-detonation@2.0.0
+    min_range_m: 0.0
+    max_range_m: 30.0
+    hit_probability: 1.0
+    delivery_model: proximity_detonation
+    impact_delay_ticks: 1
+    cooldown_ticks: 0
+    energy_per_shot: 0.0
+    rounds_per_action: 1
+    contact_required: true
+    self_destruct_on_detonation: true
+    self_destruction_magnitude: 1.0
+    source_lifecycle_on_detonation: despawn
+    parameter_annotations:
+      source_lifecycle_on_detonation:
+        fidelity: COMPETITION_RULE
+        source: Detonated carrier despawns after unified damage; a fire-killed carrier retains
+          its entity destruction policy.
+- schema_version: '2.0'
+  resource_type: ammunition
+  id: ammunition.suicide-warhead
+  version: 2.3.0
+  engine_compatibility: '>=2.0.0,<3.0.0'
+  model_id: models.formal-data@2.0.0
+  dependencies:
+  - weapon.suicide-warhead@2.3.0
+  content:
+    weapon_ref: weapon.suicide-warhead@2.3.0
+    mass_per_round_kg: 120.0
+- schema_version: '2.0'
+  resource_type: dynamics
+  id: dynamics.interceptor-uav.reference-attacker
+  version: 2.0.1
+  engine_compatibility: '>=2.0.0,<3.0.0'
+  model_id: models.native-uav-kinematics@2.0.0
+  dependencies: []
+  content:
+    compatible_platform_types:
+    - interceptor-uav
+    mobile: true
+    max_speed_mps: 30.0
+    max_turn_rate_deg_s: 30.0
+    max_vertical_speed_mps: 20.0
+    max_acceleration_mps2: 8.0
+    max_deceleration_mps2: 10.0
+    min_altitude_m: 0.0
+    max_altitude_m: 3000.0
+- schema_version: '2.0'
+  resource_type: maps
+  id: map.weihai-local
+  version: 2.3.0
+  engine_compatibility: '>=2.0.0,<3.0.0'
+  model_id: models.formal-data@2.0.0
+  dependencies: []
+  content:
+    geographic_crs: EPSG:4326
+    origin_wgs84:
+    - 122.2
+    - 37.51
+    - 0.0
+    bounds_m:
+    - - -20000.0
+      - -20000.0
+      - -100.0
+    - - 40000.0
+      - 20000.0
+      - 4000.0
+    raw_sha256: sha256:1f78cfaf98e12d3b50cd595e58e103f4c31ef3ce71b433ba276c3afa1694b675
+    terrain_source:
+      format: raw-polygon-list-wgs84@1.0
+      path: env/map_data/competition_coastal_land_r24.json
+      sha256: sha256:ed6e296c93503906dd69c1592e77b785695d36fce4d74c010072db12699837ed
+      polygon_indices:
+      - 0
+      - 1
+    visualization_source:
+      format: weihai-raw-lonlat@1.0
+      path: env/map_data/weihai_raw_lonlat.txt
+      sha256: sha256:1f78cfaf98e12d3b50cd595e58e103f4c31ef3ce71b433ba276c3afa1694b675
+      coastline_start: 3
+      coastline_end: 134
+      harbor_end: 137
+      land_polygon_indices:
+      - 1
+    surface_elevation:
+      reference: local_sea_level
+      elevation_m: 0.0
+      regions:
+      - id: terrain.land.000.abstract-height
+        vertices_m:
+        - - -3415.4429828639823
+          - -890.4165608769879
+        - - 1897.998796544128
+          - -1887.7550463243626
+        - - -338.5916772757805
+          - -435.739996134751
+        - - -354.74963821394346
+          - 334.7855667020041
+        - - -2042.8834955180682
+          - 691.5738011761516
+        - - -3318.72745081615
+          - -403.72168802155596
+        elevation_m: 40.0
+    parameter_annotations:
+      surface_elevation.regions:
+        fidelity: UNVALIDATED_COMPETITION_ABSTRACTION
+        source: Existing island polygon with declared 40 m flat terrain for visibility tests.
+          NOT a surveyed DEM.
+- schema_version: '2.0'
+  resource_type: weapons
+  id: weapon.suicide-warhead-air
+  version: 2.4.0
+  engine_compatibility: '>=2.0.0,<3.0.0'
+  model_id: models.formal-data@2.0.0
+  dependencies:
+  - effect.suicide-detonation@2.0.0
+  content:
+    allowed_platform_types:
+    - interceptor-uav
+    target_domains:
+    - air
+    - surface
+    - land
+    effect_ref: effect.suicide-detonation@2.0.0
+    min_range_m: 0.0
+    max_range_m: 600.0
+    hit_probability: 1.0
+    delivery_model: proximity_detonation
+    impact_delay_ticks: 1
+    cooldown_ticks: 0
+    energy_per_shot: 0.0
+    rounds_per_action: 1
+    contact_required: true
+    self_destruct_on_detonation: true
+    self_destruction_magnitude: 1.0
+    source_lifecycle_on_detonation: despawn
+    parameter_annotations:
+      max_range_m:
+        fidelity: UNVALIDATED_COMPETITION_ABSTRACTION
+        source: Terminal kamikaze envelope of the loitering carrier; abstraction broadens the
+          30 m surface-warhead envelope so the carrier can dive from patrol altitude.
+- schema_version: '2.0'
+  resource_type: ammunition
+  id: ammunition.suicide-warhead-air
+  version: 2.4.0
+  engine_compatibility: '>=2.0.0,<3.0.0'
+  model_id: models.formal-data@2.0.0
+  dependencies:
+  - weapon.suicide-warhead-air@2.4.0
+  content:
+    weapon_ref: weapon.suicide-warhead-air@2.4.0
+    mass_per_round_kg: 30.0
+- schema_version: '2.0'
+  resource_type: loadouts
+  id: loadout.loitering-uav-suicide
+  version: 2.4.0
+  engine_compatibility: '>=2.0.0,<3.0.0'
+  model_id: models.formal-data@2.0.0
+  dependencies:
+  - weapon.loitering-munition@2.0.1
+  - ammunition.loitering-munition@2.0.1
+  - weapon.suicide-warhead-air@2.4.0
+  - ammunition.suicide-warhead-air@2.4.0
+  content:
+    compatible_platform_types:
+    - interceptor-uav
+    required_slots:
+    - air-weapon
+    mass_kg: 100.0
+    weapon_refs:
+    - weapon.loitering-munition@2.0.1
+    - weapon.suicide-warhead-air@2.4.0
+    ammunition_refs:
+    - ammunition.loitering-munition@2.0.1
+    - ammunition.suicide-warhead-air@2.4.0
+- schema_version: '2.0'
+  resource_type: communications
+  id: communication.command-network.ie-r36
+  version: 2.0.1
+  engine_compatibility: '>=2.0.0,<3.0.0'
+  model_id: models.formal-data@2.0.0
+  dependencies: []
+  content:
+    compatible_platform_types:
+    - fixed-sensor-site
+    - interceptor-uav
+    - armed-usv
+    - suicide-usv
+    - harbor-pier
+    slot_type: communication
+    range_m: 50000.0
+    bandwidth_bps: null
+    bandwidth_policy: unlimited
+    delay_s: 1.0
+    ttl_s: 8.0
+    loss_probability: 0.0
+    contact_report_refresh_ticks: 3
+- schema_version: '2.0'
+  resource_type: sensors
+  id: sensor.interceptor-radar.reference-attacker.competition-v02
+  version: 2.2.1
+  engine_compatibility: '>=2.0.0,<3.0.0'
+  model_id: models.formal-data@2.0.0
+  dependencies: []
+  content:
+    compatible_platform_types:
+    - interceptor-uav
+    slot_type: sensor
+    kind: radar
+    range_m: 5000.0
+    probability: 0.75
+    update_ticks: 2
+    confirmation_frames: 1
+    stale_after_ticks: 12
+    engagement_max_age_ticks: 12
+    minimum_contact_confidence: 0.0
+    target_domains:
+    - air
+    - surface
+    - land
+    altitude_range_profile:
+      reference: agl
+      low_altitude_ceiling_m: 120.0
+      low_altitude_range_m: 3000.0
+      nominal_range_m: 5000.0
+      transition: step
+    visibility_profile:
+      mount_height_m: 0.5
+      earth_radius_m: 6371000.0
+      refraction_factor: 1.3333333333333333
+      terrain_occlusion: true
+    parameter_annotations:
+      visibility_profile:
+        fidelity: UNVALIDATED_COMPETITION_ABSTRACTION
+        source: Explicit competition mount heights and effective-radius model; no equipment
+          calibration.
+- schema_version: '2.0'
+  resource_type: weapons
+  id: weapon.surface-missile
+  version: 2.1.2
+  engine_compatibility: '>=2.0.0,<3.0.0'
+  model_id: models.formal-data@2.0.0
+  dependencies:
+  - effect.surface-missile-hit@2.0.0
+  content:
+    allowed_platform_types:
+    - armed-usv
+    - suicide-usv
+    target_domains:
+    - surface
+    effect_ref: effect.surface-missile-hit@2.0.0
+    min_range_m: 0.0
+    max_range_m: 45000.0
+    hit_probability: 0.7
+    delivery_model: guided_missile
+    missile:
+      launch_speed_mps: 30.0
+      cruise_speed_mps: 30.0
+      max_acceleration_mps2: 10.0
+      max_turn_rate_deg_s: 60.0
+      max_vertical_speed_mps: 5.0
+      seeker_range_m: 5000.0
+      seeker_fov_deg: 120.0
+      seeker_detection_probability: 0.9
+      fuse_radius_m: 25.0
+      max_flight_ticks: 1600
+    cooldown_ticks: 3
+    energy_per_shot: 0.0002
+    rounds_per_action: 1
+    contact_required: true
+- schema_version: '2.0'
+  resource_type: ammunition
+  id: ammunition.surface-missile
+  version: 2.1.2
+  engine_compatibility: '>=2.0.0,<3.0.0'
+  model_id: models.formal-data@2.0.0
+  dependencies:
+  - weapon.surface-missile@2.1.2
+  content:
+    weapon_ref: weapon.surface-missile@2.1.2
+    mass_per_round_kg: 12.0
+- schema_version: '2.0'
+  resource_type: loadouts
+  id: loadout.cruise-suicide-usv
+  version: 1.0.0
+  engine_compatibility: '>=2.0.0,<3.0.0'
+  model_id: models.formal-data@2.0.0
+  dependencies:
+  - weapon.suicide-warhead@2.3.0
+  - ammunition.suicide-warhead@2.3.0
+  - weapon.surface-missile@2.1.2
+  - ammunition.surface-missile@2.1.2
+  content:
+    compatible_platform_types:
+    - suicide-usv
+    required_slots:
+    - suicide-warhead
+    - surface-weapon
+    mass_kg: 270.0
+    weapon_refs:
+    - weapon.surface-missile@2.1.2
+    - weapon.suicide-warhead@2.3.0
+    ammunition_refs:
+    - ammunition.surface-missile@2.1.2
+    - ammunition.suicide-warhead@2.3.0
+- schema_version: '2.0'
+  resource_type: platforms
+  id: platform.armed-usv
+  version: 2.3.0
+  engine_compatibility: '>=2.0.0,<3.0.0'
+  model_id: models.formal-data@2.0.0
+  dependencies:
+  - energy.normalized@2.0.0
+  content:
+    platform_type: armed-usv
+    domain: surface
+    mobile: true
+    allowed_dynamics:
+    - dynamics.armed-usv@2.0.1
+    component_slots:
+    - surface-weapon
+    - sensor
+    - communication
+    loadout_slots:
+    - surface-weapon
+    payload_capacity_kg: 350.0
+    mass_kg: 5200.0
+    energy_ref: energy.normalized@2.0.0
+    collision_shape_ref: shape.usv-sphere@2.0.0
+    visualization_ref: visual.picket-usv@2.0.0
+    sensing_height_m: 2.0
+    parameter_annotations:
+      sensing_height_m:
+        fidelity: UNVALIDATED_COMPETITION_ABSTRACTION
+        source: Visible target height above platform position; independent of collision envelope.
+- schema_version: '2.0'
+  resource_type: platforms
+  id: platform.suicide-usv
+  version: 2.4.0
+  engine_compatibility: '>=2.0.0,<3.0.0'
+  model_id: models.formal-data@2.0.0
+  dependencies:
+  - energy.normalized@2.0.0
+  content:
+    platform_type: suicide-usv
+    domain: surface
+    mobile: true
+    allowed_dynamics:
+    - dynamics.suicide-usv@2.0.0
+    component_slots:
+    - suicide-warhead
+    - sensor
+    - communication
+    - surface-weapon
+    loadout_slots:
+    - suicide-warhead
+    - surface-weapon
+    payload_capacity_kg: 450.0
+    mass_kg: 2800.0
+    energy_ref: energy.normalized@2.0.0
+    collision_shape_ref: shape.usv-sphere@2.0.0
+    visualization_ref: visual.picket-usv@2.0.0
+    sensing_height_m: 2.0
+    parameter_annotations:
+      sensing_height_m:
+        fidelity: UNVALIDATED_COMPETITION_ABSTRACTION
+        source: Visible target height above platform position; independent of collision envelope.
+      payload_capacity_kg:
+        fidelity: COMPETITION_ABSTRACTION
+        source: 'Hybrid loadout bookkeeping capacity: 438 kg loaded, 450 kg allowed; original
+          hull mass and MMG dynamics preserved.'
+- schema_version: '2.0'
+  resource_type: energy
+  id: energy.uav.competition-ie02
+  version: 1.0.0
+  engine_compatibility: '>=2.0.0,<3.0.0'
+  model_id: models.formal-data@2.0.0
+  dependencies: []
+  content:
+    compatible_platform_types:
+    - interceptor-uav
+    capacity_j: 1.0
+    idle_rate_per_second: 3.898635477582846e-05
+    motion_rate_per_meter: 3.055555555555556e-05
+    motion_speed_exponent: 2.0
+    motion_reference_speed_mps: 18.0
+    parameter_source: virtual-competition-uav-energy-20261113-v1
+    fidelity: VIRTUAL_COMPETITION_RULE
+- schema_version: '2.0'
+  resource_type: platforms
+  id: platform.interceptor-uav.energy-ie02
+  version: 1.0.0
+  engine_compatibility: '>=2.0.0,<3.0.0'
+  model_id: models.formal-data@2.0.0
+  dependencies:
+  - shape.interceptor-uav@2.0.0
+  - visual.interceptor-uav@2.0.0
+  - energy.uav.competition-ie02@1.0.0
+  content:
+    platform_type: interceptor-uav
+    domain: air
+    mobile: true
+    allowed_dynamics:
+    - dynamics.interceptor-uav@2.0.1
+    - dynamics.interceptor-uav.reference-attacker@2.0.1
+    component_slots:
+    - air-weapon
+    - sensor
+    - sensor
+    - communication
+    loadout_slots:
+    - air-weapon
+    payload_capacity_kg: 200.0
+    mass_kg: 250.0
+    energy_ref: energy.uav.competition-ie02@1.0.0
+    collision_shape_ref: shape.interceptor-uav@2.0.0
+    visualization_ref: visual.interceptor-uav@2.0.0
+    sensing_height_m: 0.5
+    parameter_annotations:
+      sensing_height_m:
+        fidelity: UNVALIDATED_COMPETITION_ABSTRACTION
+        source: Visible target height above platform position; independent of collision envelope.
+- schema_version: '2.0'
+  resource_type: energy
+  id: energy.uav.competition-ie10
+  version: 1.0.0
+  engine_compatibility: '>=2.0.0,<3.0.0'
+  model_id: models.formal-data@2.0.0
+  dependencies: []
+  content:
+    compatible_platform_types:
+    - interceptor-uav
+    capacity_j: 1.0
+    idle_rate_per_second: 3.4904013961605584e-05
+    motion_rate_per_meter: 2.3504273504273507e-05
+    motion_speed_exponent: 2.0
+    motion_reference_speed_mps: 18.0
+    parameter_source: virtual-competition-uav-energy-20261113-v1
+    fidelity: VIRTUAL_COMPETITION_RULE
+- schema_version: '2.0'
+  resource_type: platforms
+  id: platform.interceptor-uav.energy-ie10
+  version: 1.0.0
+  engine_compatibility: '>=2.0.0,<3.0.0'
+  model_id: models.formal-data@2.0.0
+  dependencies:
+  - shape.interceptor-uav@2.0.0
+  - visual.interceptor-uav@2.0.0
+  - energy.uav.competition-ie10@1.0.0
+  content:
+    platform_type: interceptor-uav
+    domain: air
+    mobile: true
+    allowed_dynamics:
+    - dynamics.interceptor-uav@2.0.1
+    - dynamics.interceptor-uav.reference-attacker@2.0.1
+    component_slots:
+    - air-weapon
+    - sensor
+    - sensor
+    - communication
+    loadout_slots:
+    - air-weapon
+    payload_capacity_kg: 200.0
+    mass_kg: 250.0
+    energy_ref: energy.uav.competition-ie10@1.0.0
+    collision_shape_ref: shape.interceptor-uav@2.0.0
+    visualization_ref: visual.interceptor-uav@2.0.0
+    sensing_height_m: 0.5
+    parameter_annotations:
+      sensing_height_m:
+        fidelity: UNVALIDATED_COMPETITION_ABSTRACTION
+        source: Visible target height above platform position; independent of collision envelope.

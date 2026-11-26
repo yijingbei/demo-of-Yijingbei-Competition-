@@ -1,0 +1,20 @@
+--- a/source_codes/openmdbench/world/missile_v2.py
++++ b/source_codes/openmdbench/world/missile_v2.py
+@@ -148,7 +148,7 @@
+     launcher_id: str = Field(min_length=1, max_length=256)
+     target_id: str = Field(min_length=1, max_length=256)
+     tick: StrictInt = Field(ge=0)
+-    status: Literal["hit", "fuse_miss", "expired", "target_unavailable"]
++    status: Literal["hit", "fuse_miss", "expired", "target_unavailable", "terrain_impact"]
+     position_m: tuple[float, float, float]
+     closest_approach_m: float | None = Field(default=None, ge=0.0)
+     seeker_state: Literal["searching", "tracking"]
+@@ -157,6 +157,8 @@
+     missile_velocity_mps: tuple[float, float, float] | None = None
+     closest_approach_time_fraction: float | None = Field(default=None, ge=0.0, le=1.0)
+     impact_position_m: tuple[float, float, float] | None = None
++    terrain_region_id: str | None = None
++    terrain_contact_fraction: float | None = Field(default=None, ge=0.0, le=1.0)
+     coordinate_frame: Literal["local-m"] = "local-m"
+     evidence_hash: str = Field(pattern=r"^sha256:[0-9a-f]{64}$")
+ 

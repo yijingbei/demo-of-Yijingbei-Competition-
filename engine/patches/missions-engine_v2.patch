@@ -1,0 +1,123 @@
+--- a/source_codes/openmdbench/missions/engine_v2.py
++++ b/source_codes/openmdbench/missions/engine_v2.py
+@@ -170,6 +170,25 @@
+     resource_facts: tuple[MissionResourceFactV2, ...] = ()
+     wave_lifecycle: Mapping[str, str] = field(default_factory=lambda: MappingProxyType({}))
+     zone_activation: Mapping[str, bool] = field(default_factory=lambda: MappingProxyType({}))
++    combat_activity: Mapping[str, int] | None = None
++
++
++COMBAT_ACTIVITY_FIELDS_V2 = frozenset({
++    "active_missiles", "pending_impacts", "pending_controller_actions", "scheduled_effects",
++})
++
++
++def combat_settlement_ready_v2(activity: Mapping[str, int] | None) -> bool:
++    """Fail closed unless current authoritative combat work is completely drained.
++
++    This says nothing about mission success or surviving enemies. Scenarios must
++    still declare those conditions, including future waves, independently.
++    """
++    if activity is None or set(activity) != COMBAT_ACTIVITY_FIELDS_V2 or any(
++        type(value) is not int or value < 0 for value in activity.values()
++    ):
++        raise ValueError("current native combat activity evidence is missing or invalid")
++    return not any(activity.values())
+ 
+ 
+ class ZoneTransitionEvidenceV2(BaseModel):
+@@ -206,9 +225,9 @@
+ class MissionContactFactV2(BaseModel):
+     model_config = ConfigDict(frozen=True, extra="forbid", allow_inf_nan=False)
+ 
+-    evidence_id: str = Field(min_length=1, max_length=256)
++    evidence_id: str = Field(min_length=1, max_length=1024)
+     owner_entity_id: str = Field(min_length=1, max_length=256)
+-    target_entity_id: str = Field(min_length=1, max_length=256)
++    target_entity_id: str = Field(min_length=1, max_length=512)
+     observed_tick: StrictInt = Field(ge=0)
+     max_age_ticks: StrictInt = Field(ge=0)
+     confidence: float = Field(ge=0.0, le=1.0)
+@@ -263,6 +282,8 @@
+         ),
+         wave_lifecycle=_freeze(value.get("wave_lifecycle", {})),
+         zone_activation=_freeze(value.get("zone_activation", {})),
++        combat_activity=(None if value.get("combat_activity") is None
++                         else _freeze(value["combat_activity"])),
+     )
+ 
+ 
+@@ -327,6 +348,7 @@
+     resource_facts: tuple[MissionResourceFactV2, ...]
+     zone_activation: Mapping[str, bool]
+     fact_hash: str
++    combat_activity: Mapping[str, int] | None = None
+ 
+ 
+ @dataclass(frozen=True, slots=True)
+@@ -996,7 +1018,7 @@
+             )
+             or receipt_keys != tuple(sorted(receipt_keys))
+             or len(receipt_keys) != len(set(receipt_keys))
+-            or self.resolved_mission_states != tuple(sorted(set(self.resolved_mission_states)))
++            or len(self.resolved_mission_states) != len(set(self.resolved_mission_states))
+             or self.resolved_metric_ids != tuple(sorted(set(self.resolved_metric_ids)))
+         ):
+             raise ValueError("mission scoring checkpoint ledgers are not canonical")
+@@ -1567,13 +1589,14 @@
+         return cls(resolved=resolved, world=world)
+ 
+     def _snapshot(self, tick: int) -> MissionEvaluationSnapshotV2:
+-        # Built-in mission conditions consume current entity/contact/resource
+-        # facts and authoritative event identities, not the recursively
+-        # serialised historical receipt payload.  Trusted scoring plugins may
+-        # inspect that audit evidence, so retain it whenever one is installed.
++        # MissionEvaluationSnapshotV2 exposes current facts and event identities,
++        # not historical event receipts. Rebuilding that unused audit history on
++        # every mission/score tick adds quadratic work without supplying any
++        # additional input to a rule or plugin. Full public fact snapshots and
++        # checkpoints retain the audit history through their default path.
+         facts = self._world.mission_fact_snapshot(
+             tick=tick,
+-            include_event_receipts=bool(self._plugins),
++            include_event_receipts=False,
+         )
+         self._fact_hash = facts.fact_hash
+         return MissionEvaluationSnapshotV2(
+@@ -1592,6 +1615,7 @@
+             resource_facts=facts.resource_facts,
+             wave_lifecycle=facts.wave_lifecycle,
+             zone_activation=facts.zone_activation,
++            combat_activity=facts.combat_activity,
+         )
+ 
+     def install_plugin(
+@@ -1934,6 +1958,8 @@
+                 hasattr(rule, "selector_resolution")
+                 and all(item in self._rule_ledger for item in dependencies)
+                 and self._condition(rule, snapshot)
++                and (not rule.outcome.get("wait_for_combat_settlement", False)
++                     or combat_settlement_ready_v2(snapshot.combat_activity))
+             ):
+                 triggered.append((int(rule.priority), str(rule.id), rule))
+         emitted: list[str] = []
+@@ -2181,7 +2207,9 @@
+             "plugin_output_receipts": tuple(self._plugin_output_receipts),
+             "fact_hash": self._fact_hash,
+             "mission_definition_hash": self._mission_definition_hash,
+-            "resolved_mission_states": tuple(sorted(self._resolved.mission_states)),
++            # Declaration order identifies the initial state and is part of the
++            # immutable mission definition hash. Sorting here changes both.
++            "resolved_mission_states": tuple(self._resolved.mission_states),
+             "resolved_metric_ids": tuple(
+                 sorted(
+                     str(item.id)
+@@ -2204,7 +2232,7 @@
+         if (
+             checkpoint.resolved_hash != self.resolved_hash
+             or checkpoint.mission_definition_hash != self._mission_definition_hash
+-            or checkpoint.resolved_mission_states != tuple(sorted(self._resolved.mission_states))
++            or checkpoint.resolved_mission_states != tuple(self._resolved.mission_states)
+             or checkpoint.resolved_metric_ids
+             != tuple(
+                 sorted(

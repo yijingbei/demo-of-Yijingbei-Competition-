@@ -1,0 +1,213 @@
+{
+  "patchset": "competition-ie-motion@13",
+  "upstream_commit": "b8c1ad824acb1bd114353147df94847a9152dda2",
+  "patches": [
+    {
+      "file": "source_codes/openmdbench/catalog/v2.py",
+      "before_sha256": "48781c4e763c0f9c1a22c8df16d4fa6d2a0d6f5e5cc323c7992ccc0ffd57b551",
+      "diff": "patches/catalog-v2-energy.patch",
+      "after_sha256": "9b213a59bbb71ac4901434dacb9d2daea2512fa5605c0aae93a76b9c09de9ae6",
+      "diff_sha256": "f529f393b8f8550d16823a1728a5f476f54784815194dede2fd820203b812a20",
+      "added_lines": 9,
+      "removed_lines": 0,
+      "changed_lines": 9
+    },
+    {
+      "file": "source_codes/openmdbench/combat/models_v2.py",
+      "before_sha256": "a6b49b44604d4afce8ef97fc87e401b4f5d4ca22f9848b8ac4b78318f0295a17",
+      "after_sha256": "238e3ddf94d77a9b737309eebbd066f75463c00aa74b46c31eb692b042f888e7",
+      "diff": "patches/combat-models_v2.patch",
+      "diff_sha256": "97050ec61209cb914cdf731791546fbfdabd94328e32216f21e3d5f56c14dc2a",
+      "added_lines": 6,
+      "removed_lines": 1,
+      "changed_lines": 6
+    },
+    {
+      "file": "source_codes/openmdbench/combat/system_v2.py",
+      "before_sha256": "3254a5a95b824078405692c517f753841f93a53a82a7eaee028e81c51b1599c4",
+      "after_sha256": "d49a36da651181a7cc3f35b20f304810672bee28ec5c9528c11d03a09885916f",
+      "diff": "patches/combat-system_v2.patch",
+      "diff_sha256": "91918c8fdbaf47034cc77eed7a9ebe623c6d91fad159c0b1fd0e7d3a34b54584",
+      "added_lines": 163,
+      "removed_lines": 35,
+      "changed_lines": 163
+    },
+    {
+      "file": "source_codes/openmdbench/domains/surface/controller_v2.py",
+      "diff": "patches/surface-controller_v2.patch",
+      "before_sha256": "62a7589e2e05a90114d80813295c67824ab99d2cf29a38ee9f6a8f1751f33ec5",
+      "after_sha256": "d77a69d8cb123af3d82adb73cc2474d6ccbec394919c857532e0e9585e9e5098",
+      "diff_sha256": "4fd4074680ad61345eb957d0be51a8bc8b9afbea5e66a4fb496ec598fb75678b",
+      "added_lines": 13,
+      "removed_lines": 0,
+      "changed_lines": 13
+    },
+    {
+      "file": "source_codes/openmdbench/dynamics/native_v2.py",
+      "diff": "patches/dynamics-native_v2.patch",
+      "before_sha256": "ec9ba49d17980226b077c17a81423040b615fa7717d53cb7846a8787e29aa784",
+      "after_sha256": "87ad865c36d2a041e288db6740a468e1e22e65bc8e761382f40094fff417d4fc",
+      "diff_sha256": "b553f53820e1ba165cc03d9a474139605ff1e7c8470a8ae4f9b5af693bf9beb7",
+      "added_lines": 4,
+      "removed_lines": 0,
+      "changed_lines": 4
+    },
+    {
+      "file": "source_codes/openmdbench/missions/engine_v2.py",
+      "before_sha256": "a1645f3e545a099a787f5e8560fb5f75e534d8c2f630bd9e023ed450ccd826ec",
+      "after_sha256": "5eeea77e08e7161e6ff843d3b3fdc9fc5d728f81c59e347a769def464b0c3062",
+      "diff": "patches/missions-engine_v2.patch",
+      "diff_sha256": "27b739375abd89a0ffc6e4e8119d0ddbd39b317c8e86f6ecee9250430476962b",
+      "added_lines": 38,
+      "removed_lines": 10,
+      "changed_lines": 38
+    },
+    {
+      "file": "source_codes/openmdbench/scenarios/declarative_v2.py",
+      "before_sha256": "bfd9b0555856969e76172ff78e42d91985294697ff07c8fd7c245c34ee40681f",
+      "after_sha256": "bf106a7c6250ee00bae10fc6d83a271a0bd6cf3753a4f0433da9f11d764a9f6e",
+      "diff": "patches/scenarios-declarative_v2.patch",
+      "diff_sha256": "feea7229cf802f13877e1078b27ae0789460ba1767c053cc4719fd37fce0c434",
+      "added_lines": 52,
+      "removed_lines": 1,
+      "changed_lines": 52
+    },
+    {
+      "file": "source_codes/openmdbench/schemas/core_v2.py",
+      "diff": "patches/schemas-core_v2.patch",
+      "before_sha256": "2800940b59d7da6da023aa1239476fe15971975b793b82fce0410ec933b64257",
+      "after_sha256": "8af94522f7a3155fb632f68a00e6d146b681653de0aa684459f3b4692f4a0914",
+      "diff_sha256": "af765f226c645d9126b7e8926452d528b928191afca9aa54385af8550a7fd922",
+      "added_lines": 32,
+      "removed_lines": 0,
+      "changed_lines": 32
+    },
+    {
+      "file": "source_codes/openmdbench/sessions/lifecycle_v2.py",
+      "before_sha256": "059f1f714549865d1a928e7c237b419a10f24cf86d254ffc67bdfe3c79c973a3",
+      "after_sha256": "baa72776c72a5cbb6be4ab28df66330b854fdcee38668104e9c0872c0ef4a909",
+      "diff": "patches/sessions-lifecycle_v2.patch",
+      "diff_sha256": "b03124ab593f9c0cdbbd2b2d6018cfc2896e0af741364abb8d1d0926a612f898",
+      "added_lines": 15,
+      "removed_lines": 2,
+      "changed_lines": 15
+    },
+    {
+      "file": "source_codes/openmdbench/systems/generic_v2.py",
+      "before_sha256": "8726fe19bcd1bfd3d905a68331583af2ed2508d6be2a115125be4ee4494699f1",
+      "after_sha256": "b79f4581625874479bdca82a2cfb192b3bdf3d3cb387921c5f44e828c14328e9",
+      "diff": "patches/systems-generic_v2.patch",
+      "diff_sha256": "3865bc0e5ccb2c424e1155e54a975cfa992cef594094feafe80e0ec14d4869d5",
+      "added_lines": 125,
+      "removed_lines": 6,
+      "changed_lines": 125
+    },
+    {
+      "file": "source_codes/openmdbench/world/boundary_v2.py",
+      "diff": "patches/world-boundary_v2.patch",
+      "before_sha256": "9ecb0348155cc6b80e416cd095abc6cbe44c44c3224b666bc5044600c8ca9d95",
+      "after_sha256": "28c5b7226853a4a97e1101c62d5b3f72b45377bb3a08496b131f700f9896ca0a",
+      "diff_sha256": "0202982c4b404b1a3b1b1bf6a4f2daee5cda3ba89d086f95cd1ee3f1e462b6d7",
+      "added_lines": 524,
+      "removed_lines": 13,
+      "changed_lines": 524
+    },
+    {
+      "file": "source_codes/openmdbench/world/checkpoint_v2.py",
+      "before_sha256": "e4ae69d586c5b82fe27cc37bb3986190edef81cc34224f9846d788658061f183",
+      "after_sha256": "bc501e3e4d8d11246c67fdbe355efa5b5845005a31508900d2663ecee83020cc",
+      "diff": "patches/world-checkpoint_v2.patch",
+      "diff_sha256": "54f6f55ea75754e100ae68b91880d1f54abfb5789281d601a405f5430f92a0d8",
+      "added_lines": 38,
+      "removed_lines": 5,
+      "changed_lines": 38
+    },
+    {
+      "file": "source_codes/openmdbench/world/combat_evidence_v2.py",
+      "diff": "patches/world-combat_evidence_v2.patch",
+      "before_sha256": "d85631cfb35434fe1089750cb400cb0f7d1dbf33b111beb1a16e8dc535fcadcb",
+      "after_sha256": "6acfa22f9ea8ba7a41536da6732a594506c5d68965227e6bfae1bf8fc995ee11",
+      "diff_sha256": "1139857a4f777764c90d0981395099c75b04c096fb58e6140b0db86ad3d409b7",
+      "added_lines": 10,
+      "removed_lines": 5,
+      "changed_lines": 10
+    },
+    {
+      "file": "source_codes/openmdbench/world/factory_v2.py",
+      "before_sha256": "95f1502477f858a6b8fe85626d26b13fa9ae2b2a4235c8aef6d980bf528463b3",
+      "after_sha256": "ea47e287d88a964376e30e0bc7d082f4453f4c5ac9c7d63fde8c573fbae27fd1",
+      "diff": "patches/world-factory_v2.patch",
+      "diff_sha256": "da9736fd3189dd92e5843b8760f3ec427f826fff817bab44ffd61bdbabc5022f",
+      "added_lines": 527,
+      "removed_lines": 64,
+      "changed_lines": 527
+    },
+    {
+      "file": "source_codes/openmdbench/world/geography_v2.py",
+      "before_sha256": "521361825f1256a748a61c89b89c5edc0f784b8b93cf1dbf18b45700f2436393",
+      "after_sha256": "64d202de36d34b20128bc8b3fe3febc34723b0762fa4b9d27ac45b7899a3c7c0",
+      "diff": "patches/world-geography_v2.patch",
+      "diff_sha256": "abcaa2e99fb64bccfa1f8b993c3fe08cf92d0203b74bc2bf58bf1b13436f56b1",
+      "added_lines": 135,
+      "removed_lines": 3,
+      "changed_lines": 135
+    },
+    {
+      "file": "source_codes/openmdbench/world/missile_v2.py",
+      "diff": "patches/world-missile_v2.patch",
+      "before_sha256": "ea016d4ea898727d65993a61bf7da01efb494f7024b03a823c396b04e9bd607e",
+      "after_sha256": "628af9232da0aa98173b9803580e92c03be59ca87bf80a1e0bbf6e1d63139e53",
+      "diff_sha256": "c3eb3e0b0a272911456a3ede62d59a30a17c31f87b54ede96f4c1d7a74f9cf62",
+      "added_lines": 3,
+      "removed_lines": 1,
+      "changed_lines": 3
+    }
+  ],
+  "authorization": "User requested integration and compatibility checking on latest main, followed by direct submission to main.",
+  "reason": "Preserve main nonlinear energy validation and consumption, evasion and settlement support; integrate opt-in passive contact/coast, transient terrain termination and speed-scheduled MMG steering.",
+  "compatibility": "Latest main IE01-IE14 task configurations remain in place. All 24 IE scenarios opt into the reviewed motion policy. Anonymous IE15-IE17 contracts and native score/authorization boundaries are preserved.",
+  "source_sync": {
+    "task": "engine-sync-20261109",
+    "created_utc": "2026-11-10T07:24:13.745350+00:00",
+    "archive": "Competition-main (1).zip",
+    "archive_sha256": "006f0eec288a91833803eed872dee4fa22c4ccec645887a180c1774ef80a1e85",
+    "upstream_commit_is_historical_baseline": true,
+    "imported_engine_files": 5,
+    "python_modules_changed": 4,
+    "provenance_rebuilt": true,
+    "local_tests_run": false,
+    "runtime_acceptance": "pending_server_validation",
+    "note": "Engine sources imported from the user-supplied archive. Incoming patch metadata is stale; existing provenance was preserved and affected diffs/hashes rebuilt against the frozen baseline. No new upstream commit identity or runtime validation is claimed."
+  },
+  "source_sync_history": [
+    {
+      "task": "engine-sync-20261104",
+      "created_utc": "2026-11-05T05:36:48.558740+00:00",
+      "archive": "Competition-main.zip",
+      "archive_sha256": "c4a3e85c5825aeb5a1dc7d345b2801a9e6b112dce68f7379b6acca6c4910d5a8",
+      "upstream_commit_is_historical_baseline": true,
+      "imported_engine_files": 7,
+      "provenance_rebuilt": true,
+      "local_tests_run": false,
+      "note": "Imported engine sources from user-supplied Competition-main.zip. Archive retains patchset @6 and the historical upstream commit but has stale hashes for updated files. Patch hashes/diffs rebuilt against that exact historical baseline. No new upstream commit identity or runtime acceptance is claimed."
+    }
+  ],
+  "local_overlay": {
+    "revision": "virtual-competition-uav-energy-20261113-v1",
+    "archive_sha256": "91837e21e492d84511dd3873dcd5d211c8c1560281f0a1d64887bb51f25a66bd",
+    "scope": "Independent development baseline; cumulative diffs updated, upstream commit unchanged"
+  },
+  "main_integration": {
+    "base_commit": "5630c92bdd2f4ec022a39e63b7d9b516c4722307",
+    "previous_motion_patchset": "competition-ie-motion@12",
+    "main_patchset": "competition-medium-sensing-detonation-and-reporting@6",
+    "upstream_roundtrip_verified_patches": 16,
+    "patch_context_repairs": [
+      "source_codes/openmdbench/catalog/v2.py",
+      "source_codes/openmdbench/missions/engine_v2.py",
+      "source_codes/openmdbench/systems/generic_v2.py",
+      "source_codes/openmdbench/world/combat_evidence_v2.py"
+    ],
+    "patch_context_repair_reason": "Main LF patch contexts did not apply to its byte-bound CRLF source files; regenerate contexts without changing source behavior."
+  }
+}

@@ -1,0 +1,1018 @@
+--- a/source_codes/openmdbench/world/factory_v2.py
++++ b/source_codes/openmdbench/world/factory_v2.py
+@@ -222,6 +222,7 @@
+         "track_quality": quality,
+         "position_uncertainty_m": max(0.25, (1.0 - quality) * 250.0),
+         "classification_confidence": None,
++        "estimated_domain": record.estimated_domain,
+         "raw_contact": True,
+         "contact_evidence_version": "raw-contact@2.0",
+     }
+@@ -253,6 +254,8 @@
+         "track_quality": quality,
+         "position_uncertainty_m": max(0.25, (1.0 - quality) * 250.0),
+         "classification_confidence": None,
++        "estimated_domain": record.get("estimated_domain"),
++        "estimated_contact_kind": record.get("estimated_contact_kind"),
+         "raw_contact": True,
+         "contact_evidence_version": "raw-contact@2.0",
+         "delivered_tick": int(record["delivered_tick"]),
+@@ -361,14 +364,14 @@
+     position_m: tuple[float, float, float]
+     velocity_mps: tuple[float, float, float]
+     resolved_hash: str
+-    provenance_kind: Literal["no_dynamics", "lifecycle_wreck"] = "no_dynamics"
++    provenance_kind: Literal["no_dynamics", "lifecycle_wreck", "passive_air"] = "no_dynamics"
+ 
+     def __post_init__(self) -> None:
+         if (
+             not isinstance(self.entity_id, str)
+             or not self.entity_id
+             or re.fullmatch(r"sha256:[0-9a-f]{64}", self.resolved_hash) is None
+-            or self.provenance_kind not in {"no_dynamics", "lifecycle_wreck"}
++            or self.provenance_kind not in {"no_dynamics", "lifecycle_wreck", "passive_air"}
+         ):
+             raise _motion_error(
+                 "world.motion_kinematic_provenance_invalid",
+@@ -391,6 +394,8 @@
+     collision_events: tuple[CollisionEventV2, ...]
+     damage_intents: tuple[DamageIntentV2, ...]
+     policy_actions: tuple[BoundaryPolicyActionV2, ...]
++    motion_segments: tuple[Mapping[str, Any], ...] = ()
++    passive_motion: tuple[Mapping[str, Any], ...] = ()
+ 
+ 
+ SUPPORTED_TICK_EVENT_TYPES = (
+@@ -480,6 +485,15 @@
+     input_hash: str
+     output_hash: str
+     snapshot_hash: str
++    control_mode: str = "active"
++    input_state: Mapping[str, Any] | None = None
++    native_output_state: Mapping[str, Any] | None = None
++    control_command: Mapping[str, Any] | None = None
++    executed_command: Mapping[str, Any] | None = None
++    input_snapshot_hash: str | None = None
++    input_angular_velocity_rad_s: float | None = None
++    output_angular_velocity_rad_s: float | None = None
++    passive_surface: Mapping[str, Any] | None = None
+ 
+ 
+ class MessageIntentV2(BaseModel):
+@@ -664,6 +678,8 @@
+             )
+             for item in payload["policy_actions"]
+         ),
++        motion_segments=tuple(payload.get("motion_segments", ())),
++        passive_motion=tuple(payload.get("passive_motion", ())),
+     )
+     return receipt, fingerprint
+ 
+@@ -1627,6 +1643,7 @@
+         boundary_system: BoundarySystemV2,
+         geography: GeographyServiceV2,
+         spatial_topology_hash: str,
++        initial_tombstones: Mapping[str, LifecycleTombstoneV2] | None = None,
+     ) -> None:
+         self._entities = dict(sorted(entities.items()))
+         self._world_resource_bindings = tuple(world_resource_bindings)
+@@ -1765,7 +1782,7 @@
+         for event in self._resolved_events:
+             if event.event_type == "spatial_effect_trigger":
+                 self._arm_spatial_effect_trigger(event)
+-        self._tombstones: dict[str, LifecycleTombstoneV2] = {}
++        self._tombstones: dict[str, LifecycleTombstoneV2] = dict(initial_tombstones or {})
+         self._lifecycle_audit: list[LifecycleAuditRecordV2] = []
+         self._deferred_lifecycle_despawns: (
+             list[tuple[LifecycleScheduleEntryV2, _RuntimeEntityV2]] | None
+@@ -2064,6 +2081,7 @@
+                     stale_after_ticks=record.stale_after_ticks,
+                     confirmed=record.confirmed,
+                     source_sensor_ref=record.source_sensor_ref,
++                    estimated_domain=record.estimated_domain,
+                 )
+                 for evidence_id in sorted(self.contact_store.records)
+                 for record in self.contact_store.records[evidence_id]
+@@ -2404,6 +2422,31 @@
+             )
+             for item in views
+         }
++        # Despawn is an authoritative terminal fact, not an unknown/missing entity.
++        # Retain only immutable compiled identity and terminal evidence here; no
++        # removed runtime object is resurrected or exposed to faction observers.
++        definitions = {e.id:e for e in self._resolved_scenario.entities}
++        definitions.update({entry.blueprint.id:entry.blueprint for entry in self.lifecycle_schedule
++                            if entry.blueprint is not None})
++        for entity_id, tombstone in sorted(self._tombstones.items()):
++            definition = definitions.get(entity_id)
++            if entity_id in entity_states or definition is None:
++                continue
++            entity_states[entity_id] = MappingProxyType({
++                "lifecycle":"despawned", "health":0.0, "faction_id":definition.faction_id,
++            })
++            tokens = capability_tokens_for_entity(definition)
++            selection.append(EntitySelectionEvidenceV2(
++                entity_id=entity_id, faction_id=definition.faction_id,
++                platform_ref=definition.platform_ref, domain=definition.domain,
++                tags=definition.tags, lifecycle="despawned",
++                direct_capabilities=tuple(t.role for t in tokens if t.origin=="direct"),
++                dependency_capabilities=tuple(t.role for t in tokens if t.origin=="dependency"),
++            ))
++        self_detonated = {r.source_entity_id for r in self._pending_impact_receipts.values()
++                          if r.detonated and r.source_lifecycle_policy is not None}
++        for entity_id in self_detonated & entity_states.keys():
++            entity_states[entity_id] = MappingProxyType({**entity_states[entity_id], "self_detonated":True})
+         zone_membership = {
+             key: tuple(sorted(value))
+             for key, value in sorted(self._mission_zone_membership.items())
+@@ -2514,6 +2557,19 @@
+             else ()
+         )
+         event_ids = tuple(sorted(self._applied_tick_event_ids))
++        # Derived exclusively from authoritative queues, so restore needs no
++        # extra mutable clock. Never export these referee facts to agents.
++        combat_activity = MappingProxyType({
++            "active_missiles": len(self._missile_flights),
++            "pending_impacts": len(self._pending_impacts),
++            "pending_controller_actions": sum(
++                item.get("execution_status") == "pending" for item in self._command_queue
++            ),
++            "scheduled_effects": sum(
++                event.event_type == "apply_effect" and event.id not in self._applied_tick_event_ids
++                for event in self._resolved_events
++            ),
++        })
+         payload = {
+             "tick": tick,
+             "entity_states": entity_states,
+@@ -2529,6 +2585,7 @@
+             "contact_facts": contact_facts,
+             "resource_facts": resource_facts,
+             "zone_activation": self._zone_activation,
++            "combat_activity": combat_activity,
+         }
+         return MissionFactSnapshotV2(
+             tick=tick,
+@@ -2555,6 +2612,7 @@
+             ),
+             zone_activation=MappingProxyType(dict(sorted(self._zone_activation.items()))),
+             fact_hash=_canonical_evidence_hash(payload),
++            combat_activity=combat_activity,
+         )
+ 
+     def _restore_event_state(self, snapshot: WorldEventStateSnapshotV2) -> None:
+@@ -2653,7 +2711,10 @@
+                 raise ValueError("World cannot install contact evidence while unavailable")
+             if (
+                 evidence.owner_entity_id not in self._entities
+-                or evidence.target_entity_id not in self._entities
++                or (
++                    evidence.target_entity_id not in self._entities
++                    and evidence.target_entity_id not in self._missile_flights
++                )
+                 or evidence.observed_tick > self.tick
+                 or evidence.age_ticks < self.tick - evidence.observed_tick
+             ):
+@@ -3089,6 +3150,61 @@
+             for index in range(len(entities) - 1)
+         )
+ 
++    @staticmethod
++    def _native_surface_yaw(snapshot: NativeDynamicsSnapshotV2) -> float | None:
++        core = snapshot.native_state.get("core", {})
++        state = core.get("state") if isinstance(core, Mapping) else None
++        if not isinstance(state, Mapping):
++            return None
++        return float(state["body_velocity_mps"][2])
++
++    def _dissipate_surface_coast(self, adapter: Any, entity_id: str,
++                                state: DynamicsStateV2, output: DynamicsStateV2,
++                                before: NativeDynamicsSnapshotV2, dt: float,
++                                policy: Any) -> tuple[DynamicsStateV2, Mapping[str, Any]]:
++        """Native zero-thrust integration followed by a viscous velocity kick.
++
++        Integrated position/heading are kept. World and the native surge/sway/
++        yaw continuation receive the same dissipation. Rest requires continuous
++        small measured motion; it never removes the retained collision hull.
++        """
++        continuation = _plain(adapter.snapshot().native_state)
++        core_state = continuation["core"]["state"]
++        original_body = list(core_state["body_velocity_mps"])
++        linear = math.exp(-policy.linear_drag_per_s * dt)
++        angular = math.exp(-policy.angular_drag_per_s * dt)
++        body = [original_body[0] * linear, original_body[1] * linear,
++                original_body[2] * angular]
++        velocity = tuple(v * linear for v in output.velocity_mps)
++        prior = None
++        if self._world_tick_ledger:
++            previous = next(reversed(self._world_tick_ledger.values()))[1]
++            if previous.tick == self.tick:
++                prior = next((r.passive_surface for r in previous.dynamics_receipts
++                              if r.entity_id == entity_id), None)
++        input_yaw = self._native_surface_yaw(before) or 0.0
++        below = (math.hypot(*state.velocity_mps[:2]) <= policy.rest_speed_mps
++                 and math.hypot(*velocity[:2]) <= policy.rest_speed_mps
++                 and abs(math.degrees(input_yaw)) <= policy.rest_yaw_rate_deg_s
++                 and abs(math.degrees(body[2])) <= policy.rest_yaw_rate_deg_s)
++        stable = (float(prior.get("stable_seconds", 0.0)) if prior else 0.0) + dt if below else 0.0
++        resting = stable >= policy.stable_seconds
++        if resting:
++            velocity = (0.0, 0.0, 0.0)
++            body = [0.0, 0.0, 0.0]
++        result = output.model_copy(update={"velocity_mps": velocity})
++        core_state["body_velocity_mps"] = body
++        continuation["last_state"] = result.model_dump(mode="json")
++        restore = getattr(adapter, "_restore_native_state", None)
++        if not callable(restore):
++            raise ValueError("passive surface adapter lacks trusted continuation restoration")
++        restore(continuation)
++        return result, dict(model=policy.model, unconstrained_state=output.model_dump(mode="json"),
++            native_body_velocity_before=original_body, native_body_velocity_after=body,
++            linear_drag_per_s=policy.linear_drag_per_s, angular_drag_per_s=policy.angular_drag_per_s,
++            stable_seconds=stable, resting=resting, rest_speed_mps=policy.rest_speed_mps,
++            rest_yaw_rate_deg_s=policy.rest_yaw_rate_deg_s)
++
+     def _invoke_motion_provider(
+         self,
+         *,
+@@ -3112,7 +3228,22 @@
+         manifest = native_artifact_manifest_v2()
+         candidates: list[MotionCandidateV2 | KinematicMotionCandidateV2] = []
+         receipts: list[DynamicsStepReceiptV2] = []
+-        for entity_id in sorted(expected_entity_ids):
++        physical = getattr(self._resolved_scenario.world, "physical_motion", None)
++        coasting = frozenset(
++            entity_id for entity_id, entity in self._entities.items()
++            if physical is not None and entity_id not in expected_entity_ids
++            and entity.definition.domain == "surface" and not self._is_static_wreck(entity_id)
++            and any(b.model_ref == MMG_MODEL_REF for b in
++                    entity.definition.resource_bindings.get("dynamics", ()))
++        )
++        fixed_holds = frozenset(
++            entity_id for entity_id, entity in self._entities.items()
++            if physical is not None and entity_id not in expected_entity_ids
++            and not self._is_static_wreck(entity_id)
++            and any(b.model_ref == FIXED_MODEL_REF for b in
++                    entity.definition.resource_bindings.get("dynamics", ()))
++        )
++        for entity_id in sorted(expected_entity_ids | coasting | fixed_holds):
+             entity = self._entities[entity_id]
+             resource_ref = entity.definition.composition.dynamics_ref
+             if resource_ref is None:
+@@ -3128,7 +3259,8 @@
+             adapter = entity.adapters.get(resource_ref)
+             if binding is None or adapter is None:
+                 raise ValueError("active dynamics binding or owned adapter is absent")
+-            controls = commands[entity_id].controls
++            controls = ({"nps": 0.0, "rudder_rad": 0.0} if entity_id in coasting
++                        else {} if entity_id in fixed_holds else commands[entity_id].controls)
+             speed_multiplier = self._resolve_entity_capability(
+                 entity=entity,
+                 capability="dynamics.speed",
+@@ -3201,6 +3333,16 @@
+             )
+             if not isinstance(output, DynamicsStateV2):
+                 raise ValueError("registered dynamics adapter returned an untyped state")
++            passive_surface = None
++            coast_policy = None if physical is None else physical.surface_coast
++            low_zero_thrust = (coast_policy is not None and binding.model_ref == MMG_MODEL_REF
++                and isinstance(native_command, MMGCommandV2) and native_command.nps == 0.0
++                and coast_policy.healthy_zero_thrust_below_mps is not None
++                and max(math.hypot(*state.velocity_mps[:2]), math.hypot(*output.velocity_mps[:2]))
++                    <= coast_policy.healthy_zero_thrust_below_mps)
++            if coast_policy is not None and (entity_id in coasting or low_zero_thrust):
++                output, passive_surface = self._dissipate_surface_coast(
++                    adapter, entity_id, state, output, before, tick_input.dt_seconds, coast_policy)
+             after = snapshot()
+             after_state_hash = _canonical_evidence_hash(
+                 {
+@@ -3263,6 +3405,19 @@
+                     input_hash=input_hash,
+                     output_hash=output_hash,
+                     snapshot_hash=after_state_hash,
++                    control_mode=("passive_coast" if entity_id in coasting else
++                                  "passive_fixed" if entity_id in fixed_holds else "active"),
++                    input_state=(state.model_dump(mode="json") if physical is not None else None),
++                    native_output_state=(output.model_dump(mode="json") if physical is not None else None),
++                    control_command=(dict(controls) if physical is not None else None),
++                    executed_command=(None if physical is None or native_command is None
++                                      else native_command.model_dump(mode="json")),
++                    input_snapshot_hash=(before_state_hash if physical is not None else None),
++                    input_angular_velocity_rad_s=(self._native_surface_yaw(before)
++                        if coast_policy is not None and binding.model_ref == MMG_MODEL_REF else None),
++                    output_angular_velocity_rad_s=(self._native_surface_yaw(after)
++                        if coast_policy is not None and binding.model_ref == MMG_MODEL_REF else None),
++                    passive_surface=passive_surface,
+                 )
+             )
+         provider_receipt = (
+@@ -3276,6 +3431,64 @@
+             ).hexdigest()
+         )
+         return tuple(candidates), provider_receipt, tuple(receipts)
++
++    def _passive_air_motion(self, entity_id: str, dt: float) -> tuple[tuple[float, float, float], tuple[float, float, float], Mapping[str, Any]]:
++        """Unpowered drag/gravity flight until native ground/sea surface contact.
++
++        This is a World-owned passive model, never a controller command. It
++        retains the body as a disabled obstacle after impact, without changing
++        its prior combat damage, threat membership or score attribution.
++        """
++        policy = self._resolved_scenario.world.physical_motion
++        entity = self._entities[entity_id]
++        state = entity.state
++        start, speed = tuple(state.position_m), tuple(state.velocity_mps)
++        drag, gravity = policy.air_drag_per_s, policy.gravity_mps2
++        radius = self._boundary_system._entities[entity_id].radius_m
++
++        def integrate(seconds: float) -> tuple[tuple[float, float, float], tuple[float, float, float]]:
++            decay = math.exp(-drag * seconds)
++            length = -math.expm1(-drag * seconds) / drag
++            position = (start[0] + speed[0]*length, start[1] + speed[1]*length,
++                        start[2] + (speed[2] + gravity/drag)*length - gravity*seconds/drag)
++            velocity = (speed[0]*decay, speed[1]*decay,
++                        (speed[2] + gravity/drag)*decay - gravity/drag)
++            return position, velocity
++
++        def clearance(seconds: float) -> float:
++            point, _ = integrate(seconds)
++            return point[2] - radius - self._geography.surface_elevation_m(point)
++
++        contact = None
++        if clearance(0.0) <= policy.contact_tolerance_m and speed[2] <= 0.0:
++            contact = 0.0
++        else:
++            previous = 0.0
++            for index in range(1, 17):
++                current = dt*index/16.0
++                if clearance(current) <= 0.0:
++                    lo, hi = previous, current
++                    for _ in range(32):
++                        middle = (lo+hi)/2.0
++                        if clearance(middle) > 0.0:lo = middle
++                        else:hi = middle
++                    contact = hi
++                    break
++                previous = current
++        elapsed = dt if contact is None else contact
++        position, velocity = integrate(elapsed)
++        pre_impact = velocity
++        if contact is not None:
++            position = (position[0], position[1], self._geography.surface_elevation_m(position)+radius)
++            velocity = (0.0, 0.0, 0.0)
++        evidence = dict(entity_id=entity_id, model="unpowered-drag-gravity@1",
++            control_mode="passive_air", lifecycle=state.lifecycle, dt_seconds=dt,
++            input_state=dict(position_m=start, velocity_mps=speed),
++            output_state=dict(position_m=position, velocity_mps=velocity),
++            gravity_mps2=gravity, air_drag_per_s=drag,
++            surface_contact_seconds=contact, pre_impact_velocity_mps=pre_impact,
++            phase="falling" if contact is None else "surface_impact" if contact>0.0 else "grounded")
++        return position, velocity, evidence
+ 
+     @staticmethod
+     def _trigger_effect_parameters(
+@@ -3658,6 +3871,14 @@
+ 
+         entity = self._entities.get(entity_id)
+         record = self._destroyed_lifecycle_ledger.get(entity_id)
++        physical = getattr(self._resolved_scenario.world, "physical_motion", None)
++        if physical is not None and entity is not None and (
++            entity.definition.domain == "air" or any(b.model_ref == MMG_MODEL_REF for b in
++            entity.definition.resource_bindings.get("dynamics", ()))
++        ):
++            # "Wreck" retains the physical body; it does not anchor a moving
++            # hull or suspend an airborne object after loss of control.
++            return False
+         return (
+             entity is not None
+             and entity.state.lifecycle == "destroyed"
+@@ -3689,6 +3910,7 @@
+         damage_receipt: DamageApplyReceiptV2,
+         spatial_requests: Sequence[tuple[str, str, str]],
+         expected_tick: int,
++        weapon_requests: Sequence[tuple[str, str, str]] = (),
+     ) -> None:
+         """Apply the resolved per-entity destruction policy after one damage batch.
+ 
+@@ -3699,7 +3921,7 @@
+         """
+ 
+         requests_by_entity: dict[str, list[tuple[str, str]]] = {}
+-        for authority_event_id, entity_id, policy in sorted(spatial_requests):
++        for authority_event_id, entity_id, policy in sorted((*spatial_requests, *weapon_requests)):
+             if policy not in {"wreck", "despawn"}:
+                 raise ValueError("spatial trigger lifecycle policy is invalid")
+             requests_by_entity.setdefault(entity_id, []).append((authority_event_id, policy))
+@@ -3862,6 +4084,16 @@
+                         effect_ref=effect.exact_ref,
+                         damage_model_ref=damage.exact_ref,
+                         magnitude=magnitude,
++                        evidence_hash=_canonical_evidence_hash({
++                            "resolved_hash": self._resolved_hash,
++                            "event_id": event.id,
++                            "tick": motion_receipt.tick,
++                            "target_entity_id": target_id,
++                            "effect_ref": effect.exact_ref,
++                            "damage_model_ref": damage.exact_ref,
++                            "magnitude": magnitude,
++                        }),
++                        source_kind="environment",
+                         parameters={"resolved_event_id": event.id},
+                     )
+                 self._effect_application_ledger[event.id] = {
+@@ -3957,6 +4189,25 @@
+                     surface_elevation_m=self._surface_elevation_or_none(
+                         tuple(entity.state.position_m)
+                     ),
++                    sensing_height_m=float(next((b.normalized_content.get("sensing_height_m", 0.0)
++                        for b in bindings.get("platforms", ())
++                        if b.exact_ref == entity.definition.composition.platform_ref), 0.0)),
++                    sea_level_elevation_m=self._geography.surface_elevation_constant_m,
++                )
++            )
++        # Flights are sensing targets only: they do not become commandable
++        # platforms, communication endpoints, or energy consumers.
++        for flight in self.missile_flights:
++            facts.append(
++                SubsystemEntityFactV2(
++                    entity_id=flight.missile_id,
++                    faction_id=flight.faction_id,
++                    position_m=flight.position_m,
++                    velocity_mps=flight.velocity_mps,
++                    energy=None,
++                    domain="air",
++                    surface_elevation_m=self._surface_elevation_or_none(flight.position_m),
++                    sea_level_elevation_m=self._geography.surface_elevation_constant_m,
+                 )
+             )
+         receipt = GenericSubsystemEngineV2().evaluate(
+@@ -3967,6 +4218,7 @@
+             queued_message_count=sum(
+                 1 for item in self._message_queue if item.get("transport_status") == "queued"
+             ),
++            terrain_blocker=self._geography.visibility_blocker,
+         )
+         for energy in receipt.energy:
+             runtime_entity = self._entities[energy.entity_id]
+@@ -4055,6 +4307,7 @@
+                     stale_after_ticks=item.stale_after_ticks,
+                     confirmed=confirmed,
+                     source_sensor_ref=item.sensor_ref,
++                    estimated_domain=item.estimated_domain,
+                 )
+             )
+         self.contact_store = WorldContactStoreV2((*retained, *generated))
+@@ -4070,33 +4323,35 @@
+     ) -> None:
+         """Snapshot confirmed organic tracks into the common communication transport.
+ 
+-        A queue item is keyed by source contact and recipient controller slot.
+-        Re-observing that same track cannot mutate a queued/delivered snapshot or
+-        create a duplicate report.  Later receipt-side fusion is intentionally
+-        absent: each source report remains a ragged immutable observation.
++        Legacy profiles send one immutable snapshot per source/recipient.
++        Opt-in periodic profiles send distinct measured reports while retaining
++        a stable controller-scoped track handle. A pending or previously returned
++        snapshot is never mutated; only actual delivery advances the latest view.
+         """
+ 
+         existing_ids = {item.get("shared_contact_id") for item in self._shared_contact_queue}
++        recent_reports: dict[str, int] = {}
++        for item in self._shared_contact_queue:
++            track_id = item.get("track_shared_contact_id")
++            snapshot = item.get("contact_snapshot")
++            if isinstance(track_id, str) and isinstance(snapshot, Mapping):
++                observed = int(snapshot["observed_tick"])
++                recent_reports[track_id] = max(recent_reports.get(track_id, -1), observed)
+         for contact in sorted(contacts, key=lambda item: item.evidence_id):
+             if not contact.confirmed:
+                 continue
+             sender = self._entities.get(contact.owner_entity_id)
+-            target = self._entities.get(contact.target_entity_id)
+-            if sender is None or target is None:
++            target_position = self._contact_target_position_v2(contact.target_entity_id)
++            if sender is None or (
++                target_position is None and contact.measurement_position_m is None
++            ):
+                 continue
+             sender_profile = self._communication_profile(entity=sender, tick=tick)
+             if sender_profile is None:
+                 continue
+-            estimated_position = (
+-                contact.measurement_position_m
+-                if contact.measurement_position_m is not None
+-                else _estimated_contact_position_v2(
+-                    contact.evidence_id,
+-                    contact.observed_tick,
+-                    contact.confidence,
+-                    target.state.position_m,
+-                )
+-            )
++            from openmdbench.systems.generic_v2 import shared_contact_refresh_ticks_v2
++            refresh_ticks = shared_contact_refresh_ticks_v2(sender_profile)
++            estimated_position = self._contact_measurement_v2(contact, contact.confidence)
+             for slot_id in self.controller_ownership.slot_ids:
+                 claim = self.controller_ownership.by_slot(slot_id)
+                 endpoint_id = claim.endpoint_entity_id
+@@ -4109,7 +4364,14 @@
+                 recipient = self._entities.get(endpoint_id)
+                 if recipient is None:
+                     continue
+-                shared_contact_id = f"shared-contact:{contact.evidence_id}:{slot_id}"
++                track_shared_id = f"shared-contact:{contact.evidence_id}:{slot_id}"
++                if refresh_ticks:
++                    previous = recent_reports.get(track_shared_id)
++                    if previous is not None and contact.observed_tick-previous < refresh_ticks:
++                        continue
++                    shared_contact_id = f"{track_shared_id}:report:{contact.observed_tick}"
++                else:
++                    shared_contact_id = track_shared_id
+                 if shared_contact_id in existing_ids:
+                     continue
+                 recipient_profile = self._communication_profile(entity=recipient, tick=tick)
+@@ -4170,12 +4432,16 @@
+                         "confidence": contact.confidence,
+                         "quality": contact.quality,
+                         "source_sensor_ref": contact.source_sensor_ref,
++                        "estimated_domain": contact.estimated_domain,
++                        "estimated_contact_kind": self._estimated_contact_kind_v2(contact),
+                     }
+                 )
+                 self._shared_contact_queue.append(
+                     _frozen_mapping(
+                         {
+                             "shared_contact_id": shared_contact_id,
++                            **({"track_shared_contact_id": track_shared_id,
++                                "contact_report_refresh_ticks": refresh_ticks} if refresh_ticks else {}),
+                             "source_contact_id": contact.evidence_id,
+                             "sender_entity_id": sender.id,
+                             "recipient_entity_id": recipient.id,
+@@ -4201,6 +4467,8 @@
+                     )
+                 )
+                 existing_ids.add(shared_contact_id)
++                if refresh_ticks:
++                    recent_reports[track_shared_id] = contact.observed_tick
+ 
+     def _advance_shared_contact_transport(self, *, tick: int) -> None:
+         """Deliver only due snapshots and retain terminal transport evidence."""
+@@ -4256,10 +4524,30 @@
+                             "expiry_tick": expiry_tick,
+                         }
+                     )
+-                    self._shared_contacts_by_controller.setdefault(slot_id, {}).setdefault(
+-                        str(record["shared_contact_id"]), delivered
+-                    )
++                    reports = self._shared_contacts_by_controller.setdefault(slot_id, {})
++                    track_id = record.get("track_shared_contact_id")
++                    if isinstance(track_id, str):
++                        previous = reports.get(track_id)
++                        if previous is None or int(delivered["observed_tick"]) > int(previous["observed_tick"]):
++                            reports[track_id] = delivered
++                    else:
++                        reports.setdefault(str(record["shared_contact_id"]), delivered)
+             updated.append(_frozen_mapping(record))
++        # Periodic reports retain all in-flight packets and the latest terminal
++        # transport evidence per source/recipient. Historical observations and
++        # audit records already returned to a logger/checkpoint remain immutable.
++        latest_terminal: dict[str, Mapping[str, Any]] = {}
++        for record in updated:
++            track_id = record.get("track_shared_contact_id")
++            if not isinstance(track_id, str) or record.get("transport_status") == "queued":
++                continue
++            previous = latest_terminal.get(track_id)
++            if previous is None or int(record["generated_tick"]) > int(previous["generated_tick"]):
++                latest_terminal[track_id] = record
++        updated = [record for record in updated
++                   if not isinstance(record.get("track_shared_contact_id"), str)
++                   or record.get("transport_status") == "queued"
++                   or latest_terminal[cast(str, record["track_shared_contact_id"])] is record]
+         self._shared_contact_queue = updated
+ 
+     def enqueue_controller_action_transport(
+@@ -4769,6 +5057,34 @@
+                 tick=tick,
+                 dt_seconds=dt_seconds,
+             )
++            terrain = None
++            if self._resolved_scenario.world.physical_motion is not None and advance.status in {
++                "active", "fuse_candidate", "expired"
++            }:
++                terrain = self._geography.first_terrain_contact(flight.position_m, advance.position_m)
++            if terrain is not None:
++                fraction, region_id = terrain
++                position = tuple(flight.position_m[i] + fraction * (advance.position_m[i] - flight.position_m[i])
++                                 for i in range(3))
++                contact_fraction = fraction
++                if advance.status == "fuse_candidate":
++                    contact_fraction *= advance.closest_approach_time_fraction
++                evidence = [advance.evidence_hash, "terrain_impact", region_id, contact_fraction, position]
++                self._missile_terminal_receipts[missile_id] = MissileTerminalReceiptV2(
++                    missile_id=flight.missile_id, request_id=flight.request_id,
++                    launcher_id=flight.launcher_id, target_id=flight.target_id, tick=tick,
++                    status="terrain_impact", position_m=position,
++                    seeker_state="tracking" if advance.seeker_detected else flight.seeker_state,
++                    seeker_detected=advance.seeker_detected,
++                    target_position_m=tuple(target_start[i] + contact_fraction * (target_end[i] - target_start[i])
++                                            for i in range(3)),
++                    missile_velocity_mps=advance.missile_velocity_mps,
++                    terrain_region_id=region_id, terrain_contact_fraction=contact_fraction,
++                    evidence_hash="sha256:" + hashlib.sha256(
++                        json.dumps(evidence, sort_keys=True, separators=(",", ":")).encode()
++                    ).hexdigest(),
++                )
++                continue
+             if advance.status == "active":
+                 if advance.flight is None:
+                     raise ValueError("active missile advance is missing flight state")
+@@ -5137,7 +5453,19 @@
+                         for entity_id, entity in sorted(self._entities.items())
+                         if self._is_static_wreck(entity_id)
+                     )
+-                    candidates = (*candidates, *wreck_candidates)
++                    passive_air = tuple(
++                        KinematicMotionCandidateV2(
++                            entity_id=entity_id,
++                            position_m=self._passive_air_motion(entity_id, tick_input.dt_seconds)[0],
++                            velocity_mps=self._passive_air_motion(entity_id, tick_input.dt_seconds)[1],
++                            resolved_hash=self._resolved_hash, provenance_kind="passive_air",
++                        )
++                        for entity_id, entity in sorted(self._entities.items())
++                        if getattr(self._resolved_scenario.world, "physical_motion", None) is not None
++                        and entity_id not in active_dynamics_after_lifecycle
++                        and entity.definition.domain == "air" and not self._is_static_wreck(entity_id)
++                    )
++                    candidates = (*candidates, *wreck_candidates, *passive_air)
+                     prior_motion_positions: dict[str, tuple[float, float, float]] = {
+                         entity_id: cast(tuple[float, float, float], tuple(entity.state.position_m))
+                         for entity_id, entity in self._entities.items()
+@@ -5176,6 +5504,7 @@
+                         prior_motion_positions=prior_motion_positions,
+                     )
+                     pending_impact_damage: dict[str, DamageIntentV2] = {}
++                    pending_detonation_lifecycle: tuple[tuple[str,str,str], ...] = ()
+                     if self._pending_impacts:
+                         combat_system = self._combat_system
+                         if combat_system is None:
+@@ -5185,6 +5514,11 @@
+                             )
+                         _pending_receipts, pending_impact_damage = (
+                             combat_system.resolve_pending_impacts(expected_tick=step_tick)
++                        )
++                        pending_detonation_lifecycle = tuple(
++                            ("detonation.lifecycle."+_canonical_evidence_hash(r.impact_id).removeprefix("sha256:"),
++                             r.source_entity_id, r.source_lifecycle_policy)
++                            for r in _pending_receipts if r.detonated and r.source_lifecycle_policy is not None
+                         )
+                     if tick_input.engagement_requests:
+                         combat_system = self._combat_system
+@@ -5256,6 +5590,7 @@
+                         damage_receipt=damage_receipt,
+                         spatial_requests=trigger_lifecycle_requests,
+                         expected_tick=step_tick,
++                        weapon_requests=pending_detonation_lifecycle,
+                     )
+                     # Mission and score conditions describe the state after
+                     # this complete physical interval.  Advancing the World
+@@ -5485,6 +5820,72 @@
+                 quality=quality,
+             )
+ 
++    def _contact_target_position_v2(
++        self, target_id: str
++    ) -> tuple[float, float, float] | None:
++        entity = self._entities.get(target_id)
++        if entity is not None:
++            return cast(tuple[float, float, float], tuple(entity.state.position_m))
++        flight = self._missile_flights.get(target_id)
++        return None if flight is None else flight.position_m
++
++    def _estimated_contact_kind_v2(self, record: WorldContactEvidenceV2) -> str | None:
++        """Coarse category of a measured contact, without its identity or outcome."""
++        target = record.target_entity_id
++        if target in self._missile_flights or target in self._missile_terminal_receipts:
++            return "flight"
++        if record.estimated_domain == "static_facility":
++            return "facility"
++        if target in self._entities:
++            return "platform"
++        return None
++
++    def _contact_is_observable_v2(self, record: WorldContactEvidenceV2) -> bool:
++        # A measured missile track can age naturally after the flight ends;
++        # do not reveal its terminal outcome by instantly deleting the report.
++        return (
++            record.target_entity_id in self._entities
++            or record.target_entity_id in self._missile_flights
++            or (
++                record.target_entity_id in self._missile_terminal_receipts
++                and record.measurement_position_m is not None
++            )
++        )
++
++    def _contact_measurement_v2(
++        self, record: WorldContactEvidenceV2, confidence: float
++    ) -> tuple[float, float, float]:
++        if record.measurement_position_m is not None:
++            return record.measurement_position_m
++        position = self._contact_target_position_v2(record.target_entity_id)
++        if position is None:
++            raise ValueError("contact without a measurement requires an active target")
++        return _estimated_contact_position_v2(
++            record.evidence_id, record.observed_tick, confidence, position
++        )
++
++    def _own_missile_observations_v2(
++        self, *, faction_id: str, launcher_ids: Sequence[str]
++    ) -> tuple[dict[str, Any], ...]:
++        return tuple(
++            {
++                "missile_id": flight.missile_id,
++                "launcher_id": flight.launcher_id,
++                "launch_tick": flight.launch_tick,
++                "observed_tick": self.tick,
++                "flight_ticks": flight.flight_ticks,
++                "position_m": flight.position_m,
++                "velocity_mps": flight.velocity_mps,
++                "heading_deg": flight.heading_deg,
++                "seeker_state": flight.seeker_state,
++                "lifecycle_state": "active",
++                "weapon_ref": flight.weapon_ref,
++                "ammunition_ref": flight.ammunition_ref,
++            }
++            for flight in self.missile_flights
++            if flight.faction_id == faction_id and flight.launcher_id in launcher_ids
++        )
++
+     def _own_resource_observation_v2(
+         self, *, entity: EntityViewV2, endpoint_id: str | None
+     ) -> dict[str, Any]:
+@@ -5585,15 +5986,9 @@
+                             record, evidence_id=evidence_id, tick=self.tick
+                         )
+                         | {
+-                            "estimated_position_m": (
+-                                record.measurement_position_m
+-                                if record.measurement_position_m is not None
+-                                else _estimated_contact_position_v2(
+-                                    evidence_id,
+-                                    record.observed_tick,
+-                                    _contact_quality_at_tick_v2(record, tick=self.tick),
+-                                    self._entities[record.target_entity_id].state.position_m,
+-                                )
++                            "estimated_contact_kind": self._estimated_contact_kind_v2(record),
++                            "estimated_position_m": self._contact_measurement_v2(
++                                record, _contact_quality_at_tick_v2(record, tick=self.tick)
+                             )
+                         }
+                     ),
+@@ -5601,7 +5996,7 @@
+                 for evidence_id, records in sorted(self.contact_store.records.items())
+                 for record in records
+                 if record.owner_entity_id == endpoint
+-                and record.target_entity_id in self._entities
++                and self._contact_is_observable_v2(record)
+                 and record.confirmed
+             )
+             return ObservationV2(
+@@ -5612,6 +6007,9 @@
+                 controller_slot_id=claim.slot_id,
+                 controlled_entity_ids=controlled_ids,
+                 own_entities=own_entities,
++                own_missiles=self._own_missile_observations_v2(
++                    faction_id=claim.faction_id, launcher_ids=claim.entity_ids
++                ),
+                 organic_contacts=organic_contacts,
+                 shared_contacts=tuple(
+                     {
+@@ -5680,15 +6078,8 @@
+                 {
+                     "contact_id": evidence_id,
+                     "observer_entity_id": record.owner_entity_id,
+-                    "estimated_position_m": (
+-                        record.measurement_position_m
+-                        if record.measurement_position_m is not None
+-                        else _estimated_contact_position_v2(
+-                            evidence_id,
+-                            record.observed_tick,
+-                            record.confidence,
+-                            self._entities[record.target_entity_id].state.position_m,
+-                        )
++                    "estimated_position_m": self._contact_measurement_v2(
++                        record, record.confidence
+                     ),
+                     "observed_tick": record.observed_tick,
+                     "age_ticks": max(record.age_ticks, self.tick - record.observed_tick),
+@@ -5698,11 +6089,13 @@
+                     "track_quality": record.quality,
+                     "position_uncertainty_m": max(0.25, (1.0 - record.quality) * 250.0),
+                     "classification_confidence": None,
++                    "estimated_domain": record.estimated_domain,
++                    "estimated_contact_kind": self._estimated_contact_kind_v2(record),
+                 }
+                 for evidence_id, records in sorted(self.contact_store.records.items())
+                 for record in records
+                 if record.owner_entity_id in shared_reporter_ids
+-                and record.target_entity_id in self._entities
++                and self._contact_is_observable_v2(record)
+                 and record.confirmed
+             )
+             return ObservationV2(
+@@ -5711,6 +6104,9 @@
+                 tick=self.tick,
+                 observer_faction_id=observer_faction_id,
+                 own_entities=own_entities,
++                own_missiles=self._own_missile_observations_v2(
++                    faction_id=observer_faction_id, launcher_ids=tuple(owners)
++                ),
+                 contacts_by_faction={observer_faction_id: contacts},
+                 metadata={
+                     "resolved_hash": self._resolved_hash,
+@@ -6152,8 +6548,16 @@
+                             )
+                             and velocity == (0.0, 0.0, 0.0)
+                         )
++                        is_passive_air = (
++                            candidate.provenance_kind == "passive_air"
++                            and self._active_motion_provider_receipt is not None
++                            and getattr(self._resolved_scenario.world, "physical_motion", None) is not None
++                            and runtime_entity.definition.domain == "air"
++                            and candidate.entity_id not in self._motion_eligibility_snapshot_locked(expected_tick=expected_tick).entity_ids
++                            and (position, velocity) == self._passive_air_motion(candidate.entity_id, dt)[:2]
++                        )
+                         if candidate.resolved_hash != self._resolved_hash or not (
+-                            is_fixed_entity or is_static_wreck
++                            is_fixed_entity or is_static_wreck or is_passive_air
+                         ):
+                             raise ValueError(
+                                 f"candidate {index} kinematic provenance conflicts with dynamics"
+@@ -6226,6 +6630,9 @@
+                             tuple(self._entities[entity_id].state.position_m),
+                         ),
+                         end_m=values[0],
++                        start_heading_deg=self._entities[entity_id].state.heading_deg,
++                        end_heading_deg=(self._entities[entity_id].state.heading_deg
++                                         if values[3] is None else values[3]),
+                         velocity_mps=values[1],
+                         dt_seconds=dt,
+                     )
+@@ -6256,7 +6663,33 @@
+                     state.position_m = list(committed_position)
+                     state.velocity_mps = list(committed_velocity)
+                     if heading is not None:
+-                        state.heading_deg = heading
++                        start_heading = self._entities[entity_id].state.heading_deg
++                        fraction = 1.0 if action is None else next(
++                            (
++                                event.time_fraction
++                                for event in (
++                                    *evaluation.collision_events, *evaluation.boundary_events
++                                )
++                                if event.event_id == action.cause_event_id
++                            ),
++                            1.0,
++                        )
++                        if action is not None:
++                            if action.policy == "reject":
++                                fraction = 0.0
++                            elif action.policy in {"deactivate", "mission_event"}:
++                                fraction = 1.0
++                            if getattr(self._resolved_scenario.world, "physical_motion", None) is not None:
++                                fraction = 1.0
++                        state.heading_deg = (
++                            heading
++                            if fraction == 1.0
++                            else (
++                                start_heading + fraction * (
++                                    (heading - start_heading + 180.0) % 360.0 - 180.0
++                                )
++                            ) % 360.0
++                        )
+                     elif committed_velocity[0] != 0.0 or committed_velocity[1] != 0.0:
+                         state.heading_deg = (
+                             math.degrees(math.atan2(committed_velocity[0], committed_velocity[1]))
+@@ -6269,6 +6702,7 @@
+                     if model_ref != MMG_MODEL_REF or (
+                         action.resolved_end_m == position
+                         and action.resolved_velocity_mps == velocity
++                        and staged_states[entity_id].heading_deg == _heading
+                     ):
+                         continue
+                     runtime_entity = self._entities[entity_id]
+@@ -6308,6 +6742,11 @@
+                     collision_events=evaluation.collision_events,
+                     damage_intents=evaluation.damage_intents,
+                     policy_actions=evaluation.policy_actions,
++                    motion_segments=evaluation.motion_segments,
++                    passive_motion=tuple(
++                        self._passive_air_motion(c.entity_id, dt)[2] for c in ordered
++                        if isinstance(c, KinematicMotionCandidateV2) and c.provenance_kind == "passive_air"
++                    ),
+                 )
+                 for entity_id, state in staged_states.items():
+                     self._entities[entity_id].state = state
+@@ -7026,6 +7465,7 @@
+                             stale_after_ticks=record.stale_after_ticks,
+                             confirmed=record.confirmed,
+                             source_sensor_ref=record.source_sensor_ref,
++                            estimated_domain=record.estimated_domain,
+                         )
+                         for evidence_id in sorted(self.contact_store.records)
+                         for record in self.contact_store.records[evidence_id]
+@@ -7408,16 +7848,25 @@
+                 self._compiled_capability_tokens[entity_id] = capability_tokens_for_entity(
+                     entity.definition
+                 )
++        # A compiled slot may outlive its initial entity or endpoint. Validate
++        # that immutable contract against known retired identities, then build
++        # the active ownership index below exclusively from live runtime IDs.
++        known_definitions = {e.id:e for e in self._resolved_scenario.entities}
++        known_definitions.update({entry.blueprint.id:entry.blueprint for entry in self.lifecycle_schedule
++                                  if entry.blueprint is not None})
++        retired = {key:known_definitions[key] for key in self._tombstones if key in known_definitions}
+         base = build_controller_ownership(
+             slots=self.controller_slots,
+             uncontrolled_policy=self._controller_policy,
+-            entity_factions={key: entity.faction_id for key, entity in self._entities.items()},
++            entity_factions={**{key:e.faction_id for key,e in retired.items()},
++                             **{key:e.faction_id for key,e in self._entities.items()}},
+             # Controller-slot capability evidence belongs to the immutable
+             # compiled control contract.  Runtime component damage can remove
+             # a capability from an active entity; commands are then rejected
+             # by the action pipeline, but rebuilding the ownership index must
+             # not turn that valid degradation into a World transaction error.
+-            entity_tokens={key: self._compiled_capability_tokens[key] for key in self._entities},
++            entity_tokens={**{key:capability_tokens_for_entity(e) for key,e in retired.items()},
++                           **{key:self._compiled_capability_tokens[key] for key in self._entities}},
+             lifecycle_schedule=pending,
+         )
+         claims = list(base.slot_to_claim.values())
+@@ -8207,11 +8656,32 @@
+                     adapter_created=record_adapter,
+                 )
+                 built[entity_id] = entity
++            restored_tombstones = {
++                item.entity_id: LifecycleTombstoneV2(
++                    entity_id=item.entity_id,
++                    tick=item.tick,
++                    source_event_id=item.source_event_id,
++                    adapters_closed=item.adapters_closed,
++                    cleanup_errors=item.cleanup_errors,
++                )
++                for item in checkpoint.tombstones
++            }
++            retired_definitions = {
++                key: definitions[key] for key in restored_tombstones
++                if key in definitions
++            }
+             ownership = build_controller_ownership(
+                 slots=resolved.controller_slots,
+                 uncontrolled_policy=resolved.controller_policy,
+-                entity_factions={key: item.faction_id for key, item in built.items()},
+-                entity_tokens={key: item.capability_tokens for key, item in built.items()},
++                entity_factions={
++                    **{key: item.faction_id for key, item in retired_definitions.items()},
++                    **{key: item.faction_id for key, item in built.items()},
++                },
++                entity_tokens={
++                    **{key: capability_tokens_for_entity(item)
++                       for key, item in retired_definitions.items()},
++                    **{key: item.capability_tokens for key, item in built.items()},
++                },
+                 lifecycle_schedule=tuple(schedule[checkpoint.schedule_cursor :]),
+             )
+             boundary_system, spatial_topology_hash, geography = _spatial_runtime(
+@@ -8238,6 +8708,7 @@
+                 boundary_system=boundary_system,
+                 geography=geography,
+                 spatial_topology_hash=spatial_topology_hash,
++                initial_tombstones=restored_tombstones,
+             )
+             if tuple(_plain(item) for item in checkpoint.world_adapter_receipts) != (
+                 world._world_adapter_receipts()
+@@ -8283,16 +8754,7 @@
+                 )
+                 for item in checkpoint.lifecycle_ledger
+             }
+-            world._tombstones = {
+-                item.entity_id: LifecycleTombstoneV2(
+-                    entity_id=item.entity_id,
+-                    tick=item.tick,
+-                    source_event_id=item.source_event_id,
+-                    adapters_closed=item.adapters_closed,
+-                    cleanup_errors=item.cleanup_errors,
+-                )
+-                for item in checkpoint.tombstones
+-            }
++            world._tombstones = restored_tombstones
+             if checkpoint.boundary_topology_hash != world._spatial_topology_hash:
+                 raise ValueError("checkpoint spatial topology anchor differs from resolved world")
+             world._spatial_tick = checkpoint.spatial_clock.tick
+@@ -8625,6 +9087,7 @@
+                         stale_after_ticks=item.stale_after_ticks,
+                         confirmed=item.confirmed,
+                         source_sensor_ref=item.source_sensor_ref,
++                        estimated_domain=item.estimated_domain,
+                     )
+                     for item in checkpoint.combat_contact_evidence
+                 )

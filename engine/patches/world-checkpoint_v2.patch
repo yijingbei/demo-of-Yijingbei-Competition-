@@ -1,0 +1,97 @@
+--- a/source_codes/openmdbench/world/checkpoint_v2.py
++++ b/source_codes/openmdbench/world/checkpoint_v2.py
+@@ -11,7 +11,16 @@
+ from dataclasses import dataclass, field, fields, is_dataclass
+ from typing import Any, Literal, Never, Self
+ 
+-from pydantic import BaseModel, ConfigDict, Field, StrictInt, field_serializer, model_validator
++from pydantic import (
++    BaseModel,
++    ConfigDict,
++    Field,
++    SerializerFunctionWrapHandler,
++    StrictInt,
++    field_serializer,
++    model_serializer,
++    model_validator,
++)
+ 
+ from openmdbench.combat.models_v2 import PendingImpactReceiptV2, PendingImpactV2
+ from openmdbench.dynamics.native_v2 import (
+@@ -209,6 +218,8 @@
+     collision_events: tuple[dict[str, Any], ...]
+     damage_intents: tuple[dict[str, Any], ...]
+     policy_actions: tuple[dict[str, Any], ...]
++    motion_segments: tuple[dict[str, Any], ...] = ()
++    passive_motion: tuple[dict[str, Any], ...] = ()
+     fingerprint: str = Field(pattern=_HASH_PATTERN)
+ 
+ 
+@@ -243,9 +254,9 @@
+ 
+ class CheckpointContactEvidenceV2(_CheckpointModelV2):
+     schema_version: Literal["world-contact@2.0"] = "world-contact@2.0"
+-    evidence_id: str = Field(min_length=1, max_length=256)
++    evidence_id: str = Field(min_length=1, max_length=1024)
+     owner_entity_id: str = Field(min_length=1, max_length=256)
+-    target_entity_id: str = Field(min_length=1, max_length=256)
++    target_entity_id: str = Field(min_length=1, max_length=512)
+     observed_tick: StrictInt = Field(ge=0)
+     age_ticks: StrictInt = Field(ge=0)
+     max_age_ticks: StrictInt = Field(ge=0)
+@@ -258,6 +269,17 @@
+     stale_after_ticks: StrictInt = Field(default=1, ge=1)
+     confirmed: bool = True
+     source_sensor_ref: str | None = Field(default=None, min_length=1, max_length=256)
++    estimated_domain: Literal["air", "surface", "underwater", "static_facility"] | None = None
++
++    @model_serializer(mode="wrap")
++    def serialize_optional_classification(
++        self, handler: SerializerFunctionWrapHandler
++    ) -> dict[str, Any]:
++        payload = handler(self)
++        # Preserve canonical hashes of pre-classification checkpoint records.
++        if self.estimated_domain is None:
++            payload.pop("estimated_domain", None)
++        return payload
+ 
+ 
+ class CheckpointRoeRuleV2(_CheckpointModelV2):
+@@ -378,6 +400,9 @@
+         )
+         payload = dict(payload)
+         payload.pop("checkpoint_hash", None)
++        for contact in payload.get("combat_contact_evidence", ()):
++            if contact.get("estimated_domain") is None:
++                contact.pop("estimated_domain", None)
+         encoded = _canonical_json(payload, allow_nan=True).encode()
+         return f"sha256:{hashlib.sha256(encoded).hexdigest()}"
+ 
+@@ -713,9 +738,14 @@
+             (item.evidence_id, item.owner_entity_id, item.target_entity_id)
+             for item in self.combat_contact_evidence
+         )
++        contact_target_ids = (
++            set(entity_ids)
++            | {item.missile_id for item in self.missile_flights}
++            | {item.missile_id for item in self.missile_terminal_receipts}
++        )
+         if contact_keys != tuple(sorted(set(contact_keys))) or any(
+             item.owner_entity_id not in entity_ids
+-            or item.target_entity_id not in entity_ids
++            or item.target_entity_id not in contact_target_ids
+             or item.observed_tick > self.tick
+             or item.age_ticks < self.tick - item.observed_tick
+             for item in self.combat_contact_evidence
+@@ -761,7 +791,10 @@
+                 item.source_entity_id not in self.used_entity_ids
+                 or item.target_entity_id not in self.used_entity_ids
+                 or item.launch_tick >= item.scheduled_tick
+-                or item.scheduled_tick <= self.tick
++                # Tick N snapshots precede the interval starting at N. Impacts
++                # due at N are consumed by the next advance; older ones cannot
++                # legitimately remain pending.
++                or item.scheduled_tick < self.tick
+                 for item in self.pending_impacts
+             )
+             or any(

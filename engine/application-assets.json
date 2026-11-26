@@ -1,0 +1,11 @@
+{
+  "schema_version": "competition-application-assets@1",
+  "provenance": "competition-owned-not-upstream",
+  "notice": "This existing public coastal map is competition scenario data. It is not an upstream engine file or an engine logic patch; its geometry is unchanged.",
+  "assets": [
+    {
+      "file": "source_codes/env/map_data/competition_coastal_land_r24.json",
+      "sha256": "ed6e296c93503906dd69c1592e77b785695d36fce4d74c010072db12699837ed"
+    }
+  ]
+}

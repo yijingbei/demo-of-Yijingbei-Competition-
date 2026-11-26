@@ -1,0 +1,3810 @@
+{
+  "scenario_id": "IE-13-DEEP-STRIKE",
+  "track": "interception",
+  "difficulty": "challenge",
+  "control_mode": "centralized",
+  "objective_m": [
+    -1200.0,
+    -200.0
+  ],
+  "defence": {
+    "faction_id": "red",
+    "contact_confidence": 0.0,
+    "maximum_contact_age_ticks": 8,
+    "intercept_speed_mps": 22.0,
+    "weapon_policies": [
+      {
+        "selector_tags": [
+          "interceptor"
+        ],
+        "weapon_ref": "weapon.air-item.speed-trial@1.2.0",
+        "ammunition_ref": "ammunition.air-item.speed-trial@1.2.0",
+        "minimum_range_m": 500.0,
+        "maximum_range_m": 8000.0,
+        "cooldown_ticks": 5,
+        "target_domains": [
+          "air"
+        ],
+        "maximum_speed_mps": 25.0,
+        "missile_cruise_speed_mps": 60.0,
+        "missile_max_flight_ticks": 83,
+        "nominal_hit_probability": 0.75,
+        "nominal_health_loss_per_hit": 0.6,
+        "salvo_rounds": 2,
+        "minimum_hits_to_disable_reference_target": 1
+      },
+      {
+        "selector_tags": [
+          "usv"
+        ],
+        "weapon_ref": "weapon.surface-missile@2.2.0",
+        "ammunition_ref": "ammunition.surface-missile@2.2.0",
+        "minimum_range_m": 0.0,
+        "maximum_range_m": 15000.0,
+        "cooldown_ticks": 3,
+        "target_domains": [
+          "surface",
+          "land"
+        ],
+        "maximum_speed_mps": 10.288,
+        "missile_cruise_speed_mps": 33.333333333333336,
+        "missile_max_flight_ticks": 510,
+        "nominal_hit_probability": 0.5,
+        "nominal_health_loss_per_hit": 1.0,
+        "salvo_rounds": 1,
+        "minimum_hits_to_disable_reference_target": 1
+      }
+    ],
+    "aircraft_patrol": {
+      "enabled": true,
+      "radius_m": 600.0,
+      "speed_mps": 22.0,
+      "arrival_radius_m": 80.0,
+      "pattern": "sector_racetrack",
+      "station_mode": "initial_positions",
+      "leg_length_m": 2400.0
+    },
+    "surface_patrol": {
+      "enabled": true,
+      "pattern": "coastal_sector_loop",
+      "radius_m": 300.0,
+      "speed_mps": 6.0,
+      "arrival_radius_m": 100.0,
+      "intercept_standoff_m": 900.0,
+      "maximum_station_excursion_m": 2500.0,
+      "station_source": "first_owned_position",
+      "contact_source": "authorized_controller_observation_only",
+      "navigation_contact_confidence": 0.3,
+      "fire_contact_confidence": 0.4,
+      "maximum_fire_contact_age_ticks": 2
+    },
+    "aircraft_flight_levels_m": {
+      "defender.uav-01": 80.0,
+      "defender.uav-02": 110.0,
+      "defender.uav-03": 140.0,
+      "defender.uav-04": 170.0,
+      "defender.uav-05": 200.0,
+      "defender.uav-06": 230.0
+    },
+    "multirole_surface_support": {
+      "enabled": false
+    },
+    "flight_level_note": "Public r26 separated flight plan; local sea-level altitudes, not real-world high-altitude categories."
+  },
+  "own_weapon_policies": {
+    "defender.uav-01": {
+      "weapon_ref": "weapon.air-item.speed-trial@1.2.0",
+      "ammunition_ref": "ammunition.air-item.speed-trial@1.2.0",
+      "minimum_range_m": 500.0,
+      "maximum_range_m": 8000.0,
+      "cooldown_ticks": 5,
+      "target_domains": [
+        "air"
+      ],
+      "maximum_speed_mps": 25.0,
+      "missile_cruise_speed_mps": 60.0,
+      "missile_max_flight_ticks": 83,
+      "nominal_hit_probability": 0.75,
+      "nominal_health_loss_per_hit": 0.6,
+      "salvo_rounds": 2,
+      "minimum_hits_to_disable_reference_target": 1
+    },
+    "defender.uav-02": {
+      "weapon_ref": "weapon.air-item.speed-trial@1.2.0",
+      "ammunition_ref": "ammunition.air-item.speed-trial@1.2.0",
+      "minimum_range_m": 500.0,
+      "maximum_range_m": 8000.0,
+      "cooldown_ticks": 5,
+      "target_domains": [
+        "air"
+      ],
+      "maximum_speed_mps": 25.0,
+      "missile_cruise_speed_mps": 60.0,
+      "missile_max_flight_ticks": 83,
+      "nominal_hit_probability": 0.75,
+      "nominal_health_loss_per_hit": 0.6,
+      "salvo_rounds": 2,
+      "minimum_hits_to_disable_reference_target": 1
+    },
+    "defender.uav-03": {
+      "weapon_ref": "weapon.air-item.speed-trial@1.2.0",
+      "ammunition_ref": "ammunition.air-item.speed-trial@1.2.0",
+      "minimum_range_m": 500.0,
+      "maximum_range_m": 8000.0,
+      "cooldown_ticks": 5,
+      "target_domains": [
+        "air"
+      ],
+      "maximum_speed_mps": 25.0,
+      "missile_cruise_speed_mps": 60.0,
+      "missile_max_flight_ticks": 83,
+      "nominal_hit_probability": 0.75,
+      "nominal_health_loss_per_hit": 0.6,
+      "salvo_rounds": 2,
+      "minimum_hits_to_disable_reference_target": 1
+    },
+    "defender.usv-01": {
+      "weapon_ref": "weapon.surface-missile@2.2.0",
+      "ammunition_ref": "ammunition.surface-missile@2.2.0",
+      "minimum_range_m": 0.0,
+      "maximum_range_m": 15000.0,
+      "cooldown_ticks": 3,
+      "target_domains": [
+        "surface",
+        "land"
+      ],
+      "maximum_speed_mps": 10.288,
+      "missile_cruise_speed_mps": 33.333333333333336,
+      "missile_max_flight_ticks": 510,
+      "nominal_hit_probability": 0.5,
+      "nominal_health_loss_per_hit": 1.0,
+      "salvo_rounds": 2,
+      "minimum_hits_to_disable_reference_target": 1
+    },
+    "defender.usv-02": {
+      "weapon_ref": "weapon.surface-missile@2.2.0",
+      "ammunition_ref": "ammunition.surface-missile@2.2.0",
+      "minimum_range_m": 0.0,
+      "maximum_range_m": 15000.0,
+      "cooldown_ticks": 3,
+      "target_domains": [
+        "surface",
+        "land"
+      ],
+      "maximum_speed_mps": 10.288,
+      "missile_cruise_speed_mps": 33.333333333333336,
+      "missile_max_flight_ticks": 510,
+      "nominal_hit_probability": 0.5,
+      "nominal_health_loss_per_hit": 1.0,
+      "salvo_rounds": 2,
+      "minimum_hits_to_disable_reference_target": 1
+    },
+    "defender.usv-03": {
+      "weapon_ref": "weapon.surface-missile@2.2.0",
+      "ammunition_ref": "ammunition.surface-missile@2.2.0",
+      "minimum_range_m": 0.0,
+      "maximum_range_m": 15000.0,
+      "cooldown_ticks": 3,
+      "target_domains": [
+        "surface",
+        "land"
+      ],
+      "maximum_speed_mps": 10.288,
+      "missile_cruise_speed_mps": 33.333333333333336,
+      "missile_max_flight_ticks": 510,
+      "nominal_hit_probability": 0.5,
+      "nominal_health_loss_per_hit": 1.0,
+      "salvo_rounds": 2,
+      "minimum_hits_to_disable_reference_target": 1
+    },
+    "defender.uav-04": {
+      "weapon_ref": "weapon.air-item.speed-trial@1.2.0",
+      "ammunition_ref": "ammunition.air-item.speed-trial@1.2.0",
+      "minimum_range_m": 500.0,
+      "maximum_range_m": 8000.0,
+      "cooldown_ticks": 5,
+      "target_domains": [
+        "air"
+      ],
+      "maximum_speed_mps": 25.0,
+      "missile_cruise_speed_mps": 60.0,
+      "missile_max_flight_ticks": 83,
+      "nominal_hit_probability": 0.75,
+      "nominal_health_loss_per_hit": 0.6,
+      "salvo_rounds": 2,
+      "minimum_hits_to_disable_reference_target": 1
+    },
+    "defender.uav-05": {
+      "weapon_ref": "weapon.air-item.speed-trial@1.2.0",
+      "ammunition_ref": "ammunition.air-item.speed-trial@1.2.0",
+      "minimum_range_m": 500.0,
+      "maximum_range_m": 8000.0,
+      "cooldown_ticks": 5,
+      "target_domains": [
+        "air"
+      ],
+      "maximum_speed_mps": 25.0,
+      "missile_cruise_speed_mps": 60.0,
+      "missile_max_flight_ticks": 83,
+      "nominal_hit_probability": 0.75,
+      "nominal_health_loss_per_hit": 0.6,
+      "salvo_rounds": 2,
+      "minimum_hits_to_disable_reference_target": 1
+    },
+    "defender.uav-06": {
+      "weapon_ref": "weapon.air-item.speed-trial@1.2.0",
+      "ammunition_ref": "ammunition.air-item.speed-trial@1.2.0",
+      "minimum_range_m": 500.0,
+      "maximum_range_m": 8000.0,
+      "cooldown_ticks": 5,
+      "target_domains": [
+        "air"
+      ],
+      "maximum_speed_mps": 25.0,
+      "missile_cruise_speed_mps": 60.0,
+      "missile_max_flight_ticks": 83,
+      "nominal_hit_probability": 0.75,
+      "nominal_health_loss_per_hit": 0.6,
+      "salvo_rounds": 2,
+      "minimum_hits_to_disable_reference_target": 1
+    }
+  },
+  "protected_zone_ids": [
+    "zone.competition-protected",
+    "zone.target.facility.command",
+    "zone.target.facility.pier"
+  ],
+  "available_actions": [
+    "navigation",
+    "hold",
+    "fire_weapon",
+    "send_message"
+  ],
+  "duration_ticks": 1500,
+  "name": "纵深双目标突击",
+  "package_version": "ie-6km-balanced-full-evasion-25min-20261120",
+  "opponent_contract": {
+    "kind": "ie_attack",
+    "assigned_facility_priority": true,
+    "uses_authorized_contacts_only": true,
+    "navigation": "paper_attack_driver_routes",
+    "maximum_contact_age_ticks": 2,
+    "provenance": "paper project openmd/code/eval/attack_driver.py; controller DTO adaptation",
+    "faction_id": "blue",
+    "non_suicidal": true,
+    "equipment": "Shared UAV movement and sensing; role-specific stock: attacker 2 air + 1 strike, defender 2 air only.",
+    "feints": "Armed feints are ordinary scored threats; no hidden immunity or no-score decoys.",
+    "weapon_policy_contract": {
+      "schema_version": "competition-opponent-weapons@1",
+      "scope": "Static rules per carrier type and weapon, including types absent from a particular deployment; no individual identities, positions, routes or realized inventory are published here.",
+      "counting_rule": "initial_rounds_per_carrier is the starting ammunition stock. maximum_confirmed_launches_per_carrier is the policy cap on launches confirmed from owned ammunition decreases. Each current native fire action spends one round. Remaining policy allowance is max(0, min(observed current stock, cap minus confirmed launches)); the cap is neither a salvo size nor a promise of launches or hits.",
+      "facility_reserve_rule": "reserved_rounds_for_facilities is the initial policy quota for declared fixed facilities, including recognized alternate facilities. The quota decreases by confirmed launches at facilities. Other contacts may use only allowance above the still-owed quota; this is not additional ammunition.",
+      "retry_rule": "retry_interval_ticks is the minimum interval between policy attempts for the same carrier, weapon and contact handle; native cooldown, authorization, contact freshness, range and ammunition checks still apply.",
+      "parameters": [
+        {
+          "carrier_type": "uav",
+          "weapon_ref": "weapon.loitering-munition.competition-maritime@2.1.0",
+          "ammunition_ref": "ammunition.loitering-munition.competition-maritime@2.1.0",
+          "initial_rounds_per_carrier": 1,
+          "maximum_confirmed_launches_per_carrier": 1,
+          "reserved_rounds_for_facilities": 1,
+          "retry_interval_ticks": 5,
+          "target_domains": [
+            "land",
+            "surface"
+          ]
+        },
+        {
+          "carrier_type": "uav",
+          "weapon_ref": "weapon.air-item.speed-trial@1.2.0",
+          "ammunition_ref": "ammunition.air-item.speed-trial@1.2.0",
+          "initial_rounds_per_carrier": 2,
+          "maximum_confirmed_launches_per_carrier": 2,
+          "reserved_rounds_for_facilities": 0,
+          "retry_interval_ticks": 5,
+          "target_domains": [
+            "air"
+          ]
+        },
+        {
+          "carrier_type": "usv",
+          "weapon_ref": "weapon.surface-missile@2.2.0",
+          "ammunition_ref": "ammunition.surface-missile@2.2.0",
+          "initial_rounds_per_carrier": 2,
+          "maximum_confirmed_launches_per_carrier": 2,
+          "reserved_rounds_for_facilities": 2,
+          "retry_interval_ticks": 5,
+          "target_domains": [
+            "surface",
+            "land"
+          ]
+        }
+      ]
+    }
+  },
+  "facility_weights": {
+    "facility.command": 3,
+    "facility.pier": 1
+  },
+  "score_formula": "0.35F + 0.25N + 0.025P + 0.025G + 0.05H + 0.20T + 0.10A",
+  "terminal_contract": {
+    "breach_ends_episode": false,
+    "settlement_ticks": 1565,
+    "success": "All declared threats including future waves neutralized; no breach; F>=0.5; native combat work drained.",
+    "settlement_phase": "No new decisions after all threats neutralized, all facilities lost, or live deadline. Drain accepted commands, missiles, delayed impacts and scheduled effects; latch the natural native terminal immediately when eligible.",
+    "settlement_mode": "queue_drained",
+    "settlement_ticks_role": "Maximum native drain budget, not a mandatory idle wait.",
+    "terminal_guard": "Each terminal rule checks current native combat facts, not previous-tick score alone.",
+    "no_inactivity_shortcut": true,
+    "live_deadline_ticks": 1350,
+    "maximum_world_ticks": 1500,
+    "armed_carrier_exhaustion": "An intact carrier with spent ammunition is not a defender neutralization; it withdraws but remains live until the declared deadline unless disabled.",
+    "hard_time_limit_ticks": 1500,
+    "hard_time_limit_policy": "At 25 minutes score the current native state; pending projectiles are explicitly recorded, never counted as hits or drained.",
+    "combat_exhaustion_policy": "After all waves appear, end early only when neither side has ammunition compatible with any surviving opponent and native combat is drained.",
+    "assault_withdrawal_policy": "After all scheduled attackers are terminal or irreversibly withdraw via authenticated native status delivery, confirm 30 seconds, stop new requests and drain native combat queues. Withdrawn survivors receive no neutralization credit. Missile evasion alone is not withdrawal."
+  },
+  "status": "static_design_pending_episode_validation",
+  "own_initial_ammunition": {
+    "defender.uav-01": {
+      "ammunition.air-item.speed-trial@1.2.0": 2
+    },
+    "defender.uav-02": {
+      "ammunition.air-item.speed-trial@1.2.0": 2
+    },
+    "defender.uav-03": {
+      "ammunition.air-item.speed-trial@1.2.0": 2
+    },
+    "defender.usv-01": {
+      "ammunition.surface-missile@2.2.0": 2
+    },
+    "defender.usv-02": {
+      "ammunition.surface-missile@2.2.0": 2
+    },
+    "defender.usv-03": {
+      "ammunition.surface-missile@2.2.0": 2
+    },
+    "defender.uav-04": {
+      "ammunition.air-item.speed-trial@1.2.0": 2
+    },
+    "defender.uav-05": {
+      "ammunition.air-item.speed-trial@1.2.0": 2
+    },
+    "defender.uav-06": {
+      "ammunition.air-item.speed-trial@1.2.0": 2
+    }
+  },
+  "planned_threat_counts": {
+    "air": 6,
+    "surface": 4
+  },
+  "navigation_map": {
+    "schema_version": "competition-navigation-map@1.0",
+    "coordinate_frame": "local_m",
+    "land_regions": [
+      {
+        "schema_version": "2.0",
+        "id": "terrain.land.000",
+        "geometry_type": "polygon",
+        "coordinates_m": [
+          [
+            -3415.442982862727,
+            -890.4165608769879
+          ],
+          [
+            1897.998796544128,
+            -1887.7550463243626
+          ],
+          [
+            -338.5916772757805,
+            -435.739996134751
+          ],
+          [
+            -354.74963821394346,
+            334.785566702004
+          ],
+          [
+            -2042.8834955180682,
+            691.5738011761515
+          ],
+          [
+            -3318.7274508174046,
+            -403.72168802155596
+          ]
+        ]
+      },
+      {
+        "schema_version": "2.0",
+        "id": "terrain.land.001",
+        "geometry_type": "polygon",
+        "coordinates_m": [
+          [
+            25924.256325271886,
+            -11886.227685044552
+          ],
+          [
+            26083.688946200084,
+            -11934.02827439057
+          ],
+          [
+            26256.914630206484,
+            -11895.478334729214
+          ],
+          [
+            26347.364274967516,
+            -11756.729721404543
+          ],
+          [
+            26512.969335775433,
+            -11691.908381915073
+          ],
+          [
+            26624.841497201232,
+            -11773.683679851949
+          ],
+          [
+            28211.600065596882,
+            -12060.810042455121
+          ],
+          [
+            28298.411591287328,
+            -12025.432708281276
+          ],
+          [
+            28309.952905912207,
+            -11964.763585798668
+          ],
+          [
+            28333.909743386095,
+            -12005.395199938455
+          ],
+          [
+            28463.310221208234,
+            -11946.763224137438
+          ],
+          [
+            28464.58179680558,
+            -11995.587952799648
+          ],
+          [
+            28725.201811985164,
+            -12120.210122742885
+          ],
+          [
+            29799.312315691797,
+            -12338.173685715534
+          ],
+          [
+            30154.797168679575,
+            -12307.193471427994
+          ],
+          [
+            30879.31268692359,
+            -12413.770751913165
+          ],
+          [
+            31181.806392961058,
+            -12345.609827700418
+          ],
+          [
+            32150.791150218764,
+            -12381.799794157852
+          ],
+          [
+            32624.991713854273,
+            -12201.27297593827
+          ],
+          [
+            32811.2951996663,
+            -11974.504041243006
+          ],
+          [
+            32853.53093635388,
+            -12043.199299011478
+          ],
+          [
+            33193.244719777875,
+            -12076.917972772895
+          ],
+          [
+            33672.275504607416,
+            -11907.612159225895
+          ],
+          [
+            34016.24553412954,
+            -11439.446908745045
+          ],
+          [
+            33966.5216300333,
+            -11255.035040297253
+          ],
+          [
+            34221.39306386562,
+            -11211.742890328054
+          ],
+          [
+            34432.13022799991,
+            -11077.84780680174
+          ],
+          [
+            34551.86143304965,
+            -10919.195268523175
+          ],
+          [
+            34539.55187483376,
+            -10830.295523175324
+          ],
+          [
+            34475.76999607716,
+            -10830.674009444489
+          ],
+          [
+            34427.04392560929,
+            -10621.02601243319
+          ],
+          [
+            34274.01333460067,
+            -10689.420707576963
+          ],
+          [
+            34188.19081215177,
+            -10667.401712297804
+          ],
+          [
+            34434.75285266974,
+            -10565.911732541223
+          ],
+          [
+            34662.66511775751,
+            -10561.714987738313
+          ],
+          [
+            34867.432940891485,
+            -10403.073581408958
+          ],
+          [
+            34960.31094182853,
+            -10396.32762026715
+          ],
+          [
+            34978.21013444139,
+            -10451.453032107538
+          ],
+          [
+            34918.90526143471,
+            -10505.46524904043
+          ],
+          [
+            34951.356930329945,
+            -10594.353862439073
+          ],
+          [
+            35327.32827905563,
+            -10628.105932047329
+          ],
+          [
+            35539.41649226242,
+            -10396.294224419522
+          ],
+          [
+            35584.38081825295,
+            -10478.882154639197
+          ],
+          [
+            35678.68934173763,
+            -10450.150594065854
+          ],
+          [
+            35752.12283249549,
+            -10196.831960816196
+          ],
+          [
+            35991.51459950538,
+            -10049.42269110784
+          ],
+          [
+            36156.04235320978,
+            -9982.475149344684
+          ],
+          [
+            36518.76812279397,
+            -9963.272537183077
+          ],
+          [
+            36575.53867499278,
+            -10092.180507521314
+          ],
+          [
+            36666.42983905865,
+            -9995.833488240161
+          ],
+          [
+            36764.67671474087,
+            -10144.94594615778
+          ],
+          [
+            36733.37299603747,
+            -10285.720574214838
+          ],
+          [
+            36853.44858614451,
+            -10231.708357281947
+          ],
+          [
+            36915.04935953612,
+            -10311.15707786095
+          ],
+          [
+            37017.13745316958,
+            -10294.615001529544
+          ],
+          [
+            37087.18890605342,
+            -10495.980828425534
+          ],
+          [
+            37059.97365611229,
+            -10693.918015004572
+          ],
+          [
+            37167.827991864164,
+            -10813.753446843919
+          ],
+          [
+            37148.957456780896,
+            -10937.40713721701
+          ],
+          [
+            37232.969750080076,
+            -10963.110807640984
+          ],
+          [
+            37397.94785347488,
+            -10819.876018837118
+          ],
+          [
+            37258.41009241752,
+            -10656.058256185503
+          ],
+          [
+            37300.96372300444,
+            -10425.52672270175
+          ],
+          [
+            37517.36999501085,
+            -10320.27414415668
+          ],
+          [
+            37455.84869509439,
+            -10122.682047999178
+          ],
+          [
+            37492.58310124446,
+            -10000.297399820933
+          ],
+          [
+            37637.666344769685,
+            -9813.848384691548
+          ],
+          [
+            37705.095172983696,
+            -9816.430996877283
+          ],
+          [
+            37757.70661333193,
+            -9736.358887149672
+          ],
+          [
+            37703.67348082288,
+            -9664.413100250018
+          ],
+          [
+            37859.0882760784,
+            -9495.085022804598
+          ],
+          [
+            37932.15089061974,
+            -9518.061365704694
+          ],
+          [
+            37887.274868489934,
+            -9569.257199520032
+          ],
+          [
+            37998.85562717437,
+            -9573.030930258523
+          ],
+          [
+            38027.47490850518,
+            -9495.32992568404
+          ],
+          [
+            38064.659664346924,
+            -9585.34286594018
+          ],
+          [
+            38228.10128056223,
+            -9605.235658944861
+          ],
+          [
+            38348.33581761831,
+            -9563.813676420697
+          ],
+          [
+            38453.09068785197,
+            -9408.088840749408
+          ],
+          [
+            38512.31608738475,
+            -9451.01363639944
+          ],
+          [
+            38513.69362761521,
+            -9543.798431975505
+          ],
+          [
+            38605.997653456325,
+            -9497.656503041917
+          ],
+          [
+            38772.01774241112,
+            -9540.25847216883
+          ],
+          [
+            38877.15231924685,
+            -9670.791707072662
+          ],
+          [
+            39093.125902333995,
+            -9797.695926576936
+          ],
+          [
+            41999.9999999998,
+            -9797.695926576936
+          ],
+          [
+            41999.9999999998,
+            -22000.000000000357
+          ],
+          [
+            -22000.00000000026,
+            -22000.000000000357
+          ],
+          [
+            -22000.00000000026,
+            -3034.8810135983554
+          ],
+          [
+            -19104.72575256664,
+            -2640.743224495591
+          ],
+          [
+            -18146.49640557167,
+            -2177.3647121202134
+          ],
+          [
+            -18055.154891814123,
+            -2052.531035144372
+          ],
+          [
+            -17917.639289171468,
+            -1640.1145856533085
+          ],
+          [
+            -18057.67155185085,
+            -1610.5926566948006
+          ],
+          [
+            -18142.981911905328,
+            -1422.941391065035
+          ],
+          [
+            -17909.170948908082,
+            -1081.902999070274
+          ],
+          [
+            -17853.30992647692,
+            -1120.965008389725
+          ],
+          [
+            -17677.355653167575,
+            -1086.7231330217924
+          ],
+          [
+            -17261.506280840735,
+            -862.8485050877563
+          ],
+          [
+            -16723.974188137792,
+            -428.7804146374897
+          ],
+          [
+            -16405.61227828899,
+            -63.262866617554046
+          ],
+          [
+            -16135.896965432921,
+            395.4513590944465
+          ],
+          [
+            -16067.373169342996,
+            615.7860272210186
+          ],
+          [
+            -15971.210264779487,
+            991.1553501765967
+          ],
+          [
+            -15988.46483920685,
+            1408.7704198875522
+          ],
+          [
+            -16206.001400633959,
+            1406.1655438026057
+          ],
+          [
+            -16320.257766304154,
+            1197.7309292416885
+          ],
+          [
+            -16271.037194216759,
+            1589.2415783610872
+          ],
+          [
+            -16610.229984860758,
+            1598.7927906712391
+          ],
+          [
+            -16819.586962408648,
+            1281.8712896327922
+          ],
+          [
+            -16851.944143412296,
+            1338.72819627977
+          ],
+          [
+            -16628.25280287787,
+            1656.3672313100142
+          ],
+          [
+            -16660.987044128902,
+            1805.9806269357302
+          ],
+          [
+            -16620.67633160974,
+            1983.7578537330164
+          ],
+          [
+            -16570.722837476133,
+            1998.3184431280827
+          ],
+          [
+            -16528.566574262444,
+            1891.2736207816533
+          ],
+          [
+            -16460.08693010288,
+            1875.0988987694134
+          ],
+          [
+            -16053.218060433846,
+            1859.157947687408
+          ],
+          [
+            -16034.700740794713,
+            1776.4141701811752
+          ],
+          [
+            -15221.378029603527,
+            1708.8432392694085
+          ],
+          [
+            -14768.458696453636,
+            1809.7098298773813
+          ],
+          [
+            -13974.554004283664,
+            2090.958523366796
+          ],
+          [
+            -13675.786721177514,
+            2276.3166074863143
+          ],
+          [
+            -13491.161008722876,
+            2483.0257699403373
+          ],
+          [
+            -13459.830798861512,
+            2590.8609606719347
+          ],
+          [
+            -13675.5394703665,
+            3036.2613752852944
+          ],
+          [
+            -13438.982257293917,
+            3132.619526515658
+          ],
+          [
+            -13209.595317728155,
+            3341.3658356512756
+          ],
+          [
+            -13159.244456220064,
+            3239.33039038976
+          ],
+          [
+            -13003.520597452036,
+            3177.5480729996566
+          ],
+          [
+            -12917.733396547928,
+            3207.5041479725865
+          ],
+          [
+            -12820.758096463058,
+            3125.1277247855187
+          ],
+          [
+            -12666.897449160686,
+            3307.6582938390666
+          ],
+          [
+            -12516.966323670285,
+            3139.4322793519327
+          ],
+          [
+            -12519.677252200836,
+            2880.5142757163776
+          ],
+          [
+            -12274.907780060195,
+            2809.5258364368683
+          ],
+          [
+            -12191.257532591973,
+            2693.119044914474
+          ],
+          [
+            -12200.06142752709,
+            2547.2459841788273
+          ],
+          [
+            -11915.466914102482,
+            2561.327899764217
+          ],
+          [
+            -11637.274430596202,
+            2651.8195138300325
+          ],
+          [
+            -11281.586478727766,
+            2884.6442288248218
+          ],
+          [
+            -11104.00741437695,
+            3123.123973950762
+          ],
+          [
+            -11405.830011070957,
+            3373.793203319429
+          ],
+          [
+            -11242.688627983842,
+            3471.030778527054
+          ],
+          [
+            -11371.868346152933,
+            3802.2953192298473
+          ],
+          [
+            -11334.692420698022,
+            3955.1035842414904
+          ],
+          [
+            -11401.60025613205,
+            4132.257421890167
+          ],
+          [
+            -11206.174981484308,
+            4285.766999694094
+          ],
+          [
+            -11325.129112557473,
+            4387.04547241807
+          ],
+          [
+            -11318.762404183932,
+            4572.537139926519
+          ],
+          [
+            -11218.917228618213,
+            4592.786155301947
+          ],
+          [
+            -11175.197987067071,
+            4690.858626690787
+          ],
+          [
+            -11230.220122818911,
+            4843.35519712852
+          ],
+          [
+            -11459.633553542637,
+            4916.525498426972
+          ],
+          [
+            -11457.081571961126,
+            4958.737849335512
+          ],
+          [
+            -11230.220122818911,
+            5004.779590727798
+          ],
+          [
+            -11342.825206289675,
+            5203.173187219676
+          ],
+          [
+            -11543.751811473667,
+            5365.499268694634
+          ],
+          [
+            -12085.257577918937,
+            5998.172462668594
+          ],
+          [
+            -12148.094605364353,
+            6175.80497412774
+          ],
+          [
+            -11763.96397988654,
+            5830.302670552207
+          ],
+          [
+            -11614.38606984026,
+            5822.30993111318
+          ],
+          [
+            -11436.85998780538,
+            5708.797446352013
+          ],
+          [
+            -11345.29771439604,
+            5501.899040763013
+          ],
+          [
+            -10981.635923884985,
+            5261.66044768255
+          ],
+          [
+            -10893.552822597201,
+            5282.9892621186345
+          ],
+          [
+            -10787.764797190392,
+            5102.629423134822
+          ],
+          [
+            -10900.352219890017,
+            4971.083180864799
+          ],
+          [
+            -10752.716994783286,
+            4883.6751166936065
+          ],
+          [
+            -10592.20706675283,
+            4462.987629037237
+          ],
+          [
+            -10498.914037668914,
+            4406.1812928852105
+          ],
+          [
+            -10486.427871731586,
+            4293.737475234701
+          ],
+          [
+            -10404.81744345046,
+            4311.682177150673
+          ],
+          [
+            -10354.369447694822,
+            4210.403704426697
+          ],
+          [
+            -10029.667320631703,
+            4254.2079240539915
+          ],
+          [
+            -9868.03593356612,
+            4339.300542816519
+          ],
+          [
+            -8994.4370068966,
+            4345.523302351812
+          ],
+          [
+            -9262.183143653901,
+            4324.973724351686
+          ],
+          [
+            -9262.183143653901,
+            4280.557247524992
+          ],
+          [
+            -9731.279744127638,
+            4286.479444434795
+          ],
+          [
+            -9878.137895257798,
+            4095.477462131754
+          ],
+          [
+            -9597.075536270673,
+            3855.70641091255
+          ],
+          [
+            -9394.859694716943,
+            3585.055332946317
+          ],
+          [
+            -9084.816008569313,
+            3591.233564685565
+          ],
+          [
+            -8701.515439385254,
+            3492.059030337649
+          ],
+          [
+            -8520.819248742582,
+            3525.020731561527
+          ],
+          [
+            -8189.927021026102,
+            3708.83147475992
+          ],
+          [
+            -8120.670302891216,
+            3831.2940465810493
+          ],
+          [
+            -8217.51314718501,
+            3935.6894650472773
+          ],
+          [
+            -8159.585814407534,
+            3987.7201950438316
+          ],
+          [
+            -8288.050271304064,
+            4182.451380288525
+          ],
+          [
+            -8174.535658064397,
+            4316.691554236378
+          ],
+          [
+            -8011.853455054519,
+            4313.596872392545
+          ],
+          [
+            -7894.833178536588,
+            4379.5870665347675
+          ],
+          [
+            -7851.882180573936,
+            4231.376296492037
+          ],
+          [
+            -7580.983595981242,
+            4337.608486556462
+          ],
+          [
+            -7233.569715883615,
+            4302.275680178661
+          ],
+          [
+            -7173.461277741146,
+            4449.451178956781
+          ],
+          [
+            -7065.4656558113775,
+            4435.925860824744
+          ],
+          [
+            -6885.758468411503,
+            4619.959243004161
+          ],
+          [
+            -6877.7228170661365,
+            4737.267722402236
+          ],
+          [
+            -7110.986296126679,
+            5023.459001282889
+          ],
+          [
+            -7052.13177280916,
+            5163.009114941149
+          ],
+          [
+            -7287.611678779484,
+            5293.931968063353
+          ],
+          [
+            -7296.01820634137,
+            5502.678277198971
+          ],
+          [
+            -7416.226252239483,
+            5499.82849823458
+          ],
+          [
+            -7370.573156133106,
+            5578.308739243438
+          ],
+          [
+            -7432.8008869378145,
+            5907.847827839338
+          ],
+          [
+            -7357.548336644654,
+            6025.77969638523
+          ],
+          [
+            -7273.3594356240465,
+            6053.286742560563
+          ],
+          [
+            -7200.517580733242,
+            6005.820111686083
+          ],
+          [
+            -7170.670875735445,
+            5814.150212438386
+          ],
+          [
+            -7033.384863131408,
+            5939.941237035164
+          ],
+          [
+            -6919.985044911676,
+            5778.216280810396
+          ],
+          [
+            -6681.2290657017065,
+            5808.161223834116
+          ],
+          [
+            -6669.299214087908,
+            5736.282228628136
+          ],
+          [
+            -6764.791009309211,
+            5610.49120403215
+          ],
+          [
+            -6693.167747701075,
+            5496.6892885939105
+          ],
+          [
+            -6490.236644873529,
+            5394.854218416583
+          ],
+          [
+            -6484.267303873216,
+            5185.195089456077
+          ],
+          [
+            -6609.605804092315,
+            5017.47001267783
+          ],
+          [
+            -6478.297962874159,
+            4813.788740373965
+          ],
+          [
+            -6358.9199732685465,
+            4951.568874128492
+          ],
+          [
+            -6224.442023442601,
+            4882.161171619318
+          ],
+          [
+            -6072.418096447924,
+            4933.601908314892
+          ],
+          [
+            -6023.656704436511,
+            5108.184265725461
+          ],
+          [
+            -5921.224225745747,
+            5043.9306556401325
+          ],
+          [
+            -5790.931878928352,
+            5102.139617375935
+          ],
+          [
+            -5632.01142039332,
+            4937.353375154172
+          ],
+          [
+            -5407.569497041539,
+            5021.254875365527
+          ],
+          [
+            -5183.074591372576,
+            4963.557983287031
+          ],
+          [
+            -5096.510316493148,
+            5053.003194139026
+          ],
+          [
+            -4926.419419549749,
+            5017.47001267783
+          ],
+          [
+            -4926.419419549749,
+            4927.612919709832
+          ],
+          [
+            -5129.359352762866,
+            4837.755826741834
+          ],
+          [
+            -5189.043932371634,
+            4705.964681591577
+          ],
+          [
+            -5289.904602338112,
+            4655.581480058242
+          ],
+          [
+            -5357.845592945295,
+            4465.470053681671
+          ],
+          [
+            -5645.301151465179,
+            4422.411674642706
+          ],
+          [
+            -5613.84731619831,
+            3847.0234906304495
+          ],
+          [
+            -5572.247367309405,
+            3808.8297733390505
+          ],
+          [
+            -5527.124094368587,
+            3866.003463811032
+          ],
+          [
+            -5499.423173190994,
+            3777.3597532918325
+          ],
+          [
+            -5268.614541465675,
+            3901.859471795347
+          ],
+          [
+            -5200.2761834840085,
+            3834.3219367312076
+          ],
+          [
+            -5087.185428776788,
+            3861.5506841786787
+          ],
+          [
+            -5011.526680723575,
+            3678.6304969075472
+          ],
+          [
+            -4984.5940031369855,
+            3345.9744625701874
+          ],
+          [
+            -4884.634032552584,
+            3453.8207852502032
+          ],
+          [
+            -4822.830160280325,
+            3404.617570319619
+          ],
+          [
+            -4694.109622187213,
+            3557.336779739169
+          ],
+          [
+            -4548.885092484094,
+            3362.0378650911234
+          ],
+          [
+            -4505.227663635703,
+            3427.9056077936243
+          ],
+          [
+            -4363.888503814192,
+            3417.263464473604
+          ],
+          [
+            -4306.6587715393935,
+            3358.074891219239
+          ],
+          [
+            -4221.313089940127,
+            3433.3491308937514
+          ],
+          [
+            -4040.0076026567476,
+            3083.4719713303307
+          ],
+          [
+            -3804.2009724015174,
+            3115.1646303593643
+          ],
+          [
+            -3718.8552908035026,
+            2938.6119179608763
+          ],
+          [
+            -3382.8944214687886,
+            2734.8193261657084
+          ],
+          [
+            -3498.581309686623,
+            2709.0599959964798
+          ],
+          [
+            -3858.7109457601928,
+            2786.3268545557485
+          ],
+          [
+            -3964.7815435215507,
+            2617.933860832846
+          ],
+          [
+            -3876.4688521951484,
+            2455.240425038723
+          ],
+          [
+            -3914.4571731726783,
+            2361.1309275217695
+          ],
+          [
+            -3965.276045143576,
+            2305.905328139288
+          ],
+          [
+            -4210.937386279472,
+            2381.880880606084
+          ],
+          [
+            -4275.8230632988025,
+            2255.4219390646504
+          ],
+          [
+            -4263.884381299433,
+            2027.7067886976602
+          ],
+          [
+            -4093.08705346904,
+            1705.793085221622
+          ],
+          [
+            -3868.1153069504453,
+            1758.0353222507824
+          ],
+          [
+            -3828.166640260973,
+            1817.9697360942696
+          ],
+          [
+            -3788.5270370852654,
+            1648.9422212735494
+          ],
+          [
+            -3714.7668220412415,
+            1644.1777470680784
+          ],
+          [
+            -3646.1988740209576,
+            1559.8087049954634
+          ],
+          [
+            -3696.8587990428155,
+            1218.6701254593993
+          ],
+          [
+            -3764.04037644582,
+            1138.764994968347
+          ],
+          [
+            -3869.9520272581367,
+            1122.7795160902947
+          ],
+          [
+            -3995.2905274772374,
+            1224.6591140644598
+          ],
+          [
+            -4217.056843843254,
+            1075.7581631794458
+          ],
+          [
+            -4610.079668116901,
+            1086.823320563886
+          ],
+          [
+            -4725.166090079599,
+            911.3170113792189
+          ],
+          [
+            -4755.772208281572,
+            728.4413519041342
+          ],
+          [
+            -4838.415791735859,
+            719.2240980663097
+          ],
+          [
+            -4794.034271226823,
+            622.3984049746875
+          ],
+          [
+            -4847.599393274318,
+            716.1516801208955
+          ],
+          [
+            -4973.0968404424575,
+            710.0068442284853
+          ],
+          [
+            -5009.310253813794,
+            528.0662684759178
+          ],
+          [
+            -5368.106501587266,
+            265.6973606257833
+          ],
+          [
+            -5874.529144080646,
+            456.42104420175383
+          ],
+          [
+            -5970.948129840738,
+            364.21510997746236
+          ],
+          [
+            -6293.875349300174,
+            276.1502608108246
+          ],
+          [
+            -6509.672324665879,
+            -46.14192893358769
+          ],
+          [
+            -6696.382008239222,
+            -64.58756855765515
+          ],
+          [
+            -6826.471256175964,
+            -155.26842575844887
+          ],
+          [
+            -7008.597969366276,
+            -106.08747472549331
+          ],
+          [
+            -7023.901028467262,
+            -267.46734052872426
+          ],
+          [
+            -6965.744105651165,
+            -433.46696520007686
+          ],
+          [
+            -6621.394369528213,
+            -448.82905492952074
+          ],
+          [
+            -6639.7615726038775,
+            -647.1113319300961
+          ],
+          [
+            -6846.366116045554,
+            -659.4121356625442
+          ],
+          [
+            -6828.934933896758,
+            -932.8795967455384
+          ],
+          [
+            -6538.99803688494,
+            -1511.5183098889784
+          ],
+          [
+            -6202.940033303939,
+            -1891.618711202399
+          ],
+          [
+            -6085.266308214942,
+            -1937.9498832709653
+          ],
+          [
+            -5745.861588303462,
+            -1868.8761392333283
+          ],
+          [
+            -5822.04132913792,
+            -1651.235402783796
+          ],
+          [
+            -5768.37907284414,
+            -1632.4892005342385
+          ],
+          [
+            -5626.359973293598,
+            -1870.9132859149224
+          ],
+          [
+            -5481.868365636692,
+            -1865.4697628155866
+          ],
+          [
+            -5411.5166796259,
+            -1792.0434266876903
+          ],
+          [
+            -5229.434118365948,
+            -1861.67376817947
+          ],
+          [
+            -4886.073385485794,
+            -2070.7206399397865
+          ],
+          [
+            -4742.129261766842,
+            -2273.589279961646
+          ],
+          [
+            -4680.051647525605,
+            -2463.021657444353
+          ],
+          [
+            -4847.219686672228,
+            -2132.05767936705
+          ],
+          [
+            -5092.501321206035,
+            -1957.2081551778285
+          ],
+          [
+            -5206.713534945871,
+            -2053.91139683052
+          ],
+          [
+            -5243.032912951575,
+            -2214.8014568732824
+          ],
+          [
+            -5307.547713754386,
+            -2262.379407239065
+          ],
+          [
+            -5282.7431592156045,
+            -2429.2361919884693
+          ],
+          [
+            -5441.345723851301,
+            -2433.3661450969134
+          ],
+          [
+            -5436.065152966844,
+            -2571.435709527721
+          ],
+          [
+            -5312.519221125077,
+            -2545.4537403766767
+          ],
+          [
+            -5188.461126890145,
+            -2834.9512081337703
+          ],
+          [
+            -5338.074358481212,
+            -3021.6451261433904
+          ],
+          [
+            -5073.931019249717,
+            -2901.6983748135317
+          ],
+          [
+            -5000.091330731801,
+            -2833.838013226275
+          ],
+          [
+            -5048.375881893582,
+            -2763.317115808815
+          ],
+          [
+            -4879.477087073634,
+            -2701.5681942655497
+          ],
+          [
+            -4826.221028539907,
+            -2454.6615636861616
+          ],
+          [
+            -4776.2145520891145,
+            -2732.5484085530898
+          ],
+          [
+            -4829.267511742188,
+            -2867.9685691029044
+          ],
+          [
+            -5242.317651677756,
+            -3254.1915424103167
+          ],
+          [
+            -4938.614182745701,
+            -2953.2615629488273
+          ],
+          [
+            -4979.092672600735,
+            -2834.0383883096715
+          ],
+          [
+            -5100.007149385842,
+            -2992.3013083698593
+          ],
+          [
+            -5313.728984019667,
+            -3139.1428486756513
+          ],
+          [
+            -5424.576820657886,
+            -2979.1656084569877
+          ],
+          [
+            -5658.74099910051,
+            -3017.593096678621
+          ],
+          [
+            -5776.582501525371,
+            -3477.3203297568134
+          ],
+          [
+            -5736.792781784939,
+            -3933.99740878722
+          ],
+          [
+            -5464.37537078389,
+            -4802.834902479246
+          ],
+          [
+            -5260.667193981024,
+            -5004.601479542029
+          ],
+          [
+            -5243.986594649582,
+            -5324.177473711774
+          ],
+          [
+            -4708.326543799117,
+            -6253.138624381474
+          ],
+          [
+            -4556.814779197604,
+            -6470.0112563450475
+          ],
+          [
+            -4094.9326041623012,
+            -6549.137150400932
+          ],
+          [
+            -3977.311861389233,
+            -6632.838275528101
+          ],
+          [
+            -3886.853386242628,
+            -7005.970076717898
+          ],
+          [
+            -3690.3066525610157,
+            -7349.936171319933
+          ],
+          [
+            -3731.394439056755,
+            -7813.8267533541975
+          ],
+          [
+            -3819.0625121976614,
+            -7821.786096945596
+          ],
+          [
+            -3831.8489112619254,
+            -7947.833156371027
+          ],
+          [
+            -3650.79067478956,
+            -8525.22509121725
+          ],
+          [
+            -3438.543514633732,
+            -8502.00384543771
+          ],
+          [
+            -2625.3532592336237,
+            -9116.754601394909
+          ],
+          [
+            -1874.9647097341417,
+            -9189.524152526568
+          ],
+          [
+            -1593.867029202228,
+            -9119.125706548832
+          ],
+          [
+            -1524.186452534896,
+            -9035.42458142087
+          ],
+          [
+            -1598.45882997083,
+            -8642.834133240814
+          ],
+          [
+            -1505.9252140923447,
+            -8547.355405986922
+          ],
+          [
+            -1480.0521828368742,
+            -8572.758513786195
+          ],
+          [
+            -1266.9837967728602,
+            -8300.738206083815
+          ],
+          [
+            -1593.43434028421,
+            -7981.384850895886
+          ],
+          [
+            -931.146552844907,
+            -7273.448549195831
+          ],
+          [
+            -773.9303588264902,
+            -7293.942467451494
+          ],
+          [
+            -475.1100934044096,
+            -6954.5404719715325
+          ],
+          [
+            -986.3364659326135,
+            -6454.259548397229
+          ],
+          [
+            -777.6921033025911,
+            -6238.544639137988
+          ],
+          [
+            -184.32547932769643,
+            -6820.7121801396825
+          ],
+          [
+            23.815551295985216,
+            -6602.2922072541905
+          ],
+          [
+            81.97247411082589,
+            -6709.9715506984385
+          ],
+          [
+            414.0832951074672,
+            -6410.021182756304
+          ],
+          [
+            456.93715882257607,
+            -6453.090693744479
+          ],
+          [
+            1340.0022593838455,
+            -6400.792796969271
+          ],
+          [
+            1353.7776616909066,
+            -6305.43652115589
+          ],
+          [
+            1591.7830580835234,
+            -6300.349220426509
+          ],
+          [
+            1549.6797771870226,
+            -6085.480339297692
+          ],
+          [
+            1479.2751088590471,
+            -6019.34542981733
+          ],
+          [
+            1436.4212451451929,
+            -5710.200071934998
+          ],
+          [
+            1633.851017435235,
+            -5682.514914574687
+          ],
+          [
+            1837.4002472890597,
+            -5879.3834340430685
+          ],
+          [
+            1924.635631511948,
+            -5885.539401883897
+          ],
+          [
+            2930.1428656547614,
+            -5751.733373950465
+          ],
+          [
+            2883.1210597047534,
+            -5570.438451244135
+          ],
+          [
+            2555.6815129506067,
+            -5611.82703792146
+          ],
+          [
+            2547.2573246175807,
+            -5330.478156889952
+          ],
+          [
+            2613.4940507081474,
+            -5312.232892349281
+          ],
+          [
+            2607.4099146904086,
+            -4807.276550161599
+          ],
+          [
+            2704.897377168445,
+            -4767.012290341768
+          ],
+          [
+            2819.418654422048,
+            -4820.824132191265
+          ],
+          [
+            2816.3721712197666,
+            -5385.625832629548
+          ],
+          [
+            3062.7664344018754,
+            -5414.6802197260085
+          ],
+          [
+            3069.9720294534864,
+            -5579.711364827214
+          ],
+          [
+            3136.6149533053613,
+            -5503.468645583347
+          ],
+          [
+            3133.8775336168455,
+            -5363.206087183596
+          ],
+          [
+            3705.4772558696714,
+            -5352.296777085715
+          ],
+          [
+            3743.924756923183,
+            -5225.080863007533
+          ],
+          [
+            4078.8701318571366,
+            -5288.88919513002
+          ],
+          [
+            4121.238324335789,
+            -5367.926033593021
+          ],
+          [
+            4276.264582602389,
+            -5415.804546583503
+          ],
+          [
+            4269.774248823343,
+            -5334.663769744442
+          ],
+          [
+            4175.924905415902,
+            -5322.930695414557
+          ],
+          [
+            4160.727810948026,
+            -4602.60453438917
+          ],
+          [
+            3980.587934630133,
+            -4536.88150702481
+          ],
+          [
+            4298.075636254818,
+            -4622.786758070132
+          ],
+          [
+            4306.190761075333,
+            -5443.734606823257
+          ],
+          [
+            4426.416467745841,
+            -5660.306676161341
+          ],
+          [
+            4672.148451971315,
+            -5825.649515837248
+          ],
+          [
+            4809.593411524394,
+            -5660.807613870228
+          ],
+          [
+            4829.523592938771,
+            -5755.173146215835
+          ],
+          [
+            5018.590989598541,
+            -5807.515570787089
+          ],
+          [
+            5258.839304058902,
+            -5981.741705826911
+          ],
+          [
+            5379.409395786711,
+            -6143.422134255632
+          ],
+          [
+            5475.810720775663,
+            -6102.757124269008
+          ],
+          [
+            5576.38881838634,
+            -6206.228590961137
+          ],
+          [
+            5775.328586699168,
+            -6137.75597217369
+          ],
+          [
+            5860.674268298436,
+            -5995.734565820207
+          ],
+          [
+            6073.513064322577,
+            -6074.404049963251
+          ],
+          [
+            6189.720945320401,
+            -6292.000258617529
+          ],
+          [
+            6348.500117677533,
+            -6342.405724048491
+          ],
+          [
+            6377.702204489831,
+            -6453.046165947641
+          ],
+          [
+            6509.107179955532,
+            -6539.44122275264
+          ],
+          [
+            6565.824749838419,
+            -6672.924424162953
+          ],
+          [
+            6676.796211882145,
+            -6663.373211852802
+          ],
+          [
+            6754.653726072744,
+            -6812.786232395122
+          ],
+          [
+            6802.638044107585,
+            -6853.017096368114
+          ],
+          [
+            6861.730987849293,
+            -6822.315180807645
+          ],
+          [
+            7140.771188420466,
+            -7344.225481442735
+          ],
+          [
+            7023.000329085182,
+            -7407.232313231637
+          ],
+          [
+            6999.873547903798,
+            -7362.481877932614
+          ],
+          [
+            6950.873735468197,
+            -7387.86272183347
+          ],
+          [
+            6974.918876802801,
+            -7433.036171197703
+          ],
+          [
+            6851.2669803279205,
+            -7499.104288982809
+          ],
+          [
+            6633.182934962857,
+            -7440.438917334958
+          ],
+          [
+            6536.463716075824,
+            -7492.091161063138
+          ],
+          [
+            6441.210341278707,
+            -7429.607530880751
+          ],
+          [
+            6398.930452660772,
+            -7454.253666142485
+          ],
+          [
+            6466.209164311319,
+            -7585.054067824968
+          ],
+          [
+            6317.196398974134,
+            -7664.480524505553
+          ],
+          [
+            6202.2512631880845,
+            -7464.517323193339
+          ],
+          [
+            6144.827262418202,
+            -7481.159587067627
+          ],
+          [
+            6205.553827586948,
+            -7620.431401998816
+          ],
+          [
+            6152.271277895256,
+            -7646.090544626741
+          ],
+          [
+            6130.504376174442,
+            -7549.198059839863
+          ],
+          [
+            6025.413951269055,
+            -7562.756773818738
+          ],
+          [
+            6042.4919179749795,
+            -7723.390799033639
+          ],
+          [
+            6263.542973067179,
+            -7721.097617523391
+          ],
+          [
+            6352.341335628782,
+            -7859.868494745691
+          ],
+          [
+            6319.033119281827,
+            -7930.367128265523
+          ],
+          [
+            6101.629013645793,
+            -7934.775380101039
+          ],
+          [
+            6072.700668802471,
+            -8506.679264051088
+          ],
+          [
+            6252.407856202346,
+            -8869.758915222637
+          ],
+          [
+            5993.509766310519,
+            -8985.497789800376
+          ],
+          [
+            5996.556249512801,
+            -9066.894601468088
+          ],
+          [
+            5821.608640218647,
+            -9315.326309071765
+          ],
+          [
+            5861.283564939144,
+            -9385.891734285271
+          ],
+          [
+            6180.846407295709,
+            -9126.261285908224
+          ],
+          [
+            6153.67530928493,
+            -9031.205572720333
+          ],
+          [
+            6306.202568287203,
+            -8999.47951784367
+          ],
+          [
+            6284.1619245961565,
+            -9069.477213654616
+          ],
+          [
+            6384.969612245451,
+            -9199.464983054306
+          ],
+          [
+            6682.350524734324,
+            -9477.596730800677
+          ],
+          [
+            7166.273343460673,
+            -9798.152336488984
+          ],
+          [
+            7463.883845988164,
+            -9937.14585269389
+          ],
+          [
+            7531.515773082835,
+            -9903.994908335826
+          ],
+          [
+            7619.899107497559,
+            -9990.189590056638
+          ],
+          [
+            7722.967373986997,
+            -9966.600989957935
+          ],
+          [
+            7736.495525483042,
+            -9866.279864854894
+          ],
+          [
+            7755.666293693243,
+            -9960.567473556826
+          ],
+          [
+            7843.917172316893,
+            -9969.35058138023
+          ],
+          [
+            7904.793854049108,
+            -10053.819810994148
+          ],
+          [
+            8043.678166536652,
+            -9942.177493678015
+          ],
+          [
+            8221.75173250949,
+            -10149.665892567205
+          ],
+          [
+            8412.090704766602,
+            -10239.033179776317
+          ],
+          [
+            8489.912897412412,
+            -10233.700976167493
+          ],
+          [
+            8490.248452084143,
+            -10076.528987116382
+          ],
+          [
+            8553.862553506131,
+            -10004.304901489655
+          ],
+          [
+            8990.86953091433,
+            -9910.473702699774
+          ],
+          [
+            9009.828369858305,
+            -9984.712671109673
+          ],
+          [
+            8941.648958825677,
+            -9999.406843894461
+          ],
+          [
+            9015.303209236592,
+            -10009.191827135639
+          ],
+          [
+            9059.137245806418,
+            -10216.69135797404
+          ],
+          [
+            8902.230115301765,
+            -10252.647553500448
+          ],
+          [
+            9036.549118178673,
+            -10426.907084387896
+          ],
+          [
+            9070.298853829212,
+            -10710.382167693095
+          ],
+          [
+            9189.676843434825,
+            -10788.4059987899
+          ],
+          [
+            9395.839867572915,
+            -10795.652897640597
+          ],
+          [
+            9434.87900449474,
+            -10587.97525561643
+          ],
+          [
+            9884.107236256854,
+            -10616.11682288958
+          ],
+          [
+            10152.356705021748,
+            -10741.99690307845
+          ],
+          [
+            10351.172847929072,
+            -10722.950138203403
+          ],
+          [
+            10417.444895564427,
+            -10832.967190954736
+          ],
+          [
+            10602.58277041223,
+            -10843.54254258029
+          ],
+          [
+            10962.624102625081,
+            -10990.295027292406
+          ],
+          [
+            11020.622078489629,
+            -11169.530539418725
+          ],
+          [
+            11110.674355877434,
+            -11223.598416096873
+          ],
+          [
+            12044.575989183253,
+            -11245.405904343426
+          ],
+          [
+            12145.29537297183,
+            -11238.793526590547
+          ],
+          [
+            12166.099762609067,
+            -11109.985743793612
+          ],
+          [
+            12244.928619271323,
+            -11095.681189226407
+          ],
+          [
+            12263.534242771175,
+            -11141.912173752879
+          ],
+          [
+            12401.482534331848,
+            -11095.681189226407
+          ],
+          [
+            12425.651301071961,
+            -11150.327927257118
+          ],
+          [
+            12593.870156162877,
+            -11069.932991006388
+          ],
+          [
+            12523.924667912139,
+            -10963.667405095124
+          ],
+          [
+            12597.269854809285,
+            -10914.675697197148
+          ],
+          [
+            12588.854496861828,
+            -10859.461229763085
+          ],
+          [
+            12825.332236459264,
+            -10846.247606206538
+          ],
+          [
+            12821.393884261726,
+            -10560.902355455517
+          ],
+          [
+            12929.115764222519,
+            -10615.07041967576
+          ],
+          [
+            12977.727039670463,
+            -10805.293165543633
+          ],
+          [
+            13141.94572986109,
+            -10765.66342682083
+          ],
+          [
+            13239.159450371404,
+            -10805.293165543633
+          ],
+          [
+            13218.14313146669,
+            -10951.934330765238
+          ],
+          [
+            13606.556494199338,
+            -11004.477130419888
+          ],
+          [
+            13988.550166241264,
+            -10884.441323497145
+          ],
+          [
+            14042.274235237795,
+            -10926.45329932308
+          ],
+          [
+            14056.79138997664,
+            -11094.801765249145
+          ],
+          [
+            14251.589707211282,
+            -11072.860693614452
+          ],
+          [
+            14297.295785633587,
+            -10688.942033766494
+          ],
+          [
+            14815.30389468221,
+            -10832.544176889523
+          ],
+          [
+            15235.047467276225,
+            -10777.49668869202
+          ],
+          [
+            15244.928669316105,
+            -10824.139555334494
+          ],
+          [
+            15455.12717989802,
+            -10748.074947275607
+          ],
+          [
+            15772.685524612283,
+            -10529.28762007016
+          ],
+          [
+            16085.713881259442,
+            -10717.974156965327
+          ],
+          [
+            16410.813375698304,
+            -10800.87378175891
+          ],
+          [
+            16493.253860271932,
+            -10912.427043482949
+          ],
+          [
+            16477.791854221905,
+            -11141.934437651298
+          ],
+          [
+            16601.364277221637,
+            -11225.468583542697
+          ],
+          [
+            17445.187141981685,
+            -11359.664229693713
+          ],
+          [
+            17444.46305032229,
+            -11484.653753956905
+          ],
+          [
+            17504.147629932315,
+            -11526.67686173126
+          ],
+          [
+            17579.603279104875,
+            -11507.440853722024
+          ],
+          [
+            17599.383343955782,
+            -11318.130927679038
+          ],
+          [
+            17952.77539543929,
+            -11362.547404505733
+          ],
+          [
+            19085.864047868952,
+            -11298.583225095896
+          ],
+          [
+            19119.23407691866,
+            -11392.002541768985
+          ],
+          [
+            19169.735054990222,
+            -11382.774155982741
+          ],
+          [
+            19172.799198964898,
+            -11284.267538579481
+          ],
+          [
+            20554.18064758585,
+            -11070.500720408947
+          ],
+          [
+            21885.21123469872,
+            -10770.405637128673
+          ],
+          [
+            22200.28824092105,
+            -10619.211504733412
+          ],
+          [
+            22468.802621268096,
+            -10364.378926409465
+          ],
+          [
+            22588.56914786137,
+            -10049.500614751516
+          ],
+          [
+            22866.002218164722,
+            -10075.182021277862
+          ],
+          [
+            23101.844169963486,
+            -10008.301271209168
+          ],
+          [
+            23941.58739634935,
+            -9596.55273866276
+          ],
+          [
+            24277.265693328267,
+            -9255.915096835584
+          ],
+          [
+            24466.942386627485,
+            -9149.360080248041
+          ],
+          [
+            24593.27872047495,
+            -8952.04628281682
+          ],
+          [
+            24765.179846568073,
+            -8850.83460178731
+          ],
+          [
+            24731.112217016947,
+            -8787.694186609478
+          ],
+          [
+            24850.34892044466,
+            -8710.638835082817
+          ],
+          [
+            24929.12479478973,
+            -8840.136798722826
+          ],
+          [
+            24868.000862246496,
+            -8872.063228682095
+          ],
+          [
+            24973.735905337384,
+            -8983.694414049807
+          ],
+          [
+            24862.075673177802,
+            -9141.690167332134
+          ],
+          [
+            24770.893106370553,
+            -9158.410354849306
+          ],
+          [
+            24677.741363464535,
+            -9362.236342492102
+          ],
+          [
+            24548.27907293964,
+            -10071.330366895698
+          ],
+          [
+            24600.078117767764,
+            -10212.873099439505
+          ],
+          [
+            25265.24461107349,
+            -11051.709990363344
+          ],
+          [
+            26111.866708226054,
+            -11583.70583686431
+          ],
+          [
+            26176.187240535037,
+            -11671.436727558621
+          ],
+          [
+            25520.78715424926,
+            -11330.25362022651
+          ],
+          [
+            25367.315043934555,
+            -11388.841068230684
+          ],
+          [
+            25127.87029460873,
+            -11295.19911257578
+          ],
+          [
+            24825.712143242996,
+            -11532.83282957209
+          ]
+        ]
+      }
+    ],
+    "protected_regions": [
+      {
+        "schema_version": "2.0",
+        "id": "zone.competition-protected",
+        "geometry_type": "polygon",
+        "coordinates_m": [
+          [
+            -1500.0,
+            -1300.0
+          ],
+          [
+            1000.0,
+            -1300.0
+          ],
+          [
+            1000.0,
+            100.0
+          ],
+          [
+            -1500.0,
+            100.0
+          ]
+        ]
+      },
+      {
+        "schema_version": "2.0",
+        "id": "zone.target.facility.command",
+        "geometry_type": "polygon",
+        "coordinates_m": [
+          [
+            -900.0,
+            -200.0
+          ],
+          [
+            -905.764,
+            -141.473
+          ],
+          [
+            -922.836,
+            -85.195
+          ],
+          [
+            -950.559,
+            -33.329
+          ],
+          [
+            -987.868,
+            12.132
+          ],
+          [
+            -1033.329,
+            49.441
+          ],
+          [
+            -1085.195,
+            77.164
+          ],
+          [
+            -1141.473,
+            94.236
+          ],
+          [
+            -1200.0,
+            100.0
+          ],
+          [
+            -1258.527,
+            94.236
+          ],
+          [
+            -1314.805,
+            77.164
+          ],
+          [
+            -1366.671,
+            49.441
+          ],
+          [
+            -1412.132,
+            12.132
+          ],
+          [
+            -1449.441,
+            -33.329
+          ],
+          [
+            -1477.164,
+            -85.195
+          ],
+          [
+            -1494.236,
+            -141.473
+          ],
+          [
+            -1500.0,
+            -200.0
+          ],
+          [
+            -1494.236,
+            -258.527
+          ],
+          [
+            -1477.164,
+            -314.805
+          ],
+          [
+            -1449.441,
+            -366.671
+          ],
+          [
+            -1412.132,
+            -412.132
+          ],
+          [
+            -1366.671,
+            -449.441
+          ],
+          [
+            -1314.805,
+            -477.164
+          ],
+          [
+            -1258.527,
+            -494.236
+          ],
+          [
+            -1200.0,
+            -500.0
+          ],
+          [
+            -1141.473,
+            -494.236
+          ],
+          [
+            -1085.195,
+            -477.164
+          ],
+          [
+            -1033.329,
+            -449.441
+          ],
+          [
+            -987.868,
+            -412.132
+          ],
+          [
+            -950.559,
+            -366.671
+          ],
+          [
+            -922.836,
+            -314.805
+          ],
+          [
+            -905.764,
+            -258.527
+          ]
+        ]
+      },
+      {
+        "schema_version": "2.0",
+        "id": "zone.target.facility.pier",
+        "geometry_type": "polygon",
+        "coordinates_m": [
+          [
+            1000.0,
+            -1000.0
+          ],
+          [
+            994.236,
+            -941.473
+          ],
+          [
+            977.164,
+            -885.195
+          ],
+          [
+            949.441,
+            -833.329
+          ],
+          [
+            912.132,
+            -787.868
+          ],
+          [
+            866.671,
+            -750.559
+          ],
+          [
+            814.805,
+            -722.836
+          ],
+          [
+            758.527,
+            -705.764
+          ],
+          [
+            700.0,
+            -700.0
+          ],
+          [
+            641.473,
+            -705.764
+          ],
+          [
+            585.195,
+            -722.836
+          ],
+          [
+            533.329,
+            -750.559
+          ],
+          [
+            487.868,
+            -787.868
+          ],
+          [
+            450.559,
+            -833.329
+          ],
+          [
+            422.836,
+            -885.195
+          ],
+          [
+            405.764,
+            -941.473
+          ],
+          [
+            400.0,
+            -1000.0
+          ],
+          [
+            405.764,
+            -1058.527
+          ],
+          [
+            422.836,
+            -1114.805
+          ],
+          [
+            450.559,
+            -1166.671
+          ],
+          [
+            487.868,
+            -1212.132
+          ],
+          [
+            533.329,
+            -1249.441
+          ],
+          [
+            585.195,
+            -1277.164
+          ],
+          [
+            641.473,
+            -1294.236
+          ],
+          [
+            700.0,
+            -1300.0
+          ],
+          [
+            758.527,
+            -1294.236
+          ],
+          [
+            814.805,
+            -1277.164
+          ],
+          [
+            866.671,
+            -1249.441
+          ],
+          [
+            912.132,
+            -1212.132
+          ],
+          [
+            949.441,
+            -1166.671
+          ],
+          [
+            977.164,
+            -1114.805
+          ],
+          [
+            994.236,
+            -1058.527
+          ]
+        ]
+      }
+    ],
+    "land_constraint_domains": [
+      "surface"
+    ],
+    "description": "Public native land geometry and protected areas for this deployment. They share the observation coordinate frame. Native dynamics and collision shapes determine actual clearance; this map grants no score credit."
+  },
+  "performance_scoring": {
+    "version": "interception-performance@1.0",
+    "contact_to_neutralization_half_life_ticks": {
+      "air": 60.0,
+      "surface": 150.0
+    },
+    "timeliness": "mean 2**(-latency / domain_half_life) over the full planned threat cohort; latency starts at first valid native defender contact; unresolved or never-contacted threats receive zero",
+    "ammunition_efficiency": "neutralization_fraction * facility_integrity * min(1, nominal_rounds_for_neutralized_threats / actual_rounds_spent)",
+    "nominal_rounds_per_threat": {
+      "air": 2,
+      "surface": 1
+    },
+    "unspent_ammunition_without_neutralization_earns_zero": true
+  },
+  "difficulty_rationale": "纵深设施和海上目标并存；追击深度与保护半径需要权衡。",
+  "score_components": [
+    {
+      "metric_id": "metric.protection",
+      "kind": "protection",
+      "weight": 0.025,
+      "direction": "maximize"
+    },
+    {
+      "metric_id": "metric.neutralization",
+      "kind": "neutralization",
+      "weight": 0.25,
+      "direction": "maximize"
+    },
+    {
+      "metric_id": "metric.graded_protection",
+      "kind": "graded_protection",
+      "weight": 0.025,
+      "direction": "maximize"
+    },
+    {
+      "metric_id": "metric.survival",
+      "kind": "survival",
+      "weight": 0.05,
+      "direction": "maximize"
+    },
+    {
+      "metric_id": "metric.facilities",
+      "kind": "facilities",
+      "weight": 0.35,
+      "direction": "maximize"
+    },
+    {
+      "metric_id": "metric.settled",
+      "kind": "settled",
+      "weight": 0.0,
+      "direction": "maximize"
+    },
+    {
+      "metric_id": "metric.intercept_timeliness",
+      "kind": "interception_timeliness",
+      "weight": 0.2,
+      "direction": "maximize"
+    },
+    {
+      "metric_id": "metric.ammunition_efficiency",
+      "kind": "ammunition_efficiency",
+      "weight": 0.1,
+      "direction": "maximize"
+    },
+    {
+      "metric_id": "metric.assets_lost_settled",
+      "kind": "assets_lost_settled",
+      "weight": 0.0,
+      "direction": "maximize"
+    }
+  ],
+  "planned_decoy_count": 0,
+  "task": "本题为“纵深双目标突击”。参赛程序控制红方，只使用当步授权观察和动作接口完成任务。计分保护目标见 protected_facilities；任务完成须同时满足 task_success_criteria 中的全部条件，并等待原生结算。连续得分与任务成功分别记录，总分不是成功判定阈值。决策截止时间见 adjudication_tick，最长世界运行时间见 duration_ticks。",
+  "planned_waves": [
+    {
+      "spawn_tick": 0,
+      "air": 3,
+      "surface": 4,
+      "decoy": 0
+    },
+    {
+      "spawn_tick": 350,
+      "air": 3,
+      "surface": 0,
+      "decoy": 0
+    }
+  ],
+  "own_assets": [
+    {
+      "entity_id": "facility.command",
+      "platform_ref": "platform.shore-defence-site@2.1.0",
+      "domain": "land",
+      "initial_position_m": [
+        -1200.0,
+        -200.0,
+        40.0
+      ]
+    },
+    {
+      "entity_id": "facility.pier",
+      "platform_ref": "platform.harbor-pier@2.1.0",
+      "domain": "surface",
+      "initial_position_m": [
+        700.0,
+        -1000.0,
+        0.0
+      ]
+    },
+    {
+      "entity_id": "site.shore-radar",
+      "platform_ref": "platform.shore-sensor-site@2.1.0",
+      "domain": "land",
+      "initial_position_m": [
+        -1400.0,
+        -300.0,
+        40.0
+      ]
+    },
+    {
+      "entity_id": "defender.uav-01",
+      "platform_ref": "platform.interceptor-uav.energy-ie13@1.0.0",
+      "domain": "air",
+      "initial_position_m": [
+        2200,
+        2200,
+        80.0
+      ]
+    },
+    {
+      "entity_id": "defender.uav-02",
+      "platform_ref": "platform.interceptor-uav.energy-ie13@1.0.0",
+      "domain": "air",
+      "initial_position_m": [
+        4400,
+        3000,
+        110.0
+      ]
+    },
+    {
+      "entity_id": "defender.uav-03",
+      "platform_ref": "platform.interceptor-uav.energy-ie13@1.0.0",
+      "domain": "air",
+      "initial_position_m": [
+        6000,
+        1300,
+        140.0
+      ]
+    },
+    {
+      "entity_id": "defender.usv-01",
+      "platform_ref": "platform.armed-usv@2.1.0",
+      "domain": "surface",
+      "initial_position_m": [
+        1800.0,
+        -200.0,
+        0.0
+      ]
+    },
+    {
+      "entity_id": "defender.usv-02",
+      "platform_ref": "platform.armed-usv@2.1.0",
+      "domain": "surface",
+      "initial_position_m": [
+        2400.0,
+        800.0,
+        0.0
+      ]
+    },
+    {
+      "entity_id": "defender.usv-03",
+      "platform_ref": "platform.armed-usv@2.1.0",
+      "domain": "surface",
+      "initial_position_m": [
+        2200.0,
+        -1400.0,
+        0.0
+      ]
+    },
+    {
+      "entity_id": "defender.uav-04",
+      "platform_ref": "platform.interceptor-uav.energy-ie13@1.0.0",
+      "domain": "air",
+      "initial_position_m": [
+        2600,
+        -1400,
+        170.0
+      ]
+    },
+    {
+      "entity_id": "defender.uav-05",
+      "platform_ref": "platform.interceptor-uav.energy-ie13@1.0.0",
+      "domain": "air",
+      "initial_position_m": [
+        4300,
+        -2400,
+        200.0
+      ]
+    },
+    {
+      "entity_id": "defender.uav-06",
+      "platform_ref": "platform.interceptor-uav.energy-ie13@1.0.0",
+      "domain": "air",
+      "initial_position_m": [
+        6200,
+        -800,
+        230.0
+      ]
+    }
+  ],
+  "adjudication_tick": 1350,
+  "combat_reference": {
+    "schema_version": "native-interception-reference@1.0",
+    "reference_initial_health": 1.0,
+    "disabled_health_threshold": 0.5,
+    "planning_minimum_hits_per_threat": {
+      "air": 1,
+      "surface": 1
+    },
+    "description": "Reference planning facts, not enemy health or hit feedback. Native damage subtracts effect magnitude; legacy catalog health_scale is not applied. Scoring nominal rounds are a separate normalization allowance."
+  },
+  "score_symbols": {
+    "F": "metric.facilities",
+    "N": "metric.neutralization",
+    "P": "metric.protection",
+    "G": "metric.graded_protection",
+    "H": "metric.survival",
+    "T": "metric.intercept_timeliness",
+    "A": "metric.ammunition_efficiency"
+  },
+  "communication_contract": {
+    "resource_ref": "communication.command-network.medium-periodic@2.1.0",
+    "delay_seconds": 1.0,
+    "snapshot_ttl_seconds": 8.0,
+    "loss_probability": 0.0,
+    "organic_contacts": "Only the declared controller endpoint sensors.",
+    "shared_contacts": "New confirmed measurements can produce periodic immutable reports, at least 3 ticks apart. Reports pass through native routing, 1 second delay, 8 second TTL, loss and jamming. A source/controller track handle is stable; only delivery replaces its latest snapshot. No new measurement means no refreshed visibility.",
+    "native_fire": "A current confirmed organic or unexpired delivered shared handle is eligible, subject to all native weapon checks.",
+    "example_baselines": "Adaptive may fire using current confirmed organic handles or delivered shared handles with snapshot age at most 2 ticks. Greedy, coordinated and naive fire only using organic handles. Every request remains subject to native authority, expiry, range and ammunition checks.",
+    "minimum_report_interval_ticks": 3
+  },
+  "faction_convention": {
+    "schema_version": "competition-factions@1",
+    "roles": {
+      "blue": "attacker",
+      "red": "defender"
+    },
+    "participant_faction_id": "red"
+  },
+  "sensor_revision": "ie-visibility-rollout-staged-r17",
+  "detonation_contract": {
+    "enabled": false,
+    "source_lifecycle": "retained",
+    "rule": "No suicide warhead, contact ram attack or scripted damage; native guided weapons only."
+  },
+  "visibility_contract": {
+    "schema_version": "competition-sensor-visibility@1",
+    "fidelity": "UNVALIDATED_COMPETITION_ABSTRACTION",
+    "sea_level_m": 0.0,
+    "terrain_regions": [
+      {
+        "id": "terrain.land.000.abstract-height",
+        "vertices_m": [
+          [
+            -3415.4429828639823,
+            -890.4165608769879
+          ],
+          [
+            1897.998796544128,
+            -1887.7550463243626
+          ],
+          [
+            -338.5916772757805,
+            -435.739996134751
+          ],
+          [
+            -354.74963821394346,
+            334.7855667020041
+          ],
+          [
+            -2042.8834955180682,
+            691.5738011761516
+          ],
+          [
+            -3318.72745081615,
+            -403.72168802155596
+          ]
+        ],
+        "elevation_m": 40.0
+      }
+    ],
+    "note": "Declared 40 m abstract island plateau, not surveyed elevation. Sensor circles are upper envelopes, not guaranteed coverage."
+  },
+  "parameter_revision": "virtual-competition-uav-speed-20261113.requested.energy-v1",
+  "parameter_reference": {
+    "mode": "Isolated virtual competition parameter trial",
+    "changed": [
+      "Both UAV roles: horizontal speed upper bound 25 m/s.",
+      "Attacker: 2 air items plus 1 surface/facility item; defender: 2 air items only.",
+      "Air item cruise speed 60.0 m/s; strike item speed 30 m/s."
+    ],
+    "limitations": [
+      "No real equipment calibration.",
+      "Native horizontal and vertical speed limits are separate.",
+      "Air-item lifetime is 100 ticks; expiration is not a geometric avoidance success."
+    ]
+  },
+  "ingress_contract": {
+    "schema_version": "competition-ingress@2",
+    "deployment_rule": "sensor_exterior_approach",
+    "minimum_nominal_sensor_clearance_m": 1000.0,
+    "entries": [
+      {
+        "entity_id": "intruder.boat-01",
+        "activation_tick": 0,
+        "position_m": [
+          3096.6,
+          12419.785,
+          0.0
+        ],
+        "initial_defender_nominal_sensor_clearance_m": 4510.168295
+      },
+      {
+        "entity_id": "intruder.uav-01",
+        "activation_tick": 0,
+        "position_m": [
+          7487.966,
+          15817.091,
+          130.0
+        ],
+        "initial_defender_nominal_sensor_clearance_m": 8183.844497
+      },
+      {
+        "entity_id": "intruder.boat-02",
+        "activation_tick": 0,
+        "position_m": [
+          7942.209,
+          10668.238,
+          0.0
+        ],
+        "initial_defender_nominal_sensor_clearance_m": 3447.556962
+      },
+      {
+        "entity_id": "intruder.uav-05",
+        "activation_tick": 0,
+        "position_m": [
+          13896.808,
+          12512.742,
+          130.0
+        ],
+        "initial_defender_nominal_sensor_clearance_m": 8441.801313
+      },
+      {
+        "entity_id": "intruder.boat-03",
+        "activation_tick": 0,
+        "position_m": [
+          11870.058,
+          7038.588,
+          0.0
+        ],
+        "initial_defender_nominal_sensor_clearance_m": 3210.272417
+      },
+      {
+        "entity_id": "intruder.uav-06",
+        "activation_tick": 0,
+        "position_m": [
+          15380.819,
+          5396.334,
+          210.0
+        ],
+        "initial_defender_nominal_sensor_clearance_m": 5236.435774
+      },
+      {
+        "entity_id": "intruder.boat-04",
+        "activation_tick": 0,
+        "position_m": [
+          12675.431,
+          1781.416,
+          0.0
+        ],
+        "initial_defender_nominal_sensor_clearance_m": 1694.231875
+      },
+      {
+        "entity_id": "intruder.uav-02",
+        "activation_tick": 350,
+        "position_m": [
+          17470.393,
+          -1017.535,
+          210.0
+        ],
+        "initial_defender_nominal_sensor_clearance_m": 6272.509918
+      },
+      {
+        "entity_id": "intruder.uav-03",
+        "activation_tick": 350,
+        "position_m": [
+          18090.665,
+          -4734.75,
+          170.0
+        ],
+        "initial_defender_nominal_sensor_clearance_m": 7524.926016
+      },
+      {
+        "entity_id": "intruder.uav-04",
+        "activation_tick": 350,
+        "position_m": [
+          14650.343,
+          -7145.45,
+          250.0
+        ],
+        "initial_defender_nominal_sensor_clearance_m": 5567.565118
+      }
+    ],
+    "meaning": "Each blue entity begins beyond all red initial-position compatible sensor nominal envelopes, then uses unchanged organic navigation, contacts and weapons. Off-map travel before entry is not simulated.",
+    "visibility": "No hidden flag or grace period. Once native sensors can detect an approaching entity, normal scoped contacts apply.",
+    "reinforcement_validation": "For adaptive defence, recorded spawn-time red positions must also be checked in the complete episode. Initial-position clearance alone is not a guarantee against arbitrary participant movement to an ingress point.",
+    "geography_revision": "ie10-ie14-varied-4to7-half-evasion-20261118",
+    "status": "reconfigured_requires_current_runtime_validation"
+  },
+  "own_weapon_options": {
+    "defender.uav-01": [
+      {
+        "weapon_ref": "weapon.air-item.speed-trial@1.2.0",
+        "ammunition_ref": "ammunition.air-item.speed-trial@1.2.0",
+        "minimum_range_m": 500.0,
+        "maximum_range_m": 8000.0,
+        "cooldown_ticks": 5,
+        "target_domains": [
+          "air"
+        ],
+        "maximum_speed_mps": 25.0,
+        "missile_cruise_speed_mps": 60.0,
+        "missile_max_flight_ticks": 83,
+        "nominal_hit_probability": 0.75,
+        "nominal_health_loss_per_hit": 0.6,
+        "salvo_rounds": 2,
+        "minimum_hits_to_disable_reference_target": 1
+      }
+    ],
+    "defender.uav-02": [
+      {
+        "weapon_ref": "weapon.air-item.speed-trial@1.2.0",
+        "ammunition_ref": "ammunition.air-item.speed-trial@1.2.0",
+        "minimum_range_m": 500.0,
+        "maximum_range_m": 8000.0,
+        "cooldown_ticks": 5,
+        "target_domains": [
+          "air"
+        ],
+        "maximum_speed_mps": 25.0,
+        "missile_cruise_speed_mps": 60.0,
+        "missile_max_flight_ticks": 83,
+        "nominal_hit_probability": 0.75,
+        "nominal_health_loss_per_hit": 0.6,
+        "salvo_rounds": 2,
+        "minimum_hits_to_disable_reference_target": 1
+      }
+    ],
+    "defender.uav-03": [
+      {
+        "weapon_ref": "weapon.air-item.speed-trial@1.2.0",
+        "ammunition_ref": "ammunition.air-item.speed-trial@1.2.0",
+        "minimum_range_m": 500.0,
+        "maximum_range_m": 8000.0,
+        "cooldown_ticks": 5,
+        "target_domains": [
+          "air"
+        ],
+        "maximum_speed_mps": 25.0,
+        "missile_cruise_speed_mps": 60.0,
+        "missile_max_flight_ticks": 83,
+        "nominal_hit_probability": 0.75,
+        "nominal_health_loss_per_hit": 0.6,
+        "salvo_rounds": 2,
+        "minimum_hits_to_disable_reference_target": 1
+      }
+    ],
+    "defender.usv-01": [
+      {
+        "weapon_ref": "weapon.surface-missile@2.2.0",
+        "ammunition_ref": "ammunition.surface-missile@2.2.0",
+        "minimum_range_m": 0.0,
+        "maximum_range_m": 15000.0,
+        "cooldown_ticks": 3,
+        "target_domains": [
+          "surface",
+          "land"
+        ],
+        "maximum_speed_mps": 10.288,
+        "missile_cruise_speed_mps": 33.333333333333336,
+        "missile_max_flight_ticks": 510,
+        "nominal_hit_probability": 0.5,
+        "nominal_health_loss_per_hit": 1.0,
+        "salvo_rounds": 2,
+        "minimum_hits_to_disable_reference_target": 1
+      }
+    ],
+    "defender.usv-02": [
+      {
+        "weapon_ref": "weapon.surface-missile@2.2.0",
+        "ammunition_ref": "ammunition.surface-missile@2.2.0",
+        "minimum_range_m": 0.0,
+        "maximum_range_m": 15000.0,
+        "cooldown_ticks": 3,
+        "target_domains": [
+          "surface",
+          "land"
+        ],
+        "maximum_speed_mps": 10.288,
+        "missile_cruise_speed_mps": 33.333333333333336,
+        "missile_max_flight_ticks": 510,
+        "nominal_hit_probability": 0.5,
+        "nominal_health_loss_per_hit": 1.0,
+        "salvo_rounds": 2,
+        "minimum_hits_to_disable_reference_target": 1
+      }
+    ],
+    "defender.usv-03": [
+      {
+        "weapon_ref": "weapon.surface-missile@2.2.0",
+        "ammunition_ref": "ammunition.surface-missile@2.2.0",
+        "minimum_range_m": 0.0,
+        "maximum_range_m": 15000.0,
+        "cooldown_ticks": 3,
+        "target_domains": [
+          "surface",
+          "land"
+        ],
+        "maximum_speed_mps": 10.288,
+        "missile_cruise_speed_mps": 33.333333333333336,
+        "missile_max_flight_ticks": 510,
+        "nominal_hit_probability": 0.5,
+        "nominal_health_loss_per_hit": 1.0,
+        "salvo_rounds": 2,
+        "minimum_hits_to_disable_reference_target": 1
+      }
+    ],
+    "defender.uav-04": [
+      {
+        "weapon_ref": "weapon.air-item.speed-trial@1.2.0",
+        "ammunition_ref": "ammunition.air-item.speed-trial@1.2.0",
+        "minimum_range_m": 500.0,
+        "maximum_range_m": 8000.0,
+        "cooldown_ticks": 5,
+        "target_domains": [
+          "air"
+        ],
+        "maximum_speed_mps": 25.0,
+        "missile_cruise_speed_mps": 60.0,
+        "missile_max_flight_ticks": 83,
+        "nominal_hit_probability": 0.75,
+        "nominal_health_loss_per_hit": 0.6,
+        "salvo_rounds": 2,
+        "minimum_hits_to_disable_reference_target": 1
+      }
+    ],
+    "defender.uav-05": [
+      {
+        "weapon_ref": "weapon.air-item.speed-trial@1.2.0",
+        "ammunition_ref": "ammunition.air-item.speed-trial@1.2.0",
+        "minimum_range_m": 500.0,
+        "maximum_range_m": 8000.0,
+        "cooldown_ticks": 5,
+        "target_domains": [
+          "air"
+        ],
+        "maximum_speed_mps": 25.0,
+        "missile_cruise_speed_mps": 60.0,
+        "missile_max_flight_ticks": 83,
+        "nominal_hit_probability": 0.75,
+        "nominal_health_loss_per_hit": 0.6,
+        "salvo_rounds": 2,
+        "minimum_hits_to_disable_reference_target": 1
+      }
+    ],
+    "defender.uav-06": [
+      {
+        "weapon_ref": "weapon.air-item.speed-trial@1.2.0",
+        "ammunition_ref": "ammunition.air-item.speed-trial@1.2.0",
+        "minimum_range_m": 500.0,
+        "maximum_range_m": 8000.0,
+        "cooldown_ticks": 5,
+        "target_domains": [
+          "air"
+        ],
+        "maximum_speed_mps": 25.0,
+        "missile_cruise_speed_mps": 60.0,
+        "missile_max_flight_ticks": 83,
+        "nominal_hit_probability": 0.75,
+        "nominal_health_loss_per_hit": 0.6,
+        "salvo_rounds": 2,
+        "minimum_hits_to_disable_reference_target": 1
+      }
+    ]
+  },
+  "planned_feint_count": 0,
+  "difficulty_contract": {
+    "schema_version": "competition-difficulty@1",
+    "tier": "challenge",
+    "focus": "纵深目标与岸线绕行",
+    "basis": "Requested equal aircraft counts and half-opponent evasion; no statistical difficulty claim.",
+    "minimum_route_time_allowance_fraction": 0.2,
+    "idle_zero_neutralization_score_upper_bound": 0.45,
+    "validation_status": "server_episode_pending"
+  },
+  "pressure_contract": {
+    "schema_version": "competition-pressure-plan@2",
+    "revision": "ie10-ie14-varied-4to7-half-evasion-20261118",
+    "status": "reconfigured_requires_current_runtime_validation",
+    "coordination": "Separated fan rays; original retained wave activation ticks.",
+    "approaches": [
+      {
+        "entity_id": "intruder.boat-01",
+        "domain": "surface",
+        "activation_tick": 0,
+        "path_length_m": 11814.955,
+        "route_speed_mps": 10.288,
+        "ideal_station_arrival_tick": 1148.421,
+        "full_salvo_impact_budget_tick": 1528.232
+      },
+      {
+        "entity_id": "intruder.uav-01",
+        "domain": "air",
+        "activation_tick": 0,
+        "path_length_m": 15677.538,
+        "route_speed_mps": 25.0,
+        "ideal_station_arrival_tick": 627.102,
+        "full_salvo_impact_budget_tick": 909.213
+      },
+      {
+        "entity_id": "intruder.boat-02",
+        "domain": "surface",
+        "activation_tick": 0,
+        "path_length_m": 11939.722,
+        "route_speed_mps": 10.288,
+        "ideal_station_arrival_tick": 1160.548,
+        "full_salvo_impact_budget_tick": 1543.314
+      },
+      {
+        "entity_id": "intruder.uav-05",
+        "domain": "air",
+        "activation_tick": 0,
+        "path_length_m": 17146.69,
+        "route_speed_mps": 25.0,
+        "ideal_station_arrival_tick": 685.868,
+        "full_salvo_impact_budget_tick": 975.4
+      },
+      {
+        "entity_id": "intruder.boat-03",
+        "domain": "surface",
+        "activation_tick": 0,
+        "path_length_m": 12135.43,
+        "route_speed_mps": 10.288,
+        "ideal_station_arrival_tick": 1179.571,
+        "full_salvo_impact_budget_tick": 1562.221
+      },
+      {
+        "entity_id": "intruder.uav-06",
+        "domain": "air",
+        "activation_tick": 0,
+        "path_length_m": 15096.883,
+        "route_speed_mps": 25.0,
+        "ideal_station_arrival_tick": 603.875,
+        "full_salvo_impact_budget_tick": 864.983
+      },
+      {
+        "entity_id": "intruder.boat-04",
+        "domain": "surface",
+        "activation_tick": 0,
+        "path_length_m": 10727.516,
+        "route_speed_mps": 10.288,
+        "ideal_station_arrival_tick": 1042.721,
+        "full_salvo_impact_budget_tick": 1390.19
+      },
+      {
+        "entity_id": "intruder.uav-02",
+        "domain": "air",
+        "activation_tick": 350,
+        "path_length_m": 16460.246,
+        "route_speed_mps": 25.0,
+        "ideal_station_arrival_tick": 1058.41,
+        "full_salvo_impact_budget_tick": 1335.34
+      },
+      {
+        "entity_id": "intruder.uav-03",
+        "domain": "air",
+        "activation_tick": 350,
+        "path_length_m": 17900.645,
+        "route_speed_mps": 25.0,
+        "ideal_station_arrival_tick": 1116.026,
+        "full_salvo_impact_budget_tick": 1410.016
+      },
+      {
+        "entity_id": "intruder.uav-04",
+        "domain": "air",
+        "activation_tick": 350,
+        "path_length_m": 15558.429,
+        "route_speed_mps": 25.0,
+        "ideal_station_arrival_tick": 1022.337,
+        "full_salvo_impact_budget_tick": 1288.06
+      }
+    ],
+    "timing_allowance": "1.25 * route_length / speed + 30 seconds + salvo interval + missile transit; then 120 seconds common reserve.",
+    "limitation": "Necessary timing budgets only; actual turns, terrain occlusion, shared reports, combat and withdrawal require future focused validation."
+  },
+  "task_revision": "ie-6km-balanced-full-evasion-25min-20261120",
+  "pressure_revision": "ie10-ie14-varied-4to7-half-evasion-20261118",
+  "communication_reporting": {
+    "resource_ref": "communication.command-network.medium-periodic@2.1.0",
+    "minimum_report_interval_ticks": 3,
+    "observation": "Fresh detections are sent via native delayed snapshots. Source track handles are stable per recipient controller; repeated packets are not new targets.",
+    "availability": "Range, route, delay, loss, TTL and jamming remain enforced. No fresh detection means no renewed report."
+  },
+  "task_contract_revision": "ie-public-task@1",
+  "task_success_criteria": [
+    {
+      "metric_id": "metric.settled",
+      "comparison": ">=",
+      "value": 1.0
+    },
+    {
+      "metric_id": "metric.protection",
+      "comparison": ">=",
+      "value": 1.0
+    },
+    {
+      "metric_id": "metric.facilities",
+      "comparison": ">=",
+      "value": 0.5
+    }
+  ],
+  "protected_facilities": [
+    {
+      "entity_id": "facility.command",
+      "weight": 3,
+      "position_m": [
+        -1200.0,
+        -200.0,
+        40.0
+      ]
+    },
+    {
+      "entity_id": "facility.pier",
+      "weight": 1,
+      "position_m": [
+        700.0,
+        -1000.0,
+        0.0
+      ]
+    }
+  ],
+  "equipment_contract": {
+    "schema_version": "competition-equipment@1",
+    "revision": "virtual-competition-uav-speed-20261113",
+    "attacker_uav": {
+      "maximum_speed_mps": 25,
+      "loadout_ref": "loadout.attacker-uav.speed-trial@1.2.0",
+      "ammunition": {
+        "ammunition.air-item.speed-trial@1.2.0": 2,
+        "ammunition.loitering-munition.competition-maritime@2.1.0": 1
+      }
+    },
+    "defender_uav": {
+      "maximum_speed_mps": 25,
+      "loadout_ref": "loadout.defender-uav.speed-trial@1.2.0",
+      "ammunition": {
+        "ammunition.air-item.speed-trial@1.2.0": 2
+      }
+    },
+    "air_item_horizontal_speed_mps": 60.0,
+    "strike_item_horizontal_speed_mps": 30,
+    "speed_semantics": "Native horizontal speed; vertical components remain independently bounded."
+  },
+  "energy_contract": {
+    "schema_version": "competition-energy@1",
+    "revision": "virtual-competition-uav-energy-20261113-v1",
+    "applies_to": "all attacker and defender UAVs, including future spawns",
+    "initial_normalized_energy": 1.0,
+    "energy_ref": "energy.uav.competition-ie13@1.0.0",
+    "active_time_budget_seconds": 1700.0,
+    "world_time_budget_seconds": 3265.0,
+    "idle_rate_per_second": 3.616636528028933e-05,
+    "motion_rate_per_meter": 2.5462962962962965e-05,
+    "motion_reference_speed_mps": 18.0,
+    "motion_speed_exponent": 2.0,
+    "speed_semantics": "actual 3D velocity magnitude, matching existing energy accounting",
+    "formula": "dE = dt * (idle + motion_rate * speed * (speed / reference_speed))",
+    "firing_energy_per_shot": 0.0002,
+    "total_score_weights_changed": false,
+    "requires_engine_overlay": true,
+    "calibration_active_time_budget_seconds": 1200.0,
+    "calibration_world_time_budget_seconds": 2765.0
+  },
+  "attack_deployment_summary": {
+    "revision": "ie10-ie14-varied-4to7-half-evasion-20261118",
+    "attacker_uavs": 6,
+    "defender_uavs": 6,
+    "attacker_usvs": 4,
+    "evasive_enemy_uavs": 3,
+    "all_enemy_aircraft_including_feints_counted": true,
+    "description": "Scene-specific equal aircraft totals from4 to7; half rounded up use authorized-contact missile evasion; distinct safe offshore layouts.",
+    "status": "reconfigured_requires_current_runtime_validation"
+  }
+}

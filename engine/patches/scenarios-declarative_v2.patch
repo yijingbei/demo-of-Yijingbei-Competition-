@@ -1,0 +1,155 @@
+--- a/source_codes/openmdbench/scenarios/declarative_v2.py
++++ b/source_codes/openmdbench/scenarios/declarative_v2.py
+@@ -42,6 +42,7 @@
+     FactionV2,
+     InitialStateV2,
+     MissionRuleV2,
++    PhysicalMotionPolicyV2,
+     RelationshipV2,
+     RoePolicyV2,
+     ScoreMetricV2,
+@@ -557,6 +558,7 @@
+     zones: tuple[ZoneV2 | _ResolvedZoneV2, ...]
+     boundary_policy: str | None
+     spatial_damage_policy: SpatialDamagePolicyV2 | None = None
++    physical_motion: PhysicalMotionPolicyV2 | None = None
+     roe_rules: tuple[RoePolicyV2, ...] = ()
+     coordinate_frame: _CoordinateFrameV2 | None = None
+     map_transform: Mapping[str, Any] | None = None
+@@ -573,6 +575,7 @@
+             zones=world.zones,
+             boundary_policy=world.boundary_policy,
+             spatial_damage_policy=world.spatial_damage_policy,
++            physical_motion=world.physical_motion,
+             roe_rules=world.roe_rules,
+             duration_ticks=world.duration_ticks,
+             tick_seconds=world.tick_seconds,
+@@ -635,6 +638,8 @@
+                     if payload.get("spatial_damage_policy") is None
+                     else SpatialDamagePolicyV2.model_validate(payload["spatial_damage_policy"])
+                 ),
++                physical_motion=(None if payload.get("physical_motion") is None else
++                                 PhysicalMotionPolicyV2.model_validate(payload["physical_motion"])),
+                 roe_rules=tuple(
+                     RoePolicyV2.model_validate(item) for item in payload.get("roe_rules", ())
+                 ),
+@@ -664,6 +669,8 @@
+             "duration_ticks": self.duration_ticks,
+             "tick_seconds": self.tick_seconds,
+         }
++        if self.physical_motion is not None:
++            payload["physical_motion"] = self.physical_motion.model_dump(mode="json")
+         if self.coordinate_frame is not None:
+             payload["coordinate_frame"] = _json_value(self.coordinate_frame)
+             payload["map_transform"] = _json_value(self.map_transform)
+@@ -2036,8 +2043,10 @@
+                 ranking = outcome.ranking
+                 ranking_values = ranking.values if isinstance(ranking, _FrozenRecordV2) else ranking
+                 if (
+-                    set(outcome.values)
++                    set(outcome.values) - {"wait_for_combat_settlement"}
+                     != {"set_state", "emit_event", "terminal", "result", "ranking"}
++                    or not isinstance(outcome.get("wait_for_combat_settlement", False), bool)
++                    or (outcome.get("wait_for_combat_settlement", False) and not outcome.terminal)
+                     or not isinstance(outcome.set_state, str)
+                     or outcome.set_state not in mission_states
+                     or outcome.emit_event not in event_ids
+@@ -5464,6 +5473,7 @@
+                 "terminal",
+                 "result",
+                 "ranking",
++                "wait_for_combat_settlement",
+             }:
+                 fail(
+                     "scenario.mission_outcome_forbidden",
+@@ -5490,6 +5500,8 @@
+             ranking = outcome.get("ranking", {})
+             if (
+                 not isinstance(terminal, bool)
++                or not isinstance(outcome.get("wait_for_combat_settlement", False), bool)
++                or (outcome.get("wait_for_combat_settlement", False) and not terminal)
+                 or not isinstance(ranking, Mapping)
+                 or any(
+                     faction not in faction_ids
+@@ -5519,6 +5531,8 @@
+                         "terminal": terminal,
+                         "result": result,
+                         "ranking": MappingProxyType(dict(sorted(ranking.items()))),
++                        **({"wait_for_combat_settlement": outcome["wait_for_combat_settlement"]}
++                           if "wait_for_combat_settlement" in outcome else {}),
+                     }
+                 )
+             )
+@@ -6905,6 +6919,8 @@
+             )
+         )
+         try:
++            physical_motion = (None if world.get("physical_motion") is None else
++                               PhysicalMotionPolicyV2.model_validate(world["physical_motion"]))
+             spatial_damage_policy = (
+                 None
+                 if world.get("spatial_damage_policy") is None
+@@ -6928,6 +6944,7 @@
+             zones=sorted_zones,
+             boundary_policy=(boundaries[0].action if boundaries else None),
+             spatial_damage_policy=spatial_damage_policy,
++            physical_motion=physical_motion,
+             roe_rules=roe_rules,
+             coordinate_frame=frame,
+             map_transform=_freeze(dict(transform_raw)),
+@@ -6967,6 +6984,8 @@
+                 for zone in sorted_zones
+             ],
+         }
++        if physical_motion is not None:
++            raw["world"]["physical_motion"] = physical_motion.model_dump(mode="json")
+         return resolved_world, deployments
+ 
+     @staticmethod
+@@ -7110,7 +7129,30 @@
+                     file="entities.yaml",
+                 )
+             component = candidates[0]
++            if component.resource_type == "sensors" and "visibility_profile" in component.content:
++                from openmdbench.systems.generic_v2 import validate_sensor_visibility_profile_v2
++                try:
++                    validate_sensor_visibility_profile_v2(component.content["visibility_profile"])
++                except ValueError as error:
++                    raise self._error(
++                        "scenario.sensor_visibility_invalid",
++                        ("entities", str(index), "component_refs", str(component_index)),
++                        reference, str(error),
++                        "declare complete finite sensor visibility geometry",
++                        file="entities.yaml",
++                    ) from error
+             if component.resource_type == "communications":
++                from openmdbench.systems.generic_v2 import shared_contact_refresh_ticks_v2
++                try:
++                    shared_contact_refresh_ticks_v2(component.content)
++                except ValueError as error:
++                    raise self._error(
++                        "scenario.contact_report_refresh_invalid",
++                        ("entities", str(index), "component_refs", str(component_index)),
++                        reference, str(error),
++                        "use zero for legacy reporting or a positive integer tick interval",
++                        file="entities.yaml",
++                    ) from error
+                 bandwidth = component.content.get("bandwidth_bps")
+                 if bandwidth is not None and bandwidth != "unlimited":
+                     raise self._error(
+@@ -7131,6 +7173,15 @@
+                 communications.append(reference)
+ 
+         energy_ref = platform.content.get("energy_ref")
++        sensing_height = platform.content.get("sensing_height_m", 0.0)
++        if (isinstance(sensing_height, bool) or not isinstance(sensing_height, (int, float))
++                or not math.isfinite(sensing_height) or sensing_height < 0):
++            raise self._error(
++                "scenario.sensing_height_invalid", ("entities", str(index), "platform_ref"),
++                sensing_height, "platform sensing height must be finite and nonnegative",
++                "declare the physical visible height above the platform position in metres",
++                file="entities.yaml",
++            )
+         collision_ref = platform.content.get("collision_shape_ref")
+         visualization_ref = platform.content.get("visualization_ref")
+         composition = EntityCompositionV2(

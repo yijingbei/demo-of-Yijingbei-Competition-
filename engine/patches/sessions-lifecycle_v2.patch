@@ -1,0 +1,47 @@
+--- a/source_codes/openmdbench/sessions/lifecycle_v2.py
++++ b/source_codes/openmdbench/sessions/lifecycle_v2.py
+@@ -1008,6 +1008,7 @@
+             try:
+                 action = mmg_navigation_action_v2(
+                     current_heading_deg=float(entity.state.heading_deg),
++                    current_speed_mps=math.hypot(*entity.state.velocity_mps[:2]),
+                     target_speed_mps=(
+                         0.0 if command.command_type == "hold" else float(values["speed_mps"])
+                     ),
+@@ -1438,6 +1439,14 @@
+                         staged_statuses[command.command_id] = (
+                             PersistentCommandStatusV2.EXPIRED.value
+                         )
++                        child_receipt = ActionChildReceiptV2(
++                            child_id=command.command_id,
++                            kind="persistent",
++                            status=PersistentCommandStatusV2.EXPIRED.value,
++                            tick=expected_tick,
++                        )
++                        child_receipts.append(child_receipt)
++                        staged_child_ledger[command.command_id] = child_receipt
+                         expired.append(command.command_id)
+                         continue
+                     key = (command.entity_id, command.command_type)
+@@ -1485,7 +1494,9 @@
+                         authority_token=transport_authority_token,
+                     )
+                     if expected_tick > action.valid_until_tick:
+-                        staged_statuses[action.action_id] = DiscreteActionStatusV2.REJECTED.value
++                        # Delayed actions are terminal rejections, not just status updates:
++                        # keep the consumed set and query/audit receipts in sync.
++                        reject_discrete(action, error_code="session.action_expired")
+                         continue
+                     staged_consumed.add(action.action_id)
+                     staged_statuses[action.action_id] = DiscreteActionStatusV2.EXECUTED.value
+@@ -1493,7 +1504,9 @@
+                     if action.action_type == "fire_weapon":
+                         engagement_requests.append(
+                             self._engagement_request(
+-                                action, authority_token=authority_token, tick=expected_tick
++                                action,
++                                authority_token=transport_authority_token,
++                                tick=expected_tick,
+                             )
+                         )
+                     elif action.action_type == "send_message":

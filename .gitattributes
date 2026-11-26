@@ -1,0 +1,4 @@
+# Source and runtime manifests bind exact bytes across Windows and Linux.
+* -text
+# A unified diff can end in a blank context line with a required space prefix.
+*.patch whitespace=-blank-at-eol,-blank-at-eof

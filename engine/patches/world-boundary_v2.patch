@@ -1,0 +1,667 @@
+--- a/source_codes/openmdbench/world/boundary_v2.py
++++ b/source_codes/openmdbench/world/boundary_v2.py
+@@ -7,9 +7,9 @@
+ import math
+ import re
+ from collections.abc import Mapping, Sequence
+-from dataclasses import dataclass, fields, is_dataclass
++from dataclasses import dataclass, fields, is_dataclass, replace
+ from types import MappingProxyType
+-from typing import Literal, Protocol, Self, cast
++from typing import Any, Literal, Protocol, Self, cast
+ 
+ from openmdbench.schemas.domain_v2 import DamageIntentV2
+ from openmdbench.world.geography_v2 import GeographyServiceV2, Vector3V2
+@@ -429,16 +429,31 @@
+         shape_b: CollisionShapeV2,
+         start_b: Sequence[float],
+         end_b: Sequence[float],
++        yaw_delta_a: float = 0.0,
++        yaw_delta_b: float = 0.0,
+     ) -> ShapeSweepHitV2 | None:
+-        """Return the exact continuous 3D sphere contact fraction."""
++        """Return first contact for spheres and translating/turning boxes."""
+ 
+         if shape_a.shape != "sphere" or shape_b.shape != "sphere":
++            if {shape_a.shape, shape_b.shape} <= {"sphere", "aabb", "obb"}:
++                fraction = _rigid_sweep_fraction(
++                    shape_a,
++                    _vector3(start_a, name="start_a"),
++                    _vector3(end_a, name="end_a"),
++                    shape_b,
++                    _vector3(start_b, name="start_b"),
++                    _vector3(end_b, name="end_b"),
++                    _finite_number(yaw_delta_a, name="yaw_delta_a"),
++                    _finite_number(yaw_delta_b, name="yaw_delta_b"),
++                    self.tolerance_m,
++                )
++                return None if fraction is None else ShapeSweepHitV2(time_fraction=fraction)
+             raise _boundary_error(
+                 "boundary.shape_sweep_unsupported",
+                 ("shape_sweep",),
+                 (shape_a.shape, shape_b.shape),
+-                "the public exact sweep oracle currently supports sphere pairs",
+-                "use sphere shapes or the BoundarySystem controlled shape pipeline",
++                "continuous sweep supports sphere, aabb, and obb pairs",
++                "use supported sphere or box collision shapes",
+             )
+         first_start = _vector3(start_a, name="start_a")
+         first_end = _vector3(end_a, name="end_a")
+@@ -648,8 +663,14 @@
+     end_m: Vector3V2
+     dt_seconds: float
+     velocity_mps: Vector3V2 | None = None
++    start_heading_deg: float | None = None
++    end_heading_deg: float | None = None
+ 
+     def __post_init__(self) -> None:
++        for name in ("start_heading_deg", "end_heading_deg"):
++            value = getattr(self, name)
++            if value is not None:
++                object.__setattr__(self, name, _finite_number(value, name=name))
+         object.__setattr__(self, "start_m", _vector3(self.start_m, name="start_m"))
+         object.__setattr__(self, "end_m", _vector3(self.end_m, name="end_m"))
+         object.__setattr__(
+@@ -895,6 +916,8 @@
+     entity_a_id: str = ""
+     entity_b_id: str = ""
+     absolute_time_seconds: float = 0.0
++    contact_phase: str = "impact"
++    relative_normal_speed_mps: float = 0.0
+ 
+     def __post_init__(self) -> None:
+         object.__setattr__(self, "event_id", _identifier(self.event_id, name="event_id"))
+@@ -1130,6 +1153,7 @@
+     collision_events: tuple[CollisionEventV2, ...] = ()
+     damage_intents: tuple[DamageIntentV2, ...] = ()
+     policy_actions: tuple[BoundaryPolicyActionV2, ...] = ()
++    motion_segments: tuple[Mapping[str, Any], ...] = ()
+     lifecycle_intents: tuple[DeactivateIntentV2 | MissionEventIntentV2, ...] = ()
+ 
+     @property
+@@ -1797,6 +1821,7 @@
+         enable_entity_collisions: bool = False,
+         emit_damage_intents: bool = True,
+         impact_damage_policy: _ImpactDamagePolicyLike | None = None,
++        physical_motion: object | None = None,
+     ) -> None:
+         if point_on_edge not in {"inside", "outside"}:
+             raise ValueError("point_on_edge must be inside or outside")
+@@ -1828,6 +1853,7 @@
+         self._enable_entity_collisions = enable_entity_collisions
+         self._emit_damage_intents = emit_damage_intents
+         self._impact_damage_policy = impact_damage_policy
++        self._physical_motion = physical_motion
+         self._entities: dict[str, BoundaryEntityV2] = {}
+         self._zone_activation = {zone_id: True for zone_id in sorted(known_zone_ids)}
+         self._activation_receipts: dict[str, ZoneActivationReceiptV2] = {}
+@@ -1957,6 +1983,7 @@
+             enable_entity_collisions=enable_entity_collisions,
+             emit_damage_intents=emit_damage_intents,
+             impact_damage_policy=getattr(resolved, "spatial_effect_policy", None),
++            physical_motion=getattr(world, "physical_motion", None),
+         )
+ 
+     def zone_policy(self, zone_id: str) -> BoundaryPolicyV2:
+@@ -2287,7 +2314,10 @@
+         swept: list[tuple[float, str, float, float, float, float, float]] = []
+         for entity_id in sorted(motions):
+             segment = motions[entity_id]
++            shape = self._entities[entity_id].shape
+             radius = self._entities[entity_id].radius_m
++            if shape is not None and shape.shape in {"aabb", "obb"}:
++                radius = max(radius, shape.half_extents_m[2])
+             swept.append(
+                 (
+                     min(segment.start_m[0], segment.end_m[0]) - radius,
+@@ -2338,13 +2368,17 @@
+         second = motions[second_id]
+         if first_entity.shape is None or second_entity.shape is None:
+             raise ValueError("collision entity is missing a shape")
++        shape_a, yaw_a = _motion_shape(first_entity.shape, first)
++        shape_b, yaw_b = _motion_shape(second_entity.shape, second)
+         hit = ShapeNarrowphaseOracleV2(tolerance_m=0.0).sweep(
+-            first_entity.shape,
++            shape_a,
+             start_a=first.start_m,
+             end_a=first.end_m,
+-            shape_b=second_entity.shape,
++            shape_b=shape_b,
+             start_b=second.start_m,
+             end_b=second.end_m,
++            yaw_delta_a=yaw_a,
++            yaw_delta_b=yaw_b,
+         )
+         if hit is None:
+             return None
+@@ -2355,10 +2389,22 @@
+             Vector3V2,
+             tuple((first_position[index] + second_position[index]) / 2.0 for index in range(3)),
+         )
+-        relative_contact = cast(
+-            Vector3V2,
+-            tuple(first_position[index] - second_position[index] for index in range(3)),
+-        )
++        _, relative_contact = _shape_gap(
++            _rotated(shape_a, yaw_a * fraction),
++            first_position,
++            _rotated(shape_b, yaw_b * fraction),
++            second_position,
++        )
++        relative_travel = tuple(
++            first.end_m[i] - first.start_m[i] - second.end_m[i] + second.start_m[i]
++            for i in range(3)
++        )
++        if (
++            fraction == 0.0
++            and yaw_a == yaw_b == 0.0
++            and sum(relative_travel[i] * relative_contact[i] for i in range(3)) >= 0.0
++        ):
++            return None
+         if math.sqrt(sum(value * value for value in relative_contact)) <= 1e-15:
+             relative_contact = (-1.0, 0.0, 0.0)
+         return CollisionEventV2(
+@@ -2393,6 +2439,269 @@
+             return self._tick_start_time_seconds + fraction * dt_seconds
+         origin = tick if self._origin_tick is None else self._origin_tick
+         return max(0, tick - origin) * dt_seconds + fraction * dt_seconds
++
++    def _evaluate_continuous_contacts(
++        self, motions: Mapping[str, MotionSegmentV2], *, tick: int,
++        start_time: float, emit_damage: bool,
++    ) -> BoundaryEvaluationV2:
++        """Resolve all spherical bodies together, consuming the remaining time.
++
++        A native tick supplies an unconstrained chord and endpoint velocity.
++        The solver preserves each until a contact, then applies mass-weighted
++        inelastic normal impulses and continues along the allowed tangents.
++        Disabled bodies supplied by World have exactly the same collision
++        treatment as other bodies. Initial penetration is repaired explicitly;
++        failure to converge aborts the transaction before any state is committed.
++        """
++        if not motions:return BoundaryEvaluationV2(tick=tick)
++        config = self._physical_motion
++        tolerance, skin = config.contact_tolerance_m, config.contact_skin_m
++        velocity_tolerance = min(tolerance, 1e-5)
++        iterations = config.maximum_contact_iterations
++        ids = sorted(motions)
++        dt = motions[ids[0]].dt_seconds
++        if any(abs(m.dt_seconds-dt)>1e-12 for m in motions.values()):
++            raise ValueError("continuous contacts require one shared time interval")
++        if self._policy.policy != "constrain" or any(p.policy not in {"constrain","effect"} for p in self._zone_policies.values()):
++            raise ValueError("continuous contacts support constrain and grounding-effect policies")
++        positions = {k:list(motions[k].start_m) for k in ids}
++        path_velocity = {k:[(motions[k].end_m[a]-motions[k].start_m[a])/dt for a in range(3)] for k in ids}
++        velocities = {k:list(motions[k].velocity_mps) for k in ids}
++        inverse_mass = {k:(0.0 if self._entities[k].domain == "land" or "fixed" in self._entities[k].tags
++                            else 1.0/max(1.0,self._entities[k].mass_kg)) for k in ids}
++        mobility = {k:(1.0,1.0,0.0) if self._entities[k].domain == "surface" else (1.0,1.0,1.0) for k in ids}
++        shapes = {}
++        for k in ids:
++            shape = self._entities[k].shape or CollisionShapeV2(exact_ref="builtin.sphere@2.0.0",content_hash="builtin",shape="sphere",radius_m=self._entities[k].radius_m)
++            if shape.shape != "sphere" and (inverse_mass[k]>0.0 or shape.shape not in {"aabb","obb"}):
++                raise ValueError("continuous contacts require spherical mobile bodies and native fixed boxes")
++            shapes[k]=_motion_shape(shape,motions[k])[0]
++        pairs = [(a,b) for i,a in enumerate(ids) for b in ids[i+1:]
++                 if self._enable_entity_collisions and inverse_mass[a]+inverse_mass[b]>0.0]
++        collisions, boundaries, segments, intents = [], [], [], []
++        causes: dict[str, tuple[str, Vector3V2, Vector3V2]] = {}
++        elapsed = 0.0
++
++        def dot(a,b):return sum(x*y for x,y in zip(a,b))
++        def separation(a,b):
++            gap,n = _shape_gap(shapes[a],tuple(positions[a]),shapes[b],tuple(positions[b]))
++            # Native closest-point distance is zero inside a box. Positional
++            # recovery also includes the distance from its centre to the face.
++            if shapes[a].shape != shapes[b].shape and gap<0.0:
++                sphere,box = (a,b) if shapes[a].shape=="sphere" else (b,a)
++                shape=shapes[box];delta=[positions[sphere][i]-positions[box][i] for i in range(3)]
++                angle=math.radians(shape.yaw_degrees if shape.shape=="obb" else 0.)
++                local=(math.cos(angle)*delta[0]+math.sin(angle)*delta[1],-math.sin(angle)*delta[0]+math.cos(angle)*delta[1],delta[2])
++                if all(abs(local[i])<=shape.half_extents_m[i] for i in range(3)):
++                    gap -= min(shape.half_extents_m[i]-abs(local[i]) for i in range(3))
++            return list(n),gap
++        def stationary(k):return inverse_mass[k] == 0.0
++        def segment(k, seconds):
++            return MotionSegmentV2(start_m=tuple(positions[k]),
++                end_m=tuple(positions[k][a]+path_velocity[k][a]*seconds for a in range(3)),
++                velocity_mps=tuple(velocities[k]),dt_seconds=max(seconds,1e-12),
++                start_heading_deg=motions[k].start_heading_deg,end_heading_deg=motions[k].end_heading_deg)
++        def static_hits(k, proposed):
++            for event in self._boundary_events(self._entities[k],proposed,tick):
++                free = event.normal if event.kind in {"excluded_zone","obstacle"} else tuple(-v for v in event.normal)
++                yield event,free
++            for event in self._static_collisions(self._entities[k],proposed,tick):
++                yield event,event.normal
++        def close_velocity(a,b,n,values):
++            relative = dot([values[a][i]-values[b][i] for i in range(3)],n)
++            if relative >= -1e-10:return
++            denominator = sum((inverse_mass[a]*mobility[a][i]+inverse_mass[b]*mobility[b][i])*n[i]*n[i] for i in range(3))
++            if denominator<=1e-20:raise ValueError("contact has no physically movable normal direction")
++            scale = relative/denominator
++            for axis in range(3):
++                values[a][axis] -= scale*inverse_mass[a]*mobility[a][axis]*n[axis]
++                values[b][axis] += scale*inverse_mass[b]*mobility[b][axis]*n[axis]
++        def stop_normal(k,n,values):
++            closing = min(0.0,dot(values[k],n))
++            for axis in range(3):values[k][axis] -= closing*n[axis]
++        def remember(k,event_id,n):
++            causes.setdefault(k,(event_id,tuple(n),tuple(positions[k])))
++        def collision(a,b,n,speed,phase):
++            event = CollisionEventV2(event_id=f"collision:{tick}:contact:{len(collisions)}:{a}:{b}",
++                tick=tick,entity_id=a,other_entity_id=b,obstacle_id=None,
++                time_fraction=min(1.0,elapsed/dt),position_m=tuple((positions[a][i]+positions[b][i])/2 for i in range(3)),
++                normal=tuple(n),absolute_time_seconds=start_time+elapsed,
++                contact_phase=phase,relative_normal_speed_mps=speed)
++            collisions.append(event);remember(a,event.event_id,n);remember(b,event.event_id,[-x for x in n])
++            if phase != "impact" or speed<=tolerance or not emit_damage or self._impact_damage_policy is None:return
++            policy = self._impact_damage_policy
++            for target,source in ((a,b),(b,a)):
++                magnitude = ImpactMagnitudeModelV2.evaluate(model=policy.magnitude_model,
++                    parameters=policy.magnitude_parameters,relative_velocity_mps=tuple(speed*x for x in n),
++                    source_mass_kg=self._entities[source].mass_kg,target_mass_kg=self._entities[target].mass_kg,
++                    output_unit=policy.output_unit)
++                evidence = ImpactDamageEvidenceV2.create(effect_ref=policy.effect_binding.exact_ref,
++                    damage_model_ref=policy.damage_binding.exact_ref,magnitude_model=policy.magnitude_model,
++                    magnitude_parameters=policy.magnitude_parameters,output_unit=policy.output_unit,
++                    pre_impact_relative_velocity_mps=tuple(speed*x for x in n),
++                    source_mass_kg=self._entities[source].mass_kg,target_mass_kg=self._entities[target].mass_kg,
++                    time_fraction=min(1.0,elapsed/dt),magnitude=magnitude)
++                intents.append(DamageIntentV2(schema_version="2.0",
++                    intent_id=f"damage:{event.event_id}:{target}",tick=tick,
++                    source_entity_id=source,target_entity_id=target,effect_ref=evidence.effect_ref,
++                    damage_model_ref=evidence.damage_model_ref,magnitude=evidence.magnitude,
++                    evidence_hash=evidence.evidence_hash,source_kind="collision",
++                    parameters={"cause_event_id":event.event_id,"impact_damage_evidence":_plain(evidence)}))
++
++        def repair_overlaps():
++            """Joint positional projection, including shore constraints after each sweep."""
++            for _ in range(iterations):
++                worst = 0.0
++                for a,b in pairs:
++                    n,gap = separation(a,b)
++                    # Keep real native contact geometry: padding the final
++                    # hull separation would silently prevent contact fuses.
++                    penetration = 1e-7-gap
++                    if penetration<=tolerance:continue
++                    worst = max(worst,penetration)
++                    collision(a,b,n,0.0,"overlap_correction")
++                    denominator = sum((inverse_mass[a]*mobility[a][i]+inverse_mass[b]*mobility[b][i])*n[i]*n[i] for i in range(3))
++                    if denominator<=1e-20:raise ValueError("overlap has no physically movable normal direction")
++                    scale = penetration/denominator
++                    before = {k:tuple(positions[k]) for k in (a,b)}
++                    for axis in range(3):
++                        positions[a][axis] += scale*inverse_mass[a]*mobility[a][axis]*n[axis]
++                        positions[b][axis] -= scale*inverse_mass[b]*mobility[b][axis]*n[axis]
++                    for k in (a,b):
++                        if tuple(positions[k]) != before[k]:segments.append(dict(entity_id=k,kind="overlap_projection",start_seconds=elapsed,end_seconds=elapsed,start_m=before[k],end_m=tuple(positions[k])))
++                for k in ids:
++                    if stationary(k):continue
++                    if not list(static_hits(k,MotionSegmentV2(start_m=tuple(positions[k]),end_m=tuple(positions[k]),dt_seconds=dt))):continue
++                    chord = MotionSegmentV2(start_m=motions[k].start_m,end_m=tuple(positions[k]),dt_seconds=dt)
++                    hits = list(static_hits(k,chord))
++                    if not hits:continue
++                    event,n = min(hits,key=lambda v:v[0].time_fraction)
++                    impact = _position(chord,event.time_fraction)
++                    proposed = [impact[a]+n[a]*skin for a in range(3)]
++                    distance = math.dist(proposed,positions[k])
++                    if distance>tolerance:
++                        worst=max(worst,distance);before=tuple(positions[k]);positions[k]=proposed
++                        segments.append(dict(entity_id=k,kind="boundary_projection",start_seconds=elapsed,end_seconds=elapsed,start_m=before,end_m=tuple(proposed)))
++                        remember(k,event.event_id,n)
++                if worst<=tolerance:return
++            raise ValueError("continuous contact positional constraints did not converge")
++
++        # A touching pair is sustained support, not another high-speed impact.
++        sustained = {(a,b) for a,b in pairs if separation(a,b)[1]<=skin+2*tolerance}
++        repair_overlaps()
++        for _ in range(iterations):
++            remaining = dt-elapsed
++            if remaining<=1e-10:break
++            hits = []
++            if self._enable_entity_collisions:
++                for a,b in pairs:
++                    if shapes[a].shape != "sphere" or shapes[b].shape != "sphere":
++                        n,gap=separation(a,b)
++                        relative=[path_velocity[a][i]-path_velocity[b][i] for i in range(3)]
++                        if dot(relative,n)>=-velocity_tolerance:continue
++                        hit=ShapeNarrowphaseOracleV2(tolerance_m=0.0).sweep(shapes[a],start_a=positions[a],
++                            end_a=segment(a,remaining).end_m,shape_b=shapes[b],start_b=positions[b],end_b=segment(b,remaining).end_m)
++                        if hit is not None:hits.append((hit.time_fraction*remaining,a,b,None,None))
++                        continue
++                    delta=[positions[a][i]-positions[b][i] for i in range(3)]
++                    relative=[path_velocity[a][i]-path_velocity[b][i] for i in range(3)]
++                    square=dot(relative,relative);approach=dot(delta,relative)
++                    if square<=1e-20 or approach>=-velocity_tolerance*max(1.,math.sqrt(dot(delta,delta))):continue
++                    radius=self._entities[a].radius_m+self._entities[b].radius_m
++                    gap=dot(delta,delta)-radius*radius
++                    discriminant=approach*approach-square*gap
++                    if discriminant<0.0:continue
++                    when=max(0.0,(-approach-math.sqrt(discriminant))/square)
++                    if when<=remaining+1e-10:hits.append((min(remaining,when),a,b,None,None))
++            for k in ids:
++                if stationary(k):continue
++                for event,n in static_hits(k,segment(k,remaining)):
++                    if dot(path_velocity[k],n)<-velocity_tolerance:
++                        hits.append((event.time_fraction*remaining,k,None,event,n))
++            advance = min((h[0] for h in hits),default=remaining)
++            if advance>1e-12:
++                for k in ids:
++                    before=tuple(positions[k])
++                    positions[k]=[positions[k][a]+path_velocity[k][a]*advance for a in range(3)]
++                    segments.append(dict(entity_id=k,kind="integrate",start_seconds=elapsed,end_seconds=elapsed+advance,
++                        start_m=before,end_m=tuple(positions[k]),path_velocity_mps=tuple(path_velocity[k])))
++                elapsed += advance
++            if not hits:break
++            simultaneous=[h for h in hits if h[0]<=advance+1e-8]
++            constraints=[]
++            for _when,a,b,event,n in simultaneous:
++                if b is not None:
++                    n,_gap=separation(a,b)
++                    speed=max(0.0,-dot([path_velocity[a][i]-path_velocity[b][i] for i in range(3)],n))
++                    collision(a,b,n,speed,"sustained" if (a,b) in sustained else "impact")
++                    sustained.add((a,b));constraints.append((a,b,n))
++                else:
++                    event=replace(event,event_id=f"{event.event_id}:contact:{len(boundaries)}",
++                        time_fraction=min(1.0,elapsed/dt),absolute_time_seconds=start_time+elapsed)
++                    if isinstance(event,BoundaryEventV2):boundaries.append(event)
++                    else:collisions.append(event)
++                    remember(a,event.event_id,n);constraints.append((a,None,n))
++                    policy=self._zone_policies.get(getattr(event,"boundary_id",""),self._policy)
++                    if policy.policy=="effect":
++                        speed=max(0.0,-dot(path_velocity[a],n))
++                        if emit_damage and self._impact_damage_policy is not None and speed>tolerance and _when*speed>skin+2*tolerance:
++                            effect=self._impact_damage_policy
++                            vector=tuple(speed*x for x in n);mass=self._entities[a].mass_kg
++                            magnitude=ImpactMagnitudeModelV2.evaluate(model=effect.magnitude_model,parameters=effect.magnitude_parameters,
++                                relative_velocity_mps=vector,source_mass_kg=mass,target_mass_kg=mass,output_unit=effect.output_unit)
++                            evidence=ImpactDamageEvidenceV2.create(effect_ref=effect.effect_binding.exact_ref,
++                                damage_model_ref=effect.damage_binding.exact_ref,magnitude_model=effect.magnitude_model,
++                                magnitude_parameters=effect.magnitude_parameters,output_unit=effect.output_unit,
++                                pre_impact_relative_velocity_mps=vector,source_mass_kg=mass,target_mass_kg=mass,
++                                time_fraction=min(1.,elapsed/dt),magnitude=magnitude)
++                            intents.append(DamageIntentV2(schema_version="2.0",intent_id=f"damage:{event.event_id}:boundary",
++                                tick=tick,source_entity_id="boundary-system",target_entity_id=a,effect_ref=evidence.effect_ref,
++                                damage_model_ref=evidence.damage_model_ref,magnitude=magnitude,evidence_hash=evidence.evidence_hash,
++                                source_kind="environment",parameters={"cause_event_id":event.event_id,"impact_damage_evidence":_plain(evidence)}))
++                        path_velocity[a]=[0.,0.,0.];velocities[a]=[0.,0.,0.]
++            # Include all supporting neighbours, so a third body cannot undo a
++            # previously solved contact or squeeze another hull through it.
++            for a,b in pairs:
++                n,gap=separation(a,b)
++                if gap<=1e-7:
++                    constraints.append((a,b,n))
++            for _ in range(iterations):
++                worst=0.0
++                for a,b,n in constraints:
++                    for values in (path_velocity,velocities):
++                        relative=dot(values[a],n) if b is None else dot([values[a][i]-values[b][i] for i in range(3)],n)
++                        worst=max(worst,-relative)
++                        if b is None:stop_normal(a,n,values)
++                        else:
++                            # A supporting neighbour can receive a propagated
++                            # impulse without being the first impact pair.
++                            # Retain its constrained path/velocity at commit,
++                            # rather than restoring its old native endpoint.
++                            if relative < -1e-10 and (a not in causes or b not in causes):
++                                speed=max(0.,-dot([path_velocity[a][i]-path_velocity[b][i] for i in range(3)],n))
++                                collision(a,b,n,speed,"sustained")
++                            close_velocity(a,b,n,values)
++                if worst<=velocity_tolerance:break
++            else:raise ValueError("continuous contact velocity constraints did not converge")
++            repair_overlaps()
++        else:raise ValueError("continuous contact event budget exhausted before end of tick")
++        repair_overlaps()
++        for k in ids:
++            if k not in causes:
++                positions[k]=list(motions[k].end_m)
++        for a,b in pairs:
++            if separation(a,b)[1]<-tolerance:
++                raise ValueError("refuse to commit interpenetrating collision bodies")
++        actions=[]
++        for k in ids:
++            if tuple(positions[k])==motions[k].end_m and tuple(velocities[k])==motions[k].velocity_mps:continue
++            event_id,n,contact=causes.get(k,(f"continuous-contact:{tick}:{k}",(1.0,0.0,0.0),tuple(positions[k])))
++            actions.append(BoundaryPolicyActionV2(action_id=f"boundary-action:{tick}:continuous:{k}",
++                tick=tick,entity_id=k,policy="constrain",cause_event_id=event_id,
++                candidate_end_m=motions[k].end_m,resolved_end_m=tuple(positions[k]),
++                boundary_normal=n,resolved_velocity_mps=tuple(velocities[k]),contact_position_m=contact))
++        return BoundaryEvaluationV2(tick=tick,boundary_events=tuple(boundaries),collision_events=tuple(collisions),
++            damage_intents=tuple(intents),policy_actions=tuple(actions),motion_segments=tuple(segments))
+ 
+     def evaluate(
+         self,
+@@ -2432,6 +2741,9 @@
+             if not isinstance(segment, MotionSegmentV2):
+                 raise TypeError("motion values must be MotionSegmentV2")
+             staged[entity_id] = segment
++        if self._physical_motion is not None:
++            return self._evaluate_continuous_contacts(staged,tick=tick,start_time=start_time,
++                                                     emit_damage=damage_intents_enabled)
+         boundary_events: list[BoundaryEventV2] = []
+         collision_events: list[CollisionEventV2] = []
+         for entity_id in sorted(staged):
+@@ -2571,7 +2883,11 @@
+         ] = {}
+         for cause in causes:
+             current = winners.get(cause[1])
+-            if current is None or (-cause[7], cause[8]) < (-current[7], current[8]):
++            if current is None or (cause[3], -cause[7], cause[8]) < (
++                current[3],
++                -current[7],
++                current[8],
++            ):
+                 winners[cause[1]] = cause
+         causes = [winners[entity_id] for entity_id in sorted(winners)]
+         for index, (
+@@ -2643,7 +2959,9 @@
+             elif policy.policy == "constrain":
+                 resolved_end = impact
+                 constrained_component = (
+-                    min(0.0, normal_component) if entering_excluded else max(0.0, normal_component)
++                    min(0.0, normal_component)
++                    if entering_excluded or collision_source_id is not None
++                    else max(0.0, normal_component)
+                 )
+                 resolved_velocity = cast(
+                     Vector3V2,
+@@ -2825,6 +3143,199 @@
+         return BoundaryEvaluationV2(tick=tick, collision_events=tuple(collisions))
+ 
+ 
++def _rotated(shape: CollisionShapeV2, delta: float) -> CollisionShapeV2:
++    return replace(shape, yaw_degrees=shape.yaw_degrees + delta) if shape.shape == "obb" else shape
++
++
++def _motion_shape(
++    shape: CollisionShapeV2, motion: MotionSegmentV2
++) -> tuple[CollisionShapeV2, float]:
++    if shape.shape != "obb" or motion.start_heading_deg is None:
++        return shape, 0.0
++    # Navigation heading: clockwise from north; geometry yaw: CCW from east.
++    end = motion.start_heading_deg if motion.end_heading_deg is None else motion.end_heading_deg
++    turn = (end - motion.start_heading_deg + 180.0) % 360.0 - 180.0
++    return _rotated(shape, 90.0 - motion.start_heading_deg), -turn
++
++
++def _shape_gap(
++    a: CollisionShapeV2,
++    pa: Vector3V2,
++    b: CollisionShapeV2,
++    pb: Vector3V2,
++) -> tuple[float, Vector3V2]:
++    """Separation lower bound and normal pointing from B to A.
++
++    Box pairs use separating axes (including Z). Sphere/box uses exact closest
++    point distance, so rounded corners are not replaced with an inflated box.
++    """
++    if a.shape == "sphere" and b.shape == "sphere":
++        delta = tuple(pa[i] - pb[i] for i in range(3))
++        length = math.sqrt(sum(x * x for x in delta))
++        normal = (1.0, 0.0, 0.0) if length == 0.0 else tuple(x / length for x in delta)
++        return length - a.radius_m - b.radius_m, cast(Vector3V2, normal)
++    if b.shape == "sphere":
++        gap, normal = _shape_gap(b, pb, a, pa)
++        return gap, cast(Vector3V2, tuple(-x for x in normal))
++    if a.shape == "sphere":
++        yaw = math.radians(b.yaw_degrees if b.shape == "obb" else 0.0)
++        c, s = math.cos(yaw), math.sin(yaw)
++        dx, dy, dz = (pa[i] - pb[i] for i in range(3))
++        local = (c * dx + s * dy, -s * dx + c * dy, dz)
++        offset = tuple(
++            local[i] - max(-b.half_extents_m[i], min(b.half_extents_m[i], local[i]))
++            for i in range(3)
++        )
++        length = math.sqrt(sum(x * x for x in offset))
++        if length == 0.0:
++            axis = min(range(3), key=lambda i: b.half_extents_m[i] - abs(local[i]))
++            normal = tuple(
++                (1.0 if local[i] >= 0.0 else -1.0) if i == axis else 0.0 for i in range(3)
++            )
++        else:
++            normal = tuple(x / length for x in offset)
++        return length - a.radius_m, (
++            c * normal[0] - s * normal[1],
++            s * normal[0] + c * normal[1],
++            normal[2],
++        )
++    axes = [(0.0, 0.0, 1.0)]
++    polygons = (_shape_polygon(a), _shape_polygon(b))
++    for shape in (a, b):
++        yaw = math.radians(shape.yaw_degrees if shape.shape == "obb" else 0.0)
++        c, s = math.cos(yaw), math.sin(yaw)
++        axes.extend(((c, s, 0.0), (-s, c, 0.0)))
++    best, normal = -math.inf, (1.0, 0.0, 0.0)
++    for axis in axes:
++        center = sum((pa[i] - pb[i]) * axis[i] for i in range(3))
++        if axis[2]:
++            radius = a.half_extents_m[2] + b.half_extents_m[2]
++        else:
++            radius = sum(max(abs(x * axis[0] + y * axis[1]) for x, y in poly) for poly in polygons)
++        gap = abs(center) - radius
++        if gap > best:
++            best = gap
++            normal = tuple(x * (1.0 if center >= 0.0 else -1.0) for x in axis)
++    return best, cast(Vector3V2, normal)
++
++
++def _translation_contact(
++    a: CollisionShapeV2,
++    a0: Vector3V2,
++    a1: Vector3V2,
++    b: CollisionShapeV2,
++    b0: Vector3V2,
++    b1: Vector3V2,
++    tolerance: float,
++) -> float | None:
++    """Exact translational SAT for boxes; piecewise quadratic sphere/box sweep."""
++    start = tuple(a0[i] - b0[i] for i in range(3))
++    end = tuple(a1[i] - b1[i] for i in range(3))
++    if a.shape == "sphere" or b.shape == "sphere":
++        if b.shape == "sphere":
++            return _translation_contact(b, b0, b1, a, a0, a1, tolerance)
++        yaw = math.radians(b.yaw_degrees if b.shape == "obb" else 0.0)
++        c, s = math.cos(yaw), math.sin(yaw)
++        local_start = (c * start[0] + s * start[1], -s * start[0] + c * start[1], start[2])
++        local_end = (c * end[0] + s * end[1], -s * end[0] + c * end[1], end[2])
++        delta = tuple(local_end[i] - local_start[i] for i in range(3))
++        breaks = {0.0, 1.0}
++        for i in range(3):
++            if delta[i]:
++                for edge in (-b.half_extents_m[i], b.half_extents_m[i]):
++                    t = (edge - local_start[i]) / delta[i]
++                    if 0.0 < t < 1.0:
++                        breaks.add(t)
++        times = sorted(breaks)
++        radius = a.radius_m + tolerance
++        for lower, upper in zip(times, times[1:], strict=False):
++            mid = (lower + upper) / 2.0
++            offset, velocity = [], []
++            for i in range(3):
++                x = local_start[i] + mid * delta[i]
++                extent = b.half_extents_m[i]
++                if abs(x) <= extent:
++                    offset.append(0.0)
++                    velocity.append(0.0)
++                else:
++                    edge = extent if x > 0.0 else -extent
++                    offset.append(local_start[i] + lower * delta[i] - edge)
++                    velocity.append(delta[i] * (upper - lower))
++            hit = _sphere_sweep_fraction(
++                tuple(offset), tuple(offset[i] + velocity[i] for i in range(3)), radius, 0.0
++            )
++            if hit is not None:
++                return lower + hit * (upper - lower)
++        return None
++    axes = [(0.0, 0.0, 1.0)]
++    for shape in (a, b):
++        yaw = math.radians(shape.yaw_degrees if shape.shape == "obb" else 0.0)
++        c, s = math.cos(yaw), math.sin(yaw)
++        axes.extend(((c, s, 0.0), (-s, c, 0.0)))
++    entry, exit_time = 0.0, 1.0
++    for axis in axes:
++        if axis[2]:
++            radius = a.half_extents_m[2] + b.half_extents_m[2]
++        else:
++            radius = sum(
++                max(abs(x * axis[0] + y * axis[1]) for x, y in _shape_polygon(shape))
++                for shape in (a, b)
++            )
++        interval = _linear_interval(
++            sum(start[i] * axis[i] for i in range(3)),
++            sum(end[i] * axis[i] for i in range(3)),
++            -radius - tolerance,
++            radius + tolerance,
++        )
++        if interval is None:
++            return None
++        entry, exit_time = max(entry, interval[0]), min(exit_time, interval[1])
++        if entry > exit_time:
++            return None
++    return entry
++
++
++def _rigid_sweep_fraction(
++    a: CollisionShapeV2,
++    a0: Vector3V2,
++    a1: Vector3V2,
++    b: CollisionShapeV2,
++    b0: Vector3V2,
++    b1: Vector3V2,
++    yaw_a: float,
++    yaw_b: float,
++    tolerance: float,
++) -> float | None:
++    """Conservative advancement with a bound on translation plus angular travel.
++
++    Each step is bounded by separation / maximum relative point travel, so fast
++    crossings and intermediate rotations cannot be skipped. Contact accuracy is
++    1e-7 metres; iterations fail explicitly rather than silently missing a hit.
++    """
++    if yaw_a == yaw_b == 0.0:
++        return _translation_contact(a, a0, a1, b, b0, b1, tolerance)
++    da = tuple(a1[i] - a0[i] for i in range(3))
++    db = tuple(b1[i] - b0[i] for i in range(3))
++    speed = math.sqrt(sum((da[i] - db[i]) ** 2 for i in range(3)))
++    speed += abs(math.radians(yaw_a)) * a.radius_m + abs(math.radians(yaw_b)) * b.radius_m
++    fraction = 0.0
++    epsilon = max(tolerance, 1e-7)
++    for _ in range(4096):
++        pa = cast(Vector3V2, tuple(a0[i] + fraction * da[i] for i in range(3)))
++        pb = cast(Vector3V2, tuple(b0[i] + fraction * db[i] for i in range(3)))
++        gap, _normal = _shape_gap(
++            _rotated(a, yaw_a * fraction), pa, _rotated(b, yaw_b * fraction), pb
++        )
++        if gap <= epsilon:
++            return fraction
++        if speed == 0.0 or gap > speed * (1.0 - fraction) + epsilon:
++            return None
++        fraction += gap / speed
++        if fraction > 1.0:
++            return None
++    raise ValueError("continuous shape sweep did not converge")
++
++
+ def _sphere_sweep_fraction(
+     relative_start: Vector3V2,
+     relative_end: Vector3V2,
