@@ -1,0 +1,31 @@
+{
+  "scenario": "IE-15-BUOY-IDENTIFICATION",
+  "policy": "hybrid",
+  "seed": 2026111201,
+  "status": "completed",
+  "task_success": true,
+  "utility": 0.8207255090894321,
+  "final_tick": 1169,
+  "frames": 1170,
+  "scoring_scope": "natural_terminal",
+  "requested_model": "DeepSeek-V4-Flash",
+  "reported_models": [
+    "neolink/program/deepseek-v4.1-flash"
+  ],
+  "plan_interval_ticks": 30,
+  "llm_calls": 39,
+  "transport_failures": 0,
+  "invalid_json_responses": 0,
+  "scout_plans": {
+    "accepted": 39,
+    "rejected": 0,
+    "survey": 4,
+    "revisit": 35
+  },
+  "decision_timeouts": 0,
+  "runtime_sha256": "0d54bcc0a41c9ae96d2bfc66519a08d7ea3e3c600df67a5887f62a2ee9007408",
+  "trace_sha256": "583bad24f769b45fb94b2af06e68b64f571b65d3b0c59fe867bdea77afa57b97",
+  "replay_pack_sha256": "dafc345398492538b0fa5570cfb86554ad4495bbb090ee7b7828e01335380fd9",
+  "llm_audit_sha256": "c35f66663ebb9193e526999e2c8e954aac4fa24ed940c934d18442963d438e9e",
+  "scout_plans_sha256": "8889850a7e8e5a80b2f6bf66f52e0457ba3d7936fe96692f27cd920e2d4b0440"
+}

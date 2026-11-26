@@ -1,8 +1,8 @@
-"""Local OpenAI-compatible LLM client for the hybrid defence agent.
+"""OpenAI-compatible LLM client for the Hybrid agents.
 
 Reuses the paper project's planner/executor split: this module only provides the
-transport to the locally served vLLM endpoint (Qwen3.8-27B). It never touches
-engine state and never receives referee facts.
+transport to the configured endpoint. It only receives inputs supplied by the
+participant process.
 """
 import json
 import os
@@ -42,18 +42,23 @@ class LLMClient:
         self.model = model or DEFAULT_MODEL
         self.timeout = DEFAULT_TIMEOUT if timeout is None else timeout
         self.max_tokens = DEFAULT_MAX_TOKENS if max_tokens is None else max_tokens
+        self.reported_model = None
         self.stats = {"calls": 0, "failures": 0, "prompt_tokens": 0,
                       "completion_tokens": 0, "latency_s": []}
 
     def complete(self, system, user, max_tokens=None, temperature=0.0):
+        self.reported_model = None
         payload = {
             "model": self.model,
             "messages": [{"role": "system", "content": system},
                          {"role": "user", "content": user}],
             "max_tokens": self.max_tokens if max_tokens is None else max_tokens,
             "temperature": temperature,
-            "chat_template_kwargs": {"enable_thinking": False},
         }
+        if self.model.casefold().startswith("deepseek-"):
+            payload["thinking"] = {"type": "disabled"}
+        else:
+            payload["chat_template_kwargs"] = {"enable_thinking": False}
         headers = {"Content-Type": "application/json"}
         key = os.environ.get("OPENMD_LLM_API_KEY")
         if key:
@@ -75,6 +80,9 @@ class LLMClient:
         elapsed = time.monotonic() - began
         self.stats["calls"] += 1
         self.stats["latency_s"].append(round(elapsed, 3))
+        reported_model = body.get("model")
+        if isinstance(reported_model, str):
+            self.reported_model = reported_model
         usage = body.get("usage") or {}
         self.stats["prompt_tokens"] += int(usage.get("prompt_tokens") or 0)
         self.stats["completion_tokens"] += int(usage.get("completion_tokens") or 0)
@@ -119,7 +127,7 @@ class AuditedClient(LLMClient):
         except (ValueError,AttributeError): tick=None
         if self.audit:
             row={'tick':tick,'pid':os.getpid(),'model':self.model,'endpoint':self.base,
-                 'thinking':False,'temperature':temperature,'elapsed_seconds':time.monotonic()-started,
+                 'reported_model':self.reported_model,'thinking':False,'temperature':temperature,'elapsed_seconds':time.monotonic()-started,
                  'request_system':system,'request_user':user,'response':response,
                  'parsed_json':bool(extract_json(response)),
                  'calls_delta':after['calls']-before['calls'],

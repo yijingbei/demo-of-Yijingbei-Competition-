@@ -1,0 +1,8 @@
+{
+  "base_url": "https://delta-router.yangtzeailab.com/v1",
+  "model": "DeepSeek-V4-Flash",
+  "plan_interval": 30,
+  "timeout_seconds": 22,
+  "max_tokens": 192,
+  "max_fallback": 3
+}
