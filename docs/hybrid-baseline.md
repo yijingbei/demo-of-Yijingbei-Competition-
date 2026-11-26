@@ -1,8 +1,8 @@
 # Hybrid 基线
 
-常规 Hybrid 默认使用 Qwen3.8-27B 做规划，每 30 个仿真 tick 调用一次。模型读取选手接口提供的观测摘要，输出有限的 JSON 规划字段，由现有 `adaptive` 执行器生成每个 tick 的动作。评测仍通过同一个选手 JSONL 接口。
+六个场景共用 `HybridCommander` 和 `AirLanePlanner(adaptive)`。每 30 tick 依据公开观测摘要产生一次相同格式的 JSON 规划指令，并由规则执行器逐步生成动作。模型超时均为 25 秒，输出上限 220 token，连续三次失败后采用默认指令。
 
-IE01、IE05、IE13、S2 和 S10 使用常规分支。IE15 的 Hybrid 分支根据授权观测的汇总计数选择普通或加密复查节奏，间隔分别为 120 或 60 tick。侦察、轨迹判断和动作仍由 [IE15 专用规则执行器](../omd_competition/buoy_baselines.py) 处理。
+常规配置请求 Qwen3.8-27B。IE15 实验配置将模型名和服务地址换为 Delta Router 上的 DeepSeek-V4-Flash。
 
 ## 运行
 
@@ -31,20 +31,19 @@ Linux 使用 `.venv/bin/python`。每次使用新的输出目录。快速验证�
 IE15 的复现实验使用 [Delta Router 配置](../configs/hybrid.ie15.deepseek.example.json)。在运行环境中设置 `OPENMD_LLM_API_KEY` 后执行：
 
 ```powershell
-.venv\Scripts\python.exe run_hybrid.py --config configs/hybrid.ie15.deepseek.example.json --scenario IE-15-BUOY-IDENTIFICATION --seed 2026111201 --output local-results/ie15-deepseek-v4-flash --replay-format html
+.venv\Scripts\python.exe run_hybrid.py --config configs/hybrid.ie15.deepseek.example.json --scenario IE-15-BUOY-IDENTIFICATION --seed 2026111201 --output local-results/ie15-deepseek-shared-hybrid --replay-format html
 ```
 
-每 30 tick 规划一次。`scout-plans.jsonl` 保存接受与回退情况以及实际复查间隔，`hybrid-summary.json` 保存模型网关返回的标识和调度统计。
+`llm-audit.jsonl` 保存每次规划调用，`hybrid-summary.json` 汇总模型网关返回的标识、调用次数与错误。
 
 ## 离线回放
 
 下载[六场 Hybrid 回放](../visualization/hybrid-replay.html)，用 Chrome 或 Edge 打开，在下拉菜单切换。IE01、IE05 和 IE13 采用种子 `2026102302`，S2 和 S10 采用种子 `2026102801`。IE15 使用种子 `2026111201` 和当前场景配置，网关返回的模型标识为 `neolink/program/deepseek-v4.1-flash`。其余五场保留原始录制版本。IE01、IE05、IE13 有模型调用核验记录，S2、S10 的模型来自原回放策略声明。
 
-本次 IE15 的终局、得分、模型调用和复查模式计数见 [实验结果摘要](../visualization/ie15-hybrid-summary.json)。
+本次 IE15 的终局、得分和模型调用见 [实验结果摘要](../visualization/ie15-hybrid-summary.json)。
 
 ## 源码
 
 - [运行入口](../run_hybrid.py)与[评测接入](../omd_competition/hybrid_runner.py)
 - [规划与执行](../omd_competition/hybrid_agent.py)
 - [模型请求与审计](../omd_competition/hybrid_llm_client.py)
-- [IE15 复查调度](../omd_competition/hybrid_buoy.py)

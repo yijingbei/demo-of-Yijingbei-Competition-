@@ -16,7 +16,7 @@
 | [`IE-13-DEEP-STRIKE`][ie13] | 纵深双目标突击 | 支持 | 支持 |
 | [`IE-S2-LURE`][s2] | 调虎离山 | 支持 | 支持 |
 | [`IE-S10-TWO-AXIS`][s10] | 双轴同时施压 | 支持 | 支持 |
-| [`IE-15-BUOY-IDENTIFICATION`][ie15] | 浮标阵中的水面威胁识别 | 专用轨迹判断 | DeepSeek 复查调度 |
+| [`IE-15-BUOY-IDENTIFICATION`][ie15] | 浮标阵中的水面威胁识别 | 专用轨迹判断 | 共用 Hybrid · DeepSeek |
 
 [ie01]: scenarios/ie/ie-01-single-target/public_brief.json
 [ie05]: scenarios/ie/ie-05-multi-axis/public_brief.json
@@ -45,7 +45,7 @@
 
 ### Hybrid 基线
 
-Hybrid 默认用 **Qwen3.8-27B** 每 30 tick 对公开观测摘要做一次规划，`adaptive` 执行器每 tick 生成动作。IE15 可用 **DeepSeek-V4-Flash** 选择侦察复查节奏，由 IE15 专用轨迹判断策略继续执行。入口使用 OpenAI 兼容的 Chat Completions 服务，调用记录和失败回退统计写到本地结果目录。[运行入口](run_hybrid.py) · [常规配置](configs/hybrid.example.json) · [IE15 配置](configs/hybrid.ie15.deepseek.example.json) · [使用说明](docs/hybrid-baseline.md)
+六个场景共用同一套 Hybrid 提示词、规划指令、`adaptive` 执行器和回退机制。模型每 30 tick 规划一次，执行器每 tick 生成动作。前五场实录使用 **Qwen3.8-27B**，IE15 实录通过 Delta Router 使用 **DeepSeek-V4-Flash**。模型请求使用 OpenAI 兼容的 Chat Completions 接口，调用证据写到本地结果目录。[运行入口](run_hybrid.py) · [常规配置](configs/hybrid.example.json) · [IE15 配置](configs/hybrid.ie15.deepseek.example.json) · [使用说明](docs/hybrid-baseline.md)
 
 ### 自定义参赛程序
 
@@ -121,7 +121,7 @@ Linux 可用 `python3.11 -m venv .venv` 创建环境，后续命令换成 `.venv
 | 回放入口 | 收录范围 | 录制来源 |
 | --- | --- | --- |
 | [规则基线](visualization/demo-replay.html) | 六场 | IE01、IE05、IE13 为原有能耗版实录，种子 `2026102302`。S2、S10 为历史实录，种子 `2026102801`。IE15 录于无人机能耗对齐之前，种子 `2026111201`。 |
-| [Hybrid 基线](visualization/hybrid-replay.html) | 六场 | IE01、IE05、IE13 的种子为 `2026102302`，有模型调用核验记录。S2、S10 的种子为 `2026102801`，模型来自原回放策略声明。IE15 是 DeepSeek-V4-Flash 实跑，种子为 `2026111201`。 |
+| [Hybrid 基线](visualization/hybrid-replay.html) | 六场 | IE01、IE05、IE13 的种子为 `2026102302`，有模型调用核验记录。S2、S10 的种子为 `2026102801`，模型来自原回放策略声明。IE15 为共用 Hybrid 方法的 DeepSeek-V4-Flash 实跑，种子为 `2026111201`。 |
 
 两份合集都保留各局录制时的运行时摘要。用当前配置重新实验后，可以通过[回放插件](plugins/html_replay/README.md)把本地结果导出到新的 HTML：
 

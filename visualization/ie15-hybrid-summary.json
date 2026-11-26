@@ -3,29 +3,27 @@
   "policy": "hybrid",
   "seed": 2026111201,
   "status": "completed",
-  "task_success": true,
-  "utility": 0.8207255090894321,
-  "final_tick": 1169,
-  "frames": 1170,
+  "task_success": false,
+  "utility": 0.4333333333333333,
+  "final_tick": 2400,
+  "frames": 2401,
   "scoring_scope": "natural_terminal",
   "requested_model": "DeepSeek-V4-Flash",
   "reported_models": [
     "neolink/program/deepseek-v4.1-flash"
   ],
   "plan_interval_ticks": 30,
-  "llm_calls": 39,
+  "llm_calls": 80,
   "transport_failures": 0,
   "invalid_json_responses": 0,
-  "scout_plans": {
-    "accepted": 39,
-    "rejected": 0,
-    "survey": 4,
-    "revisit": 35
+  "method": {
+    "planner": "HybridCommander",
+    "executor": "AirLanePlanner(adaptive)",
+    "accepted_plans": 80
   },
   "decision_timeouts": 0,
-  "runtime_sha256": "0d54bcc0a41c9ae96d2bfc66519a08d7ea3e3c600df67a5887f62a2ee9007408",
-  "trace_sha256": "583bad24f769b45fb94b2af06e68b64f571b65d3b0c59fe867bdea77afa57b97",
-  "replay_pack_sha256": "dafc345398492538b0fa5570cfb86554ad4495bbb090ee7b7828e01335380fd9",
-  "llm_audit_sha256": "c35f66663ebb9193e526999e2c8e954aac4fa24ed940c934d18442963d438e9e",
-  "scout_plans_sha256": "8889850a7e8e5a80b2f6bf66f52e0457ba3d7936fe96692f27cd920e2d4b0440"
+  "runtime_sha256": "0e5018073704a316b5911180f543eb19a7fe3bb196bd16170edcc9060085832e",
+  "trace_sha256": "35cbd50f4eabada35d34ddbc6a6fccd89c8cb899c284ccfbe72db17478973616",
+  "replay_pack_sha256": "0a0d78fb2d1c12a6e64bcbba6e2fc1b97b9c9c8d3a5e8f54abb11540bbb46704",
+  "llm_audit_sha256": "a0aa88d0f16d798f917fad77384d76bec72eeee71d0a03e0d3142d82c7d2bdc0"
 }

@@ -271,7 +271,7 @@ class HybridCommander:
         # Frozen experiment used strict scheduling, without contact-count triggers.
         return obs["tick"] - self.last_plan_tick >= PLAN_INTERVAL
 
-    def act(self, obs, receipt=None):
+    def act(self, obs):
         contacts = self._contacts(obs)
         if self._should_plan(obs, contacts):
             try:
@@ -318,21 +318,15 @@ def main():
         if request.get("protocol") != PROTOCOL:
             raise ValueError("unsupported protocol")
         if request["type"] == "close":
-            if commander is not None and hasattr(commander, "close"):
+            if commander is not None:
                 commander.close()
             return
         observation = request["observation"]
         if request["type"] == "reset":
-            brief = request["public_brief"]
-            if "contact_judgment_contract" in brief:
-                from .hybrid_buoy import BuoyHybridCommander
-                commander = BuoyHybridCommander(
-                    brief, plan_interval=PLAN_INTERVAL, max_fallback=MAX_FALLBACK)
-            else:
-                commander = HybridCommander(brief, observation)
+            commander = HybridCommander(request["public_brief"], observation)
         if commander is None:
             raise ValueError("reset required")
-        response = commander.act(observation, request.get("last_receipt"))
+        response = commander.act(observation)
         print(json.dumps(response, ensure_ascii=False, allow_nan=False), flush=True)
 
 

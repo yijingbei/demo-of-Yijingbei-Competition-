@@ -36,25 +36,21 @@ def main(argv=None):
     if args.max_ticks is not None and args.max_ticks<1:parser.error('--max-ticks must be positive')
     output=args.output.resolve()
     if output.exists():parser.error('Output already exists; choose a new path to preserve previous evidence')
-    from .runtime import entry, public_brief
+    from .runtime import entry
     try:
         row = entry(args.scenario)
     except StopIteration:
         parser.error(f'Unknown demo scenario: {args.scenario}')
     if row['track'] != 'interception':
         parser.error('This hybrid baseline is for interception scenarios only')
-    buoy_policy = 'contact_judgment_contract' in public_brief(args.scenario)
     configure(data,output)
     # Hash implementation plus effective configuration, not a fictitious rule baseline.
     names=['run_hybrid.py','omd_competition/hybrid_runner.py','omd_competition/hybrid_agent.py',
            'omd_competition/hybrid_llm_client.py','omd_competition/hybrid_brief_compat.py',
            'omd_competition/agent.py','omd_competition/intercept_planner.py','omd_competition/wave_schedule.py']
-    if buoy_policy:
-        names.extend(('omd_competition/hybrid_buoy.py', 'omd_competition/buoy_baselines.py',
-                      'omd_competition/trajectory_judgment.py', 'omd_competition/action_feedback.py'))
     hashes={name:hashlib.sha256((ROOT/name).read_bytes()).hexdigest() for name in names}
     provenance={'architecture':'hybrid','config':data,'source_sha256':hashes,
-                'thinking':False,'scheduling':'strict_interval','source':'IE15 inspection scheduling' if buoy_policy else '20261028 experiment; 20261030 integration',
+                'thinking':False,'scheduling':'strict_interval','source':'20261028 experiment; 20261030 integration',
                 'official_sandbox_certified':False}
     digest=hashlib.sha256(json.dumps(provenance,sort_keys=True).encode()).hexdigest()
     from .evaluate import run_episode
@@ -78,17 +74,6 @@ def main(argv=None):
              'model_called_successfully':any(r['parsed_json'] and not r['failures_delta'] for r in rows),
              'validation_scope':'bounded_probe' if args.max_ticks else 'natural_terminal'}
     summary['reported_models'] = sorted({row['reported_model'] for row in rows if row.get('reported_model')})
-    directives_invalid = 0
-    if buoy_policy:
-        plans_path = output/'scout-plans.jsonl'
-        plans = [json.loads(line) for line in plans_path.read_text(encoding='utf-8').splitlines()] if plans_path.is_file() else []
-        directives_invalid = sum(not plan['accepted'] for plan in plans)
-        summary['scout_plans'] = {
-            'accepted': len(plans) - directives_invalid, 'rejected': directives_invalid,
-            'survey': sum(p['effective_mode'] == 'survey' for p in plans),
-            'revisit': sum(p['effective_mode'] == 'revisit' for p in plans),
-        }
-        summary['model_called_successfully'] &= summary['scout_plans']['accepted'] > 0
     (output/'hybrid-summary.json').write_text(json.dumps(summary,ensure_ascii=False,indent=2),encoding='utf-8')
     print(json.dumps(summary,ensure_ascii=False),flush=True)
-    return int(result.get('status') not in ('completed','bounded_probe') or not summary['model_called_successfully'] or transport or invalid or directives_invalid or executor_errors)
+    return int(result.get('status') not in ('completed','bounded_probe') or not summary['model_called_successfully'] or transport or invalid or executor_errors)
