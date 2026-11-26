@@ -47,6 +47,10 @@ py -3.11 -m venv .venv
 .venv\Scripts\python.exe replay.py local-results/ie01 -o local-results/ie01.html
 ```
 
+## Hybrid 基线
+
+[五场 Hybrid 回放 HTML](visualization/hybrid-replay.html) 可切换 IE01、IE05、IE13、IE-S2-LURE 和 IE-S10-TWO-AXIS。Qwen3.8-27B 负责周期性规划，`adaptive` 执行器以现有规则生成动作。参见 [Hybrid 使用说明](docs/hybrid-baseline.md) 和 [运行入口](run_hybrid.py)。IE15 提供轨迹判断规则基线。
+
 ## 接入自己的程序
 
 [选手接口说明](docs/participant-guide.md) 提供 JSONL 请求、回执与提交入口。示例配置见 [场景清单](scenarios/suite.json)。[引擎](engine/source_codes/openmdbench) 随仓库提供，启动器直接加载其源码。
