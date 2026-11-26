@@ -31,7 +31,15 @@ py -3.11 -m venv .venv
 
 ## 看回放
 
-下载 [离线示例回放 HTML](visualization/demo-replay.html)，用 Chrome 或 Edge 打开后从下拉菜单选场景。IE01、IE05、IE13 沿用源包已有的能耗版实录，种子为 `2026102302`，并保留录制时的运行时摘要。IE15、S2 和 S10 可用上面的评测命令运行并生成回放。
+下载 [六场规则基线回放 HTML](visualization/demo-replay.html)，用 Chrome 或 Edge 打开。可在同一播放器中切换 IE01、IE05、IE13、IE-S2-LURE、IE-S10-TWO-AXIS 和 IE15。
+
+| 回放 | 种子 | 录制版本 |
+| --- | --- | --- |
+| IE01、IE05、IE13 | 2026102302 | 原有能耗版 |
+| IE-S2-LURE、IE-S10-TWO-AXIS | 2026102801 | S 系列历史规则基线 |
+| IE15 | 2026111201 | 无人机能耗对齐前的历史记录 |
+
+每局保留录制时的运行时摘要。可用上面的评测命令按仓库当前配置生成新回放。
 
 用 [回放插件](plugins/html_replay/README.md) 可将自己的实验目录导出为独立 HTML。
 
