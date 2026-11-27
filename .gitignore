@@ -19,3 +19,8 @@ backup/
 backups/
 *.log
 *.tmp
+
+# Personal model settings and credentials
+.env
+.env.*
+configs/*.local.json

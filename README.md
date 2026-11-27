@@ -47,6 +47,10 @@
 
 六个场景共用同一套 Hybrid 提示词、规划指令、`adaptive` 执行器和回退机制。模型每 30 tick 规划一次，执行器每 tick 生成动作。前五场实录使用 **Qwen3.8-27B**，IE15 实录通过 Delta Router 使用 **DeepSeek-V4-Flash**。模型请求使用 OpenAI 兼容的 Chat Completions 接口，调用证据写到本地结果目录。[运行入口](run_hybrid.py) · [常规配置](configs/hybrid.example.json) · [IE15 配置](configs/hybrid.ie15.deepseek.example.json) · [使用说明](docs/hybrid-baseline.md)
 
+### LLM＋运筹策略
+
+提供独立的 LLM＋运筹执行方法：LLM生成单位任务与交战约束，数学优化器逐tick计算分配和动作。包含输出校验、临时故障续行和整局调用预算控制，不使用规则基线作为动作回退。[运行入口](run_llm_or.py) · [示例配置](configs/llm-or.example.json) · [方法与运行说明](docs/llm-or-strategy.md)
+
 ### 自定义参赛程序
 
 参赛程序用 UTF-8 JSONL 处理 `reset`、`act`、`close`。可先用最小程序验证接口，再参考 IE15 的独立基线程序替换决策逻辑。[选手接口](docs/participant-guide.md) · [最小程序](examples/minimal_agent.py) · [IE15 参考程序](examples/buoy_identify_reference.py)
@@ -57,6 +61,7 @@
 .
 ├── run.py                       # 查看场景、评测规则基线或参赛程序
 ├── run_hybrid.py                # 运行 LLM + adaptive 基线
+├── run_llm_or.py                # 运行 LLM + 运筹策略
 ├── replay.py                    # 把本地结果导出为离线回放
 ├── check_environment.py         # 检查解释器和依赖
 ├── requirements-lock.txt        # 固定的 CPU 运行依赖
