@@ -94,6 +94,8 @@
 
 ## 安装和运行
 
+云端比赛镜像与模型 API 的使用方法见 [Delta 使用指南](docs/delta-llm-api.md)。
+
 推荐 Python 3.11，仿真和规则基线可在 CPU 上运行。克隆或下载仓库后，在仓库根目录执行：
 
 ```powershell
