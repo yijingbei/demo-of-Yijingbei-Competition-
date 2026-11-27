@@ -5,7 +5,7 @@
 每局由选手程序控制红方，蓝方使用场景自带的对手策略。评测器逐 tick 向选手程序发送授权观测和上步回执，接收动作，再交由引擎推进世界、判定任务并计分。
 
 - [看六场规则基线回放](visualization/demo-replay.html) · [看六场 Hybrid 回放](visualization/hybrid-replay.html)
-- [安装和运行](#安装和运行) · [仓库结构](#仓库结构) · [选手接口](docs/participant-guide.md)
+- [安装和运行](#安装和运行) · [仓库结构](#仓库结构) · [选手接口](docs/participant-guide.md) · [Delta API 调用](docs/delta-llm-api.md)
 
 ## 示例场景
 
